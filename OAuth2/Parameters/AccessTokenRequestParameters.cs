@@ -20,7 +20,11 @@ namespace OAuth2.Parameters
         /// </summary>
         public string ClientSecret { get; set; }
 
-        //public string RedirectUri { get; set; }
+        /// <summary>
+        /// Redirect URI (URI which is registered for your app in third-party service). 
+        /// At this stage such URI is used for app verification purposes.
+        /// </summary>
+        public string RedirectUri { get; set; }
 
         /// <summary>
         /// Grant type. Should always be "authorization_code".

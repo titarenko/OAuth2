@@ -16,7 +16,7 @@ namespace OAuth2.Parameters
         public string ClientId { get; set; }
 
         /// <summary>
-        /// Redirect URI (URI which user will be redirected to 
+        /// Redirect URI (URI user will be redirected to 
         /// after authentication using third-party service).
         /// </summary>
         public string RedirectUri { get; set; }
