@@ -1,9 +1,12 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Autofac;
 using Autofac.Integration.Mvc;
+using OAuth2.Example.Controllers;
 using RestSharp;
+using Autofac.Builder;
 
 namespace OAuth2.Example
 {

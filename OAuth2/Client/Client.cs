@@ -23,7 +23,7 @@ namespace OAuth2.Client
     /// - third-party service redirects user to hosting app
     /// - hosting app reads user information using <see cref="GetUserInfo"/> method on callback
     /// </remarks>
-    public abstract class Client
+    public abstract class Client : IClient
     {
         private readonly IRestClient client;
         private readonly IRestRequest request;

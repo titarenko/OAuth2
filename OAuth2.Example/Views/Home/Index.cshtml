@@ -1,3 +1,7 @@
-﻿@model string
+﻿@using OAuth2.Example
+@model OAuth2.Example.Models.IndexViewModel
 
-<a href="@Model">Log In</a>
+@foreach (var uri in Model.LoginUris)
+{
+    <p><a href="@uri">Log In (@uri.Cut(40))</a></p>
+}
