@@ -44,7 +44,18 @@ namespace OAuth2.Infrastructure
         /// <param name="allowInheritance">Allows read values from parent section if true.</param>
         public IConfiguration GetSection<T>(bool allowInheritance = true)
         {
-            return GetSection(typeof (T).Name, allowInheritance);
+            return GetSection(typeof (T), allowInheritance);
+        }
+
+        /// <summary>
+        /// Returns configuration section for given type (uses type name as section name).
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="allowInheritance">Allows read values from parent section if true.</param>
+        /// <returns></returns>
+        public IConfiguration GetSection(Type type, bool allowInheritance = true)
+        {
+            return GetSection(type.Name, allowInheritance);
         }
 
         /// <summary>

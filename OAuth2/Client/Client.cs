@@ -54,7 +54,7 @@ namespace OAuth2.Client
         {
             this.client = client;
             this.request = request;
-            this.configuration = configuration;
+            this.configuration = configuration.GetSection(GetType());
         }
 
         /// <summary>
