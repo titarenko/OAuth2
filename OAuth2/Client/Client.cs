@@ -5,6 +5,7 @@ using OAuth2.Infrastructure;
 using OAuth2.Models;
 using OAuth2.Parameters;
 using RestSharp;
+using System.Linq;
 
 namespace OAuth2.Client
 {
@@ -105,13 +106,22 @@ namespace OAuth2.Client
         /// Obtains user information using third-party authentication service.
         /// </summary>
         /// <param name="accessToken">The access token.</param>
-        public virtual UserInfo GetUserInfo(string accessToken)
+        public UserInfo GetUserInfo(string accessToken)
         {
             client.BaseUrl = UserInfoServiceEndpoint.BaseUri;
             request.Resource = UserInfoServiceEndpoint.Resource;
             request.Method = Method.GET;
 
-            request.AddParameter("access_token", accessToken);
+            const string name = "access_token";
+            var parameter = request.Parameters.FirstOrDefault(x => x.Name == name);
+            if (parameter == null)
+            {
+                request.AddParameter(name, accessToken);
+            }
+            else
+            {
+                parameter.Value = accessToken;
+            }
             
             OnGetUserInfo(request);
             return ParseUserInfo(client.Execute(request).Content);

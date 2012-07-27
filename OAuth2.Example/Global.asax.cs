@@ -47,7 +47,7 @@ namespace OAuth2.Example
                 Assembly.GetExecutingAssembly(), 
                 Assembly.GetAssembly(typeof(Client.Client)), 
                 Assembly.GetAssembly(typeof(RestClient))).AsImplementedInterfaces().AsSelf();
-            builder.RegisterType<FacebookClient>().As<Client.Client>();
+            builder.RegisterType<GoogleClient>().As<Client.Client>();
             DependencyResolver.SetResolver(new AutofacDependencyResolver(builder.Build()));
         }
     }

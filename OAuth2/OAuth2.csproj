@@ -51,6 +51,7 @@
     <Compile Include="Infrastructure\IConfiguration.cs" />
     <Compile Include="Infrastructure\QueryStringExtensions.cs" />
     <Compile Include="Infrastructure\RestSharpExtensions.cs" />
+    <Compile Include="Infrastructure\SafeExtensions.cs" />
     <Compile Include="Infrastructure\StringExtensions.cs" />
     <Compile Include="Models\UserInfo.cs" />
     <Compile Include="Parameters\AccessCodeRequestParameters.cs" />

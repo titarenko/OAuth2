@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
@@ -61,20 +62,25 @@ namespace OAuth2.Client
                 return new Endpoint
                 {
                     BaseUri = "https://www.googleapis.com",
-                    Resource = "/userinfo/email"
+                    Resource = "/oauth2/v1/userinfo"
                 };
             }
         }
-
+        
         /// <summary>
         /// Should return parsed <see cref="UserInfo"/> from content received from third-party service.
         /// </summary>
         /// <param name="content">The content which is received from third-party service.</param>
         protected override UserInfo ParseUserInfo(string content)
         {
+            var response = JObject.Parse(content);
             return new UserInfo
             {
-                Email = content.ToDictionary()["email"],
+                Id = response["id"].Value<string>(),
+                Email = response["email"].Value<string>(),
+                FirstName = response["given_name"].Value<string>(),
+                LastName = response["family_name"].Value<string>(),
+                PhotoUri = response["picture"].SafeGet(x => x.Value<string>())
             };
         }
     }
