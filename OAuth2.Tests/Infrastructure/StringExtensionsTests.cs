@@ -1,8 +1,8 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NUnit.Framework;
 using OAuth2.Infrastructure;
 
-namespace OAuth2.Tests
+namespace OAuth2.Tests.Infrastructure
 {
     [TestFixture]
     public class StringExtensionsTests
