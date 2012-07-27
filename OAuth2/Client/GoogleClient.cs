@@ -32,7 +32,6 @@ namespace OAuth2.Client
                 {
                     BaseUri = "https://accounts.google.com",
                     Resource = "/o/oauth2/auth"
-
                 };
             }
         }
