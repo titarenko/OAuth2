@@ -3,7 +3,6 @@ using NUnit.Framework;
 using OAuth2.Client;
 using OAuth2.Infrastructure;
 using FluentAssertions;
-using System.Linq;
 
 namespace OAuth2.Tests.Infrastructure
 {
