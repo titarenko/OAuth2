@@ -11,7 +11,7 @@ namespace OAuth2.Infrastructure
         /// <summary>
         /// Converts string from camel to snake case.
         /// </summary>
-        /// <param line="line">The line.</param>
+        /// <param name="line">The line.</param>
         public static string FromCamelToSnakeCase(this string line)
         {
             var value = Regex.Replace(line, "([A-Z]+)", match => "_" + match.Groups[1].Value.ToLowerInvariant());
