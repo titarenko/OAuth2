@@ -40,18 +40,13 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Client\Client.cs" />
     <Compile Include="Client\Endpoint.cs" />
     <Compile Include="Client\FacebookClient.cs" />
     <Compile Include="Client\GoogleClient.cs" />
-    <Compile Include="Infrastructure\Configuration.cs" />
+    <Compile Include="Infrastructure\AppConfig.cs" />
     <Compile Include="Infrastructure\EnumerableExtensions.cs" />
     <Compile Include="Infrastructure\IConfiguration.cs" />
     <Compile Include="Infrastructure\QueryStringExtensions.cs" />

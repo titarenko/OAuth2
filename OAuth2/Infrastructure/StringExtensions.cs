@@ -1,41 +1,50 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace OAuth2.Infrastructure
 {
+    /// <summary>
+    /// Set of extension methods for <see cref="string"/>.
+    /// </summary>
     public static class StringExtensions
     {
-        public static string FromCamelToSnakeCase(this string name)
+        /// <summary>
+        /// Converts string from camel to snake case.
+        /// </summary>
+        /// <param line="line">The line.</param>
+        public static string FromCamelToSnakeCase(this string line)
         {
-            var value = Regex.Replace(name, "([A-Z]+)", match => "_" + match.Groups[1].Value.ToLowerInvariant());
+            var value = Regex.Replace(line, "([A-Z]+)", match => "_" + match.Groups[1].Value.ToLowerInvariant());
             return value.StartsWith("_") ? value.Substring(1) : value;
         }
 
+        /// <summary>
+        /// Alias for <code>string.Format</code>.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="args">The args.</param>
         public static string Fill(this string format, params object[] args)
         {
             return string.Format(format, args);
         }
 
+        /// <summary>
+        /// Alias for <code>string.Join</code>.
+        /// </summary>
+        /// <param name="enumerable">The enumerable.</param>
+        /// <param name="separator">The separator.</param>
         public static string Join<T>(this IEnumerable<T> enumerable, string separator)
         {
             return string.Join(separator, enumerable);
         }
 
+        /// <summary>
+        /// Returns true if given line is null, empty or contains only whitespaces.
+        /// </summary>
+        /// <param name="line">The line.</param>
         public static bool IsEmpty(this string line)
         {
             return string.IsNullOrWhiteSpace(line);
-        }
-
-        public static IDictionary<string, string> ToDictionary(this string line, char pairSeparator = '&', char keyValueSeparator = '=')
-        {
-            return (from x in line.Split(pairSeparator)
-                    let pair = x.Split(keyValueSeparator)
-                    select new
-                    {
-                        Key = pair[0],
-                        Value = pair[1]
-                    }).ToDictionary(x => x.Key, x => x.Value);
         }
     }
 }
