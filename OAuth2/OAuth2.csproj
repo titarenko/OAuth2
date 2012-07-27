@@ -48,8 +48,10 @@
     <Compile Include="Client\GoogleClient.cs" />
     <Compile Include="Client\IClient.cs" />
     <Compile Include="Infrastructure\AppConfig.cs" />
+    <Compile Include="Infrastructure\ConfigurationManager.cs" />
     <Compile Include="Infrastructure\EnumerableExtensions.cs" />
     <Compile Include="Infrastructure\IConfiguration.cs" />
+    <Compile Include="Infrastructure\IConfigurationManager.cs" />
     <Compile Include="Infrastructure\QueryStringExtensions.cs" />
     <Compile Include="Infrastructure\RestSharpExtensions.cs" />
     <Compile Include="Infrastructure\SafeExtensions.cs" />

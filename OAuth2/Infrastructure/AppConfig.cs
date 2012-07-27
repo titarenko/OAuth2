@@ -1,5 +1,4 @@
 using System;
-using System.Configuration;
 using System.Linq;
 
 namespace OAuth2.Infrastructure
@@ -9,20 +8,23 @@ namespace OAuth2.Infrastructure
     /// </summary>
     public class AppConfig : IConfiguration
     {
+        private readonly IConfigurationManager configurationManager;
         private readonly string sectionName;
         private readonly bool allowInheritance;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AppConfig"/> class.
         /// </summary>
-        public AppConfig()
+        public AppConfig(IConfigurationManager configurationManager)
         {
+            this.configurationManager = configurationManager;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AppConfig"/> class.
         /// </summary>
-        private AppConfig(string sectionName, bool allowInheritance)
+        private AppConfig(IConfigurationManager configurationManager, string sectionName, bool allowInheritance) 
+            : this(configurationManager)
         {
             this.sectionName = sectionName;
             this.allowInheritance = allowInheritance;
@@ -35,7 +37,7 @@ namespace OAuth2.Infrastructure
         /// <param name="allowInheritance">Allows read values from parent section if true.</param>
         public IConfiguration GetSection(string name, bool allowInheritance = true)
         {
-            return new AppConfig(name, allowInheritance);
+            return new AppConfig(configurationManager, name, allowInheritance);
         }
 
         /// <summary>
@@ -66,9 +68,9 @@ namespace OAuth2.Infrastructure
         public string Get(string key)
         {
             return sectionName.IsEmpty()
-                       ? ConfigurationManager.AppSettings[key]
-                       : ConfigurationManager.AppSettings["{0}.{1}".Fill(sectionName, key)]
-                         ?? (allowInheritance ? ConfigurationManager.AppSettings[key] : null);
+                       ? configurationManager.GetAppSetting(key)
+                       : configurationManager.GetAppSetting("{0}.{1}".Fill(sectionName, key))
+                         ?? (allowInheritance ? configurationManager.GetAppSetting(key) : null);
         }
 
         /// <summary>
@@ -79,7 +81,7 @@ namespace OAuth2.Infrastructure
             var instance = Activator.CreateInstance<T>();
             typeof (T).GetProperties()
                 .Where(x => x.CanWrite)
-                .ForEach(x => x.SetValue(instance, Get(x.Name), null));
+                .ForEach(x => x.SetValue(instance, Get(x.Name, x.PropertyType), null));
             return instance;
         }
 
@@ -90,7 +92,7 @@ namespace OAuth2.Infrastructure
         {
             return (T) Get(key, typeof (T));
         }
-
+        
         private object Get(string key, Type valueType)
         {
             return Convert.ChangeType(Get(key), valueType);

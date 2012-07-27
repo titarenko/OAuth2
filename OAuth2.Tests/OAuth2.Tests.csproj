@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Client\EndpointTests.cs" />
+    <Compile Include="Infrastructure\AppConfigTests.cs" />
     <Compile Include="Infrastructure\EnumerableExtensionsTests.cs" />
     <Compile Include="Infrastructure\QueryStringExtensionsTests.cs" />
     <Compile Include="Infrastructure\RestSharpExtensionsTests.cs" />
