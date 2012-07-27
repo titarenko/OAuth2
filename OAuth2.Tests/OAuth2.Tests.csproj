@@ -56,6 +56,8 @@
     <Compile Include="Infrastructure\RestSharpExtensionsTests.cs" />
     <Compile Include="Infrastructure\SafeExtensionsTests.cs" />
     <Compile Include="Infrastructure\StringExtensionsTests.cs" />
+    <Compile Include="Parameters\AccessCodeRequestParametersTests.cs" />
+    <Compile Include="Parameters\AccessTokenRequestParametersTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
