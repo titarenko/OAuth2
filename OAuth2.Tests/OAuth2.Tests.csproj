@@ -53,6 +53,7 @@
     <Compile Include="Infrastructure\EnumerableExtensionsTests.cs" />
     <Compile Include="Infrastructure\QueryStringExtensionsTests.cs" />
     <Compile Include="Infrastructure\RestSharpExtensionsTests.cs" />
+    <Compile Include="Infrastructure\SafeExtensionsTests.cs" />
     <Compile Include="Infrastructure\StringExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
