@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using Autofac;
 using Autofac.Integration.Mvc;
+using OAuth2.Client;
 using RestSharp;
 
 namespace OAuth2.Example
@@ -44,9 +45,9 @@ namespace OAuth2.Example
             builder.RegisterControllers(Assembly.GetExecutingAssembly());
             builder.RegisterAssemblyTypes(
                 Assembly.GetExecutingAssembly(), 
-                Assembly.GetAssembly(typeof(Client)), 
+                Assembly.GetAssembly(typeof(Client.Client)), 
                 Assembly.GetAssembly(typeof(RestClient))).AsImplementedInterfaces().AsSelf();
-            builder.RegisterType<FacebookClient>().As<Client>();
+            builder.RegisterType<FacebookClient>().As<Client.Client>();
             DependencyResolver.SetResolver(new AutofacDependencyResolver(builder.Build()));
         }
     }

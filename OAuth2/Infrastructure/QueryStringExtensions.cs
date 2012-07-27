@@ -1,6 +1,6 @@
-﻿using System.Linq;
+using System.Linq;
 
-namespace OAuth2
+namespace OAuth2.Infrastructure
 {
     public static class QueryStringExtensions
     {

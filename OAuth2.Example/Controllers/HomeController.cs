@@ -4,9 +4,9 @@ namespace OAuth2.Example.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly Client client;
+        private readonly Client.Client client;
 
-        public HomeController(Client client)
+        public HomeController(Client.Client client)
         {
             this.client = client;
         }

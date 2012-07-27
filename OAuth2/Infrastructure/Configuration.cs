@@ -2,7 +2,7 @@ using System;
 using System.Configuration;
 using System.Linq;
 
-namespace OAuth2
+namespace OAuth2.Infrastructure
 {
     public class Configuration : IConfiguration
     {

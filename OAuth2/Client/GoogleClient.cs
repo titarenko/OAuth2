@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
+using OAuth2.Infrastructure;
+using OAuth2.Models;
 using RestSharp;
 
-namespace OAuth2
+namespace OAuth2.Client
 {
     public class GoogleClient : Client
     {

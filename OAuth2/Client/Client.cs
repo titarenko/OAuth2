@@ -1,9 +1,12 @@
 using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OAuth2.Infrastructure;
+using OAuth2.Models;
+using OAuth2.Parameters;
 using RestSharp;
 
-namespace OAuth2
+namespace OAuth2.Client
 {
     public abstract class Client
     {

@@ -1,4 +1,4 @@
-namespace OAuth2
+namespace OAuth2.Client
 {
     public class Endpoint
     {

@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
-namespace OAuth2
+namespace OAuth2.Infrastructure
 {
     public static class EnumerableExtensions
     {
