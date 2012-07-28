@@ -15,13 +15,28 @@ namespace OAuth2.Tests.Client
     [TestFixture]
     public class ClientTests
     {
-        [Test]
-        public void Should_ReturnCorrectAccessCodeRequestUri()
+        private IRestClient client;
+        private IRestRequest request;
+        private IConfiguration config;
+        private IRestResponse response;
+        private ClientDescendant descendant;
+
+        [SetUp]
+        public void SetUp()
         {
-            // arrange
-            var client = Substitute.For<IRestClient>();
-            var request = Substitute.For<IRestRequest>();
-            var config = Substitute.For<IConfiguration>();
+            request = Substitute.For<IRestRequest>();
+            request.Parameters.Returns(new List<Parameter>
+            {
+                new Parameter {Name = "param1", Type = ParameterType.GetOrPost, Value = "value1"}
+            });
+
+            response = Substitute.For<IRestResponse>();
+            response.Content.Returns("access_token=token");
+
+            client = Substitute.For<IRestClient>();
+            client.Execute(Arg.Is(request)).Returns(response);
+
+            config = Substitute.For<IConfiguration>();
             config.GetSection(Arg.Any<Type>(), Arg.Any<bool>()).Returns(config);
             config.Get<AccessCodeRequestParameters>().Returns(new AccessCodeRequestParameters
             {
@@ -30,30 +45,7 @@ namespace OAuth2.Tests.Client
                 Scope = "scope",
                 State = "state"
             });
-            var descendant = new ClientDescendant(client, request, config);
-
-            // act
-            var uri = descendant.GetAccessCodeRequestUri();
-
-            // assert
-            uri.Should().Be("https://base.com/resource?response_type=code&client_id=id&redirect_uri=uri&scope=scope&state=state");
-        }
-
-        [Test] // TODO: split into several tests
-        public void Should_IssueCorrectRequestForAccessToken()
-        {
-            // arrange
-            var request = Substitute.For<IRestRequest>();
-
-            var response = Substitute.For<IRestResponse>();
-            response.Content.Returns("access_token=token");
-
-            var client = Substitute.For<IRestClient>();
-            client.Execute(Arg.Any<IRestRequest>()).Returns(response);
-
-            var config = Substitute.For<IConfiguration>();
-            config.GetSection(Arg.Any<Type>(), Arg.Any<bool>()).Returns(config);
-            config.Get<AccessTokenRequestParameters>().Returns(new AccessTokenRequestParameters()
+            config.Get<AccessTokenRequestParameters>().Returns(new AccessTokenRequestParameters
             {
                 ClientId = "id",
                 RedirectUri = "uri",
@@ -61,10 +53,24 @@ namespace OAuth2.Tests.Client
                 Code = null
             });
 
-            var descendant = new ClientDescendant(client, request, config);
+            descendant = new ClientDescendant(client, request, config);
+        }
 
+        [Test]
+        public void Should_ReturnCorrectAccessCodeRequestUri()
+        {
             // act
-            var token = descendant.GetAccessToken("code", string.Empty);
+            var uri = descendant.GetAccessCodeRequestUri();
+
+            // assert
+            uri.Should().Be("https://base.com/resource?response_type=code&client_id=id&redirect_uri=uri&scope=scope&state=state");
+        }
+
+        [Test]
+        public void Should_IssueCorrectRequestForAccessToken()
+        {
+            // act
+            descendant.GetAccessToken("code", string.Empty);
 
             // assert
             client.BaseUrl.Should().Be("https://base.com");
@@ -78,6 +84,16 @@ namespace OAuth2.Tests.Client
             request.AddParameter(Arg.Is("grant_type"), Arg.Is("authorization_code")).Received(1);
 
             client.Execute(Arg.Is(request)).Received(1);
+        }
+
+        [Test]
+        public void Should_ReturnObtainedAccessToken()
+        {
+            // act
+            var token = descendant.GetAccessToken("code", string.Empty);
+
+            // assert
+            client.Execute(Arg.Is(request)).Received(1);
 
             token.Should().Be("token");
         }
@@ -85,27 +101,6 @@ namespace OAuth2.Tests.Client
         [Test]
         public void Should_ThrowException_WhenAccessTokenIsRequestedAndErrorIsNotEmpty()
         {
-            // arrange
-            var request = Substitute.For<IRestRequest>();
-
-            var response = Substitute.For<IRestResponse>();
-            response.Content.Returns("access_token=token");
-
-            var client = Substitute.For<IRestClient>();
-            client.Execute(Arg.Any<IRestRequest>()).Returns(response);
-
-            var config = Substitute.For<IConfiguration>();
-            config.GetSection(Arg.Any<Type>(), Arg.Any<bool>()).Returns(config);
-            config.Get<AccessTokenRequestParameters>().Returns(new AccessTokenRequestParameters()
-            {
-                ClientId = "id",
-                RedirectUri = "uri",
-                ClientSecret = "secret",
-                Code = null
-            });
-
-            var descendant = new ClientDescendant(client, request, config);
-
             // act & assert
             descendant.Invoking(x => x.GetAccessToken("code", "error")).ShouldThrow<ApplicationException>()
                 .WithMessage("error");
@@ -116,27 +111,6 @@ namespace OAuth2.Tests.Client
         [TestCase(null)]
         public void ShouldNot_ThrowException_WhenAccessTokenIsRequestedAndErrorIsEmpty(string error)
         {
-            // arrange
-            var request = Substitute.For<IRestRequest>();
-
-            var response = Substitute.For<IRestResponse>();
-            response.Content.Returns("access_token=token");
-
-            var client = Substitute.For<IRestClient>();
-            client.Execute(Arg.Any<IRestRequest>()).Returns(response);
-
-            var config = Substitute.For<IConfiguration>();
-            config.GetSection(Arg.Any<Type>(), Arg.Any<bool>()).Returns(config);
-            config.Get<AccessTokenRequestParameters>().Returns(new AccessTokenRequestParameters()
-            {
-                ClientId = "id",
-                RedirectUri = "uri",
-                ClientSecret = "secret",
-                Code = null
-            });
-
-            var descendant = new ClientDescendant(client, request, config);
-
             // act & assert
             descendant.Invoking(x => x.GetAccessToken("code", error)).ShouldNotThrow();
         }
@@ -145,23 +119,8 @@ namespace OAuth2.Tests.Client
         public void Should_IssueCorrectRequestForUserInfo()
         {
             // arrange
-            var request = Substitute.For<IRestRequest>();
-            request.Parameters.Returns(new List<Parameter>
-            {
-                new Parameter {Name = "param1", Type = ParameterType.GetOrPost, Value = "value1"}
-            });
-
-            var response = Substitute.For<IRestResponse>();
             response.Content.Returns("response");
-
-            var client = Substitute.For<IRestClient>();
-            client.Execute(Arg.Any<IRestRequest>()).Returns(response);
-
-            var config = Substitute.For<IConfiguration>();
-            config.GetSection(Arg.Any<Type>(), Arg.Any<bool>()).Returns(config);
-
-            var descendant = new ClientDescendant(client, request, config);
-
+            
             // act
             var info = descendant.GetUserInfo("token");
 
@@ -182,22 +141,11 @@ namespace OAuth2.Tests.Client
         public void Should_OverwritePreviousAccessToken()
         {
             // arrange
-            var request = Substitute.For<IRestRequest>();
-            request.Parameters.Returns(new List<Parameter>
+            request.Parameters.Add(new Parameter
             {
-                new Parameter {Name = "access_token", Type = ParameterType.GetOrPost, Value = "wrong"}
+                Name = "access_token",
+                Value = "wrong"
             });
-
-            var response = Substitute.For<IRestResponse>();
-            response.Content.Returns("response");
-
-            var client = Substitute.For<IRestClient>();
-            client.Execute(Arg.Any<IRestRequest>()).Returns(response);
-
-            var config = Substitute.For<IConfiguration>();
-            config.GetSection(Arg.Any<Type>(), Arg.Any<bool>()).Returns(config);
-
-            var descendant = new ClientDescendant(client, request, config);
 
             // act
             descendant.GetUserInfo("token");

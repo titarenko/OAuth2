@@ -57,6 +57,7 @@
     <Compile Include="Client\FacebookClientTests.cs" />
     <Compile Include="Client\GoogleClientTests.cs" />
     <Compile Include="Infrastructure\AppConfigTests.cs" />
+    <Compile Include="Infrastructure\ConfigurationManagerTests.cs" />
     <Compile Include="Infrastructure\EnumerableExtensionsTests.cs" />
     <Compile Include="Infrastructure\QueryStringExtensionsTests.cs" />
     <Compile Include="Infrastructure\RestSharpExtensionsTests.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
