@@ -1,25 +1,24 @@
-﻿using NSubstitute;
+﻿using FluentAssertions;
+using NSubstitute;
 using NUnit.Framework;
 using OAuth2.Client;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
-using FluentAssertions;
 
 namespace OAuth2.Tests.Client
 {
     [TestFixture]
-    public class GoogleClientTests
+    public class FacebookClientTests
     {
-        private const string content = "{\"email\":\"email\",\"given_name\":\"name\",\"family_name\":\"surname\",\"id\":\"id\"}";
-        private const string contentWithPicture = "{\"email\":\"email\",\"given_name\":\"name\",\"family_name\":\"surname\",\"id\":\"id\",\"picture\":\"picture\"}";
+        private const string content = "{\"email\":\"email\",\"first_name\":\"name\",\"last_name\":\"surname\",\"id\":\"id\",\"picture\":{\"data\":{\"url\":\"picture\"}}}";
 
-        private GoogleClientDescendant descendant;
+        private FacebookClientDescendant descendant;
 
         [SetUp]
         public void SetUp()
         {
-            descendant = new GoogleClientDescendant(null, null, Substitute.For<IConfiguration>());
+            descendant = new FacebookClientDescendant(null, null, Substitute.For<IConfiguration>());
         }
 
         [Test]
@@ -29,8 +28,8 @@ namespace OAuth2.Tests.Client
             var endpoint = descendant.GetAccessCodeServiceEndpoint();
 
             // assert
-            endpoint.BaseUri.Should().Be("https://accounts.google.com");
-            endpoint.Resource.Should().Be("/o/oauth2/auth");
+            endpoint.BaseUri.Should().Be("https://www.facebook.com");
+            endpoint.Resource.Should().Be("/dialog/oauth");
         }
 
         [Test]
@@ -40,8 +39,8 @@ namespace OAuth2.Tests.Client
             var endpoint = descendant.GetAccessTokenServiceEndpoint();
 
             // assert
-            endpoint.BaseUri.Should().Be("https://accounts.google.com");
-            endpoint.Resource.Should().Be("/o/oauth2/token");
+            endpoint.BaseUri.Should().Be("https://graph.facebook.com");
+            endpoint.Resource.Should().Be("/oauth/access_token");
         }
 
         [Test]
@@ -51,22 +50,15 @@ namespace OAuth2.Tests.Client
             var endpoint = descendant.GetUserInfoServiceEndpoint();
 
             // assert
-            endpoint.BaseUri.Should().Be("https://www.googleapis.com");
-            endpoint.Resource.Should().Be("/oauth2/v1/userinfo");
+            endpoint.BaseUri.Should().Be("https://graph.facebook.com");
+            endpoint.Resource.Should().Be("/me");
         }
-
-        [Test]
-        public void ShouldNot_Throw_WhenParsingUserInfoAndPictureIsNotAvailable()
-        {
-            // act & assert
-            descendant.Invoking(x => x.ParseUserInfo(content)).ShouldNotThrow();
-        }
-
+        
         [Test]
         public void Should_ParseAllFieldsOfUserInfo_WhenCorrectContentIsPassed()
         {
             // act
-            var info = descendant.ParseUserInfo(contentWithPicture);
+            var info = descendant.ParseUserInfo(content);
 
             //  assert
             info.Id.Should().Be("id");
@@ -76,9 +68,9 @@ namespace OAuth2.Tests.Client
             info.PhotoUri.Should().Be("picture");
         }
 
-        class GoogleClientDescendant : GoogleClient
+        class FacebookClientDescendant : FacebookClient
         {
-            public GoogleClientDescendant(IRestClient client, IRestRequest request, IConfiguration configuration)
+            public FacebookClientDescendant(IRestClient client, IRestRequest request, IConfiguration configuration)
                 : base(client, request, configuration)
             {
             }
@@ -102,6 +94,6 @@ namespace OAuth2.Tests.Client
             {
                 return base.ParseUserInfo(content);
             }
-        } 
+        }
     }
 }
