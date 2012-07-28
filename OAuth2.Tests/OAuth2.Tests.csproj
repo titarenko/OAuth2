@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="Client\ClientTests.cs" />
     <Compile Include="Client\EndpointTests.cs" />
+    <Compile Include="Client\GoogleClientTests.cs" />
     <Compile Include="Infrastructure\AppConfigTests.cs" />
     <Compile Include="Infrastructure\EnumerableExtensionsTests.cs" />
     <Compile Include="Infrastructure\QueryStringExtensionsTests.cs" />
