@@ -83,6 +83,22 @@ Auth Razor View:
 	    @Model.FirstName @Model.LastName (@Model.Email) [@Model.Id]
 	</p>
 
+AppSettings (Web.config):
+
+  <appSettings>
+    ...
+    
+    <add key="RedirectUri" value="http://localhost:53023/Auth"/>
+    
+    <add key="GoogleClient.ClientId" value="000000000000.apps.googleusercontent.com"/>
+    <add key="GoogleClient.ClientSecret" value="AAAAAAAAAAAAAAAAAAAAAAAA"/>
+    <add key="GoogleClient.Scope" value="https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"/>
+    
+    <add key="FacebookClient.ClientId" value="000000000000000"/>
+    <add key="FacebookClient.ClientSecret" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"/>
+    <add key="FacebookClient.Scope" value="email"/>
+  </appSettings>
+
 ## Supported Sevices##
 
 Currently OAuth2 supports receiving user information via:
