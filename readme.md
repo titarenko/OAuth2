@@ -72,7 +72,7 @@ Auth View:
 	<p>
 	    @if (@Model.PhotoUri.IsEmpty())
 	    {
-	        @:text "No photo"
+	        @:"No photo"
 	    }
 	    else
 	    {
@@ -97,6 +97,10 @@ AppSettings (Web.config):
 		<add key="FacebookClient.ClientId" value="000000000000000"/>
 		<add key="FacebookClient.ClientSecret" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"/>
 		<add key="FacebookClient.Scope" value="email"/>
+		
+		<add key="VkClient.ClientId" value="0000000"/>
+		<add key="VkClient.ClientSecret" value="AAAAAAAAAAAAAAAAAAAA"/>
+		<add key="VkClient.Scope" value="offline"/>
 	</appSettings>
 
 ## Supported Sevices##
@@ -105,6 +109,7 @@ Currently OAuth2 supports receiving user information via:
 
 - Google
 - Facebook
+- VK (Vkontakte)
 
 ## Goals ##
 
