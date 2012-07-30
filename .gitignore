@@ -9,3 +9,4 @@ packages
 *.user
 *.dotCover
 log.txt
+*ncrunch*

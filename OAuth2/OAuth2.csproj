@@ -49,6 +49,7 @@
     <Compile Include="Client\FacebookClient.cs" />
     <Compile Include="Client\GoogleClient.cs" />
     <Compile Include="Client\IClient.cs" />
+    <Compile Include="Client\VkClient.cs" />
     <Compile Include="Infrastructure\AppConfig.cs" />
     <Compile Include="Infrastructure\ConfigurationManager.cs" />
     <Compile Include="Infrastructure\EnumerableExtensions.cs" />
@@ -65,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="readme.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
