@@ -72,7 +72,6 @@ namespace OAuth2.Client
         /// Called just after obtaining response with access token from third-party service.
         /// Allows to read extra data returned along with access token.
         /// </summary>
-        /// <param name="response"></param>
         protected override void AfterGetAccessToken(IRestResponse response)
         {
             userId = JObject.Parse(response.Content)["user_id"].Value<string>();
@@ -82,7 +81,6 @@ namespace OAuth2.Client
         /// Called just before issuing request to third-party service when everything is ready.
         /// Allows to add extra parameters to request or do any other needed preparations.
         /// </summary>
-        /// <param name="request"></param>
         protected override void OnGetUserInfo(IRestRequest request)
         {
             request.AddParameter("uids", userId);
@@ -93,7 +91,6 @@ namespace OAuth2.Client
         /// Should return parsed <see cref="UserInfo"/> from content received from third-party service.
         /// </summary>
         /// <param name="content">The content which is received from third-party service.</param>
-        /// <returns></returns>
         protected override UserInfo ParseUserInfo(string content)
         {
             var response = JObject.Parse(content)["response"][0];
