@@ -88,17 +88,19 @@ namespace OAuth2.Client
             parameters.Code = code;
 
             request.AddObjectPropertiesAsParameters(parameters);
-            var response = client.Execute(request).Content;
+            var response = client.Execute(request);
+            AfterGetAccessToken(response);
 
+            var content = response.Content;
             try
             {
                 // response can be sent in JSON format
-                return (string)JObject.Parse(response).SelectToken("access_token");
+                return (string)JObject.Parse(content).SelectToken("access_token");
             }
             catch (JsonReaderException)
             {
                 // or it can be in "query string" format (param1=val1&param2=val2)
-                return response.ToDictionary()["access_token"];
+                return content.ToDictionary()["access_token"];
             }
         }
 
@@ -132,6 +134,14 @@ namespace OAuth2.Client
         /// Allows to add extra parameters to request or do any other needed preparations.
         /// </summary>
         protected virtual void OnGetUserInfo(IRestRequest request)
+        {
+        }
+
+        /// <summary>
+        /// Called just after obtaining response with access token from third-party service.
+        /// Allows to read extra data returned along with access token.
+        /// </summary>
+        protected virtual void AfterGetAccessToken(IRestResponse response)
         {
         }
 

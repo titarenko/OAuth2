@@ -88,7 +88,7 @@ namespace OAuth2.Tests.Client
             descendant.GetUserInfo("token");
 
             // assert
-            request.AddParameter(Arg.Is("fields"), Arg.Is("id,first_name,last_name,email,picture")).Received(1);
+            request.Received(1).AddParameter(Arg.Is("fields"), Arg.Is("id,first_name,last_name,email,picture"));
         }
 
         class FacebookClientDescendant : FacebookClient
