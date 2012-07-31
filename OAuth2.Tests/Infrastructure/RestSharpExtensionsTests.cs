@@ -24,8 +24,8 @@ namespace OAuth2.Tests.Infrastructure
             request.AddObjectPropertiesAsParameters(instance);
 
             // assert
-            request.AddParameter(Arg.Is("client_id"), Arg.Is(15)).Received(1);
-            request.AddParameter(Arg.Is("state"), Arg.Is("done")).Received(1);
+            request.Received(1).AddParameter(Arg.Is("client_id"), Arg.Is(15));
+            request.Received(1).AddParameter(Arg.Is("state"), Arg.Is("done"));
         }
     }
 }
