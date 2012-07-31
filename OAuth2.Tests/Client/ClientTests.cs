@@ -77,13 +77,13 @@ namespace OAuth2.Tests.Client
             request.Resource.Should().Be("/resource");
             request.Method.Should().Be(Method.POST);
 
-            request.AddParameter(Arg.Is("client_id"), Arg.Is("id")).Received(1);
-            request.AddParameter(Arg.Is("redirect_uri"), Arg.Is("uri")).Received(1);
-            request.AddParameter(Arg.Is("client_secret"), Arg.Is("secret")).Received(1);
-            request.AddParameter(Arg.Is("code"), Arg.Is("code")).Received(1);
-            request.AddParameter(Arg.Is("grant_type"), Arg.Is("authorization_code")).Received(1);
+            request.Received(1).AddParameter(Arg.Is("client_id"), Arg.Is("id"));
+            request.Received(1).AddParameter(Arg.Is("redirect_uri"), Arg.Is("uri"));
+            request.Received(1).AddParameter(Arg.Is("client_secret"), Arg.Is("secret"));
+            request.Received(1).AddParameter(Arg.Is("code"), Arg.Is("code"));
+            request.Received(1).AddParameter(Arg.Is("grant_type"), Arg.Is("authorization_code"));
 
-            client.Execute(Arg.Is(request)).Received(1);
+            client.Received(1).Execute(Arg.Is(request));
         }
 
         [Test]
@@ -93,7 +93,7 @@ namespace OAuth2.Tests.Client
             var token = descendant.GetAccessToken("code", string.Empty);
 
             // assert
-            client.Execute(Arg.Is(request)).Received(1);
+            client.Received(1).Execute(Arg.Is(request));
 
             token.Should().Be("token");
         }
@@ -102,7 +102,8 @@ namespace OAuth2.Tests.Client
         public void Should_ThrowException_WhenAccessTokenIsRequestedAndErrorIsNotEmpty()
         {
             // act & assert
-            descendant.Invoking(x => x.GetAccessToken("code", "error")).ShouldThrow<ApplicationException>()
+            descendant.Invoking(x => x.GetAccessToken("code", "error"))
+                .ShouldThrow<ApplicationException>()
                 .WithMessage("error");
         }
 
@@ -129,9 +130,9 @@ namespace OAuth2.Tests.Client
             request.Resource.Should().Be("/resource");
             request.Method.Should().Be(Method.GET);
 
-            request.AddParameter(Arg.Is("access_token"), Arg.Is("token")).Received(1);
+            request.Received(1).AddParameter(Arg.Is("access_token"), Arg.Is("token"));
 
-            client.Execute(Arg.Is(request)).Received(1);
+            client.Received(1).Execute(Arg.Is(request));
 
             info.Id.Should().Be("response");
             info.Email.Should().Be("Email1");
