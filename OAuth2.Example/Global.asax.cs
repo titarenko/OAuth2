@@ -63,7 +63,7 @@ namespace OAuth2.Example
             builder
                 .RegisterAssemblyTypes(
                     Assembly.GetExecutingAssembly(),
-                    Assembly.GetAssembly(typeof (Client.Client)),
+                    Assembly.GetAssembly(typeof (Client.OAuth2Client)),
                     Assembly.GetAssembly(typeof (RestClient)))
                 .AsImplementedInterfaces().AsSelf();
 

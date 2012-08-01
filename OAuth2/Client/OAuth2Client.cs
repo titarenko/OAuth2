@@ -23,7 +23,7 @@ namespace OAuth2.Client
     /// - third-party service redirects user to hosting app
     /// - hosting app reads user information using <see cref="GetUserInfo"/> method on callback
     /// </remarks>
-    public abstract class Client : IClient
+    public abstract class OAuth2Client : IClient
     {
         private readonly IRestClient client;
         private readonly IRestRequest request;
@@ -45,12 +45,12 @@ namespace OAuth2.Client
         protected abstract Endpoint UserInfoServiceEndpoint { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Client"/> class.
+        /// Initializes a new instance of the <see cref="OAuth2Client"/> class.
         /// </summary>
         /// <param name="client">The client.</param>
         /// <param name="request">The request.</param>
         /// <param name="configuration">The configuration.</param>
-        protected Client(IRestClient client, IRestRequest request, IConfiguration configuration)
+        protected OAuth2Client(IRestClient client, IRestRequest request, IConfiguration configuration)
         {
             this.client = client;
             this.request = request;

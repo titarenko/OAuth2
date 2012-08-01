@@ -8,7 +8,7 @@ namespace OAuth2.Client
     /// <summary>
     /// Google authentication client.
     /// </summary>
-    public class GoogleClient : Client
+    public class GoogleClient : OAuth2Client
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GoogleClient"/> class.

@@ -8,7 +8,7 @@ namespace OAuth2.Client
     /// <summary>
     /// Facebook authentication client.
     /// </summary>
-    public class FacebookClient : Client
+    public class FacebookClient : OAuth2Client
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FacebookClient"/> class.

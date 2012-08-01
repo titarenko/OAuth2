@@ -8,7 +8,7 @@ namespace OAuth2.Client
     /// <summary>
     /// VK (Vkontakte) authentication client.
     /// </summary>
-    public class VkClient : Client
+    public class VkClient : OAuth2Client
     {
         private string userId;
 
