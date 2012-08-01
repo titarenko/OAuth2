@@ -54,7 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Client\ClientTests.cs" />
+    <Compile Include="Client\OAuth2ClientTests.cs" />
     <Compile Include="Client\EndpointTests.cs" />
     <Compile Include="Client\FacebookClientTests.cs" />
     <Compile Include="Client\GoogleClientTests.cs" />

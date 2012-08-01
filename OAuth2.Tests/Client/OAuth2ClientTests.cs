@@ -13,7 +13,7 @@ using FluentAssertions;
 namespace OAuth2.Tests.Client
 {
     [TestFixture]
-    public class ClientTests
+    public class OAuth2ClientTests
     {
         private IRestClient client;
         private IRestRequest request;
