@@ -76,10 +76,10 @@ namespace OAuth2.Infrastructure
             {
                 if (item.ClientType.Equals(sectionName))
                 {
-                    string configKey = Char.ToLowerInvariant(key[0]) + key.Substring(1);
-                    PropertyInformation pi = item.ElementInformation.Properties[configKey];
+                    string propKey = Char.ToLowerInvariant(key[0]) + key.Substring(1);
+                    PropertyInformation pi = item.ElementInformation.Properties[propKey];
                     if (pi != null)
-                        return Convert.ToString(item.ElementInformation.Properties[configKey].Value);
+                        return Convert.ToString(pi.Value);
                 }
             }
             return string.Empty;
