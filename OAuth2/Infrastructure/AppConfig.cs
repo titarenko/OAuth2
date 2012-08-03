@@ -1,5 +1,7 @@
 using System;
+using System.Configuration;
 using System.Linq;
+using OAuth2.Configuration;
 
 namespace OAuth2.Infrastructure
 {
@@ -11,20 +13,22 @@ namespace OAuth2.Infrastructure
         private readonly IConfigurationManager configurationManager;
         private readonly string sectionName;
         private readonly bool allowInheritance;
+        private readonly string configSectionName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AppConfig"/> class.
         /// </summary>
-        public AppConfig(IConfigurationManager configurationManager)
+        public AppConfig(IConfigurationManager configurationManager, string configSectionName)
         {
             this.configurationManager = configurationManager;
+            this.configSectionName = configSectionName;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AppConfig"/> class.
         /// </summary>
-        private AppConfig(IConfigurationManager configurationManager, string sectionName, bool allowInheritance) 
-            : this(configurationManager)
+        private AppConfig(IConfigurationManager configurationManager, string sectionName, bool allowInheritance, string configSectionName)
+            : this(configurationManager, configSectionName)
         {
             this.sectionName = sectionName;
             this.allowInheritance = allowInheritance;
@@ -37,7 +41,7 @@ namespace OAuth2.Infrastructure
         /// <param name="allowInheritance">Allows read values from parent section if true.</param>
         public IConfiguration GetSection(string name, bool allowInheritance = true)
         {
-            return new AppConfig(configurationManager, name, allowInheritance);
+            return new AppConfig(configurationManager, name, allowInheritance, configSectionName);
         }
 
         /// <summary>
@@ -46,7 +50,7 @@ namespace OAuth2.Infrastructure
         /// <param name="allowInheritance">Allows read values from parent section if true.</param>
         public IConfiguration GetSection<T>(bool allowInheritance = true)
         {
-            return GetSection(typeof (T), allowInheritance);
+            return GetSection(typeof(T), allowInheritance);
         }
 
         /// <summary>
@@ -67,10 +71,18 @@ namespace OAuth2.Infrastructure
         /// <returns></returns>
         public string Get(string key)
         {
-            return sectionName.IsEmpty()
-                       ? configurationManager.GetAppSetting(key)
-                       : configurationManager.GetAppSetting("{0}.{1}".Fill(sectionName, key))
-                         ?? (allowInheritance ? configurationManager.GetAppSetting(key) : null);
+            OAuthSettings settings = configurationManager.GetSetting(configSectionName);
+            foreach (NetworkElement item in settings.Networks)
+            {
+                if (item.ClientType.Equals(sectionName))
+                {
+                    string propKey = Char.ToLowerInvariant(key[0]) + key.Substring(1);
+                    PropertyInformation pi = item.ElementInformation.Properties[propKey];
+                    if (pi != null)
+                        return Convert.ToString(pi.Value);
+                }
+            }
+            return string.Empty;
         }
 
         /// <summary>
@@ -79,7 +91,7 @@ namespace OAuth2.Infrastructure
         public T Get<T>()
         {
             var instance = Activator.CreateInstance<T>();
-            typeof (T).GetProperties()
+            typeof(T).GetProperties()
                 .Where(x => x.CanWrite)
                 .ForEach(x => x.SetValue(instance, Get(x.Name, x.PropertyType), null));
             return instance;
@@ -90,9 +102,9 @@ namespace OAuth2.Infrastructure
         /// </summary>
         public T Get<T>(string key)
         {
-            return (T) Get(key, typeof (T));
+            return (T)Get(key, typeof(T));
         }
-        
+
         private object Get(string key, Type valueType)
         {
             return Convert.ChangeType(Get(key), valueType);

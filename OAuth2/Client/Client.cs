@@ -6,6 +6,7 @@ using OAuth2.Models;
 using OAuth2.Parameters;
 using RestSharp;
 using System.Linq;
+using System.Configuration;
 
 namespace OAuth2.Client
 {
@@ -28,6 +29,11 @@ namespace OAuth2.Client
         private readonly IRestClient client;
         private readonly IRestRequest request;
         private readonly IConfiguration configuration;
+
+        /// <summary>
+        /// Defines  Name of service which allows to obtain information from config file.
+        /// </summary>
+        public virtual string NetworkName { get; private set; }
 
         /// <summary>
         /// Defines URI of service which issues access code.
@@ -124,9 +130,12 @@ namespace OAuth2.Client
             {
                 parameter.Value = accessToken;
             }
-            
+
             OnGetUserInfo(request);
-            return ParseUserInfo(client.Execute(request).Content);
+
+            UserInfo info = ParseUserInfo(client.Execute(request).Content);
+            info.NetworkName = this.NetworkName;
+            return info;
         }
 
         /// <summary>

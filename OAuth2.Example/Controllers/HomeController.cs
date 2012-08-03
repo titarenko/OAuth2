@@ -30,7 +30,7 @@ namespace OAuth2.Example.Controllers
         {
             return View(new IndexViewModel
             {
-                LoginUris = clients.Select(x => x.GetAccessCodeRequestUri())
+                LoginInfos = clients.Select(x => new LoginInfo { NetworkName = x.NetworkName, Uri = x.GetAccessCodeRequestUri()})
             });
         }
 

@@ -50,11 +50,15 @@
     <Compile Include="Client\GoogleClient.cs" />
     <Compile Include="Client\IClient.cs" />
     <Compile Include="Client\VkClient.cs" />
+    <Compile Include="Configuration\NetworkCollection.cs" />
+    <Compile Include="Configuration\NetworkElement.cs" />
+    <Compile Include="Configuration\NetworkSettings.cs" />
     <Compile Include="Infrastructure\AppConfig.cs" />
     <Compile Include="Infrastructure\ConfigurationManager.cs" />
     <Compile Include="Infrastructure\EnumerableExtensions.cs" />
     <Compile Include="Infrastructure\IConfiguration.cs" />
     <Compile Include="Infrastructure\IConfigurationManager.cs" />
+    <Compile Include="Infrastructure\OAuthSettings.cs" />
     <Compile Include="Infrastructure\QueryStringExtensions.cs" />
     <Compile Include="Infrastructure\RestSharpExtensions.cs" />
     <Compile Include="Infrastructure\SafeExtensions.cs" />

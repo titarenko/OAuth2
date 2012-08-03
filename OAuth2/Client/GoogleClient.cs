@@ -1,4 +1,6 @@
+using System.Configuration;
 using Newtonsoft.Json.Linq;
+using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
@@ -10,13 +12,18 @@ namespace OAuth2.Client
     /// </summary>
     public class GoogleClient : Client
     {
+        public override string NetworkName
+        {
+            get { return "Google"; }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GoogleClient"/> class.
         /// </summary>
         /// <param name="client">The client.</param>
         /// <param name="request">The request.</param>
         /// <param name="configuration">The configuration.</param>
-        public GoogleClient(IRestClient client, IRestRequest request, IConfiguration configuration)
+                public GoogleClient(IRestClient client, IRestRequest request, IConfiguration configuration)
             : base(client, request, configuration)
         {
         }

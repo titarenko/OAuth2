@@ -6,6 +6,11 @@ namespace OAuth2.Models
     public class UserInfo
     {
         /// <summary>
+        /// NetworkName.
+        /// </summary>
+        public string NetworkName { get; set; }
+
+        /// <summary>
         /// Unique identifier.
         /// </summary>
         public string Id { get; set; }
