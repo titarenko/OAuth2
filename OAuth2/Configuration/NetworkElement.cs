@@ -59,7 +59,7 @@ namespace OAuth2.Configuration
             }
         }
 
-        [ConfigurationProperty("scope", IsRequired = true)]
+        [ConfigurationProperty("scope", DefaultValue = "", IsRequired = false)]
         public string Scope
         {
             get
