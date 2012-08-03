@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Configuration;
+using Newtonsoft.Json.Linq;
+using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
@@ -11,6 +13,11 @@ namespace OAuth2.Client
     public class VkClient : Client
     {
         private string userId;
+
+        public override string NetworkName
+        {
+            get { return "Vkontakte"; }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VkClient"/> class.

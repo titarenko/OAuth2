@@ -7,6 +7,7 @@ using Autofac.Integration.Mvc;
 using OAuth2.Example.Controllers;
 using RestSharp;
 using Autofac.Builder;
+using OAuth2.Infrastructure;
 
 namespace OAuth2.Example
 {
@@ -66,6 +67,8 @@ namespace OAuth2.Example
                     Assembly.GetAssembly(typeof (Client.Client)),
                     Assembly.GetAssembly(typeof (RestClient)))
                 .AsImplementedInterfaces().AsSelf();
+
+            builder.Register((c, p) => new AppConfig(c.Resolve<ConfigurationManager>(), "oauthConfiguration")).AsImplementedInterfaces();
 
             DependencyResolver.SetResolver(new AutofacDependencyResolver(builder.Build()));
         }

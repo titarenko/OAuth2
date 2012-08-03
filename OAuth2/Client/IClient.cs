@@ -16,6 +16,7 @@ namespace OAuth2.Client
     /// </remarks>
     public interface IClient
     {
+        string NetworkName { get; }
         /// <summary>
         /// Returns URI of service which should be called in order to start authentication process. 
         /// You should use this URI when rendering login link.
