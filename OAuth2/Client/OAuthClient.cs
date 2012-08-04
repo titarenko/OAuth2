@@ -1,4 +1,5 @@
-﻿using OAuth2.Infrastructure;
+﻿using System;
+using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
 
@@ -12,7 +13,7 @@ namespace OAuth2.Client
         protected Endpoint RequestTokenRequestEndpoint { get; set; }
         protected Endpoint LoginServiceEndpoint { get; set; }
         protected Endpoint AccessTokenRequestEndpoint { get; set; }
-        protected Endpoint 
+        //protected Endpoint 
 
         protected OAuthClient(IRestClient client, IRestRequest request, IConfiguration configuration)
         {
@@ -39,7 +40,7 @@ namespace OAuth2.Client
 
             var restResponse = client.Execute(request);
 
-
+            throw new NotImplementedException();
         }
     }
 }
