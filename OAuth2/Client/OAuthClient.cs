@@ -6,7 +6,7 @@ using RestSharp.Contrib;
 
 namespace OAuth2.Client
 {
-    public abstract class OAuthClient
+    public abstract class OAuthClient : IClient
     {
         private const string OAuthTokenKey = "oauth_token";
 
@@ -14,8 +14,11 @@ namespace OAuth2.Client
         private readonly ServiceClientConfiguration configuration;
 
         protected Endpoint RequestTokenRequestEndpoint { get; set; }
+
         protected Endpoint LoginServiceEndpoint { get; set; }
+
         protected Endpoint AccessTokenRequestEndpoint { get; set; }
+
         protected Endpoint UserInfoRequestEndpoint { get; set; }
 
         protected OAuthClient(IRequestFactory factory, IConfigurationManager configurationManager)
@@ -26,7 +29,7 @@ namespace OAuth2.Client
                 .Services[GetType().Name];
         }
 
-        public string GetLoginRequestUri()
+        public string GetLoginLinkUri()
         {
             return GetLoginRequestUri(GetRequestToken());
         }
