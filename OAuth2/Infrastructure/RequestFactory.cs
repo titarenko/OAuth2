@@ -1,6 +1,6 @@
 using RestSharp;
 
-namespace OAuth2.Client
+namespace OAuth2.Infrastructure
 {
     public class RequestFactory : IRequestFactory
     {

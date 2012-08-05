@@ -1,6 +1,6 @@
-﻿using RestSharp;
+using RestSharp;
 
-namespace OAuth2.Client
+namespace OAuth2.Infrastructure
 {
     public interface IRequestFactory
     {
