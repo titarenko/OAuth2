@@ -9,7 +9,7 @@ namespace OAuth2.Infrastructure
     public class LibConfig : Configuration
     {
         private readonly OAuth2ConfigurationSection configurationSection;
-        private readonly ServiceElement serviceElement;
+        private readonly ServiceClientConfiguration serviceClientConfiguration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LibConfig"/> class.
@@ -24,10 +24,10 @@ namespace OAuth2.Infrastructure
         /// <summary>
         /// Initializes a new instance of the <see cref="LibConfig"/> class.
         /// </summary>
-        /// <param name="serviceElement">The service element.</param>
-        public LibConfig(ServiceElement serviceElement)
+        /// <param name="serviceClientConfiguration">The service element.</param>
+        public LibConfig(ServiceClientConfiguration serviceClientConfiguration)
         {
-            this.serviceElement = serviceElement;
+            this.serviceClientConfiguration = serviceClientConfiguration;
         }
 
         /// <summary>
@@ -38,14 +38,14 @@ namespace OAuth2.Infrastructure
         /// <returns></returns>
         public override IConfiguration GetSection(string name, bool allowInheritance = true)
         {
-            if (serviceElement != null)
+            if (serviceClientConfiguration != null)
             {
                 throw new NotSupportedException("Nested sections are not supported.");
             }
 
             return new LibConfig(
                 configurationSection.Services
-                    .Cast<ServiceElement>()
+                    .Cast<ServiceClientConfiguration>()
                     .First(x => x.ClientTypeName == name));
         }
 
@@ -56,13 +56,13 @@ namespace OAuth2.Infrastructure
         /// <returns></returns>
         public override string Get(string key)
         {
-            if (serviceElement == null)
+            if (serviceClientConfiguration == null)
             {
                 throw new ApplicationException(
                     "First choose service client and only then obtains its settings.");
             }
 
-            return (string) serviceElement.ElementInformation.Properties[key].Value;
+            return (string) serviceClientConfiguration.ElementInformation.Properties[key].Value;
         }
     }
 }

@@ -44,6 +44,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Client\IRequestFactory.cs" />
     <Compile Include="Client\OAuth2Client.cs" />
     <Compile Include="Client\Endpoint.cs" />
     <Compile Include="Client\FacebookClient.cs" />
@@ -59,7 +60,7 @@
     <Compile Include="Infrastructure\IConfigurationManager.cs" />
     <Compile Include="Infrastructure\LibConfig.cs" />
     <Compile Include="Infrastructure\OAuth2ConfigurationSection.cs" />
-    <Compile Include="Infrastructure\ServiceElement.cs" />
+    <Compile Include="Infrastructure\ServiceClientConfiguration.cs" />
     <Compile Include="Infrastructure\QueryStringExtensions.cs" />
     <Compile Include="Infrastructure\RestSharpExtensions.cs" />
     <Compile Include="Infrastructure\SafeExtensions.cs" />

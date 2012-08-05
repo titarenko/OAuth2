@@ -5,7 +5,7 @@ namespace OAuth2.Infrastructure
     /// <summary>
     /// Contains settings for service client.
     /// </summary>
-    public class ServiceElement : ConfigurationElement
+    public class ServiceClientConfiguration : ConfigurationElement
     {
         private const string ClientTypeNameKey = "clientType";
         private const string ClientIdKey = "clientId";

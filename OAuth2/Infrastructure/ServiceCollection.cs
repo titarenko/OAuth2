@@ -19,9 +19,9 @@ namespace OAuth2.Infrastructure
         /// <summary>
         /// Returns settings for service client with given name.
         /// </summary>
-        public new ServiceElement this[string clientTypeName]
+        public new ServiceClientConfiguration this[string clientTypeName]
         {
-            get { return (ServiceElement)BaseGet(clientTypeName); }
+            get { return (ServiceClientConfiguration)BaseGet(clientTypeName); }
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace OAuth2.Infrastructure
         /// </returns>
         protected override ConfigurationElement CreateNewElement()
         {
-            return new ServiceElement();
+            return new ServiceClientConfiguration();
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace OAuth2.Infrastructure
         /// </returns>
         protected override object GetElementKey(ConfigurationElement element)
         {
-            return ((ServiceElement) element).ClientTypeName;
+            return ((ServiceClientConfiguration) element).ClientTypeName;
         }
     }
 }
