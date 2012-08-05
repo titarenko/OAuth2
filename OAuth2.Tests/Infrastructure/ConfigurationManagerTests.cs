@@ -34,5 +34,25 @@ namespace OAuth2.Tests.Infrastructure
             // assert
             setting.Should().BeNull();
         }
+
+        [Test]
+        public void Should_ReturnConfigurationSection_WhenItIsInConfig()
+        {
+            // act
+            var section = manager.GetConfigSection<OAuth2ConfigurationSection>("oauth2");
+
+            // assert
+            section.Should().NotBeNull();
+        }
+
+        [Test]
+        public void Should_ReturnNull_WhenRequestedConfigurationSectionIsNotFound()
+        {
+            // act
+            var section = manager.GetConfigSection<OAuth2ConfigurationSection>("notfound");
+
+            // assert
+            section.Should().BeNull();
+        }
     }
 }
