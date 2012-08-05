@@ -25,7 +25,7 @@ namespace OAuth2.Tests.Client
             var configuration = Substitute.For<IConfiguration>();
             configuration.GetSection(Arg.Any<Type>()).Returns(configuration);
             configuration.Get<AccessTokenRequestParameters>().Returns(new AccessTokenRequestParameters());
-            descendant = new FacebookClientDescendant(null, null, configuration);
+            descendant = new FacebookClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IConfigurationManager>());
         }
 
         [Test]
@@ -91,7 +91,7 @@ namespace OAuth2.Tests.Client
             var configuration = Substitute.For<IConfiguration>();
             configuration.GetSection(Arg.Any<Type>()).Returns(configuration);
             configuration.Get<AccessTokenRequestParameters>().Returns(new AccessTokenRequestParameters());
-            var descendant = new FacebookClientDescendant(client, request, configuration);
+            var descendant = new FacebookClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IConfigurationManager>());
 
             // act
             descendant.GetUserInfo(new NameValueCollection());
@@ -102,8 +102,8 @@ namespace OAuth2.Tests.Client
 
         class FacebookClientDescendant : FacebookClient
         {
-            public FacebookClientDescendant(IRestClient client, IRestRequest request, IConfiguration configuration)
-                : base(client, request, configuration)
+            public FacebookClientDescendant(IRequestFactory factory, IConfigurationManager configurationManager)
+                : base(factory, configurationManager)
             {
             }
 

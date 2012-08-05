@@ -6,7 +6,6 @@ using OAuth2.Infrastructure;
 using OAuth2.Models;
 using OAuth2.Parameters;
 using RestSharp;
-using System.Linq;
 
 namespace OAuth2.Client
 {
@@ -26,9 +25,8 @@ namespace OAuth2.Client
     /// </remarks>
     public abstract class OAuth2Client : IClient
     {
-        private readonly IRestClient client;
-        private readonly IRestRequest request;
-        private readonly IConfiguration configuration;
+        private readonly IRequestFactory factory;
+        private readonly ServiceClientConfiguration configuration;
 
         /// <summary>
         /// Defines URI of service which issues access code.
@@ -44,31 +42,42 @@ namespace OAuth2.Client
         /// Defines URI of service which allows to obtain information about user which is currently logged in.
         /// </summary>
         protected abstract Endpoint UserInfoServiceEndpoint { get; }
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="OAuth2Client"/> class.
         /// </summary>
-        /// <param name="client">The client.</param>
-        /// <param name="request">The request.</param>
-        /// <param name="configuration">The configuration.</param>
-        protected OAuth2Client(IRestClient client, IRestRequest request, IConfiguration configuration)
+        /// <param name="factory">The factory.</param>
+        /// <param name="configurationManager">The configuration manager.</param>
+        protected OAuth2Client(IRequestFactory factory, IConfigurationManager configurationManager)
         {
-            this.client = client;
-            this.request = request;
-            this.configuration = configuration.GetSection(GetType());
+            this.factory = factory;
+            configuration = configurationManager
+                .GetConfigSection<OAuth2ConfigurationSection>("oauth2")
+                .Services[GetType().Name];
         }
 
         /// <summary>
-        /// Returns URI of service which should be called in order to start authentication process. 
+        /// Returns URI of service which should be called in order to start authentication process.
         /// You should use this URI when rendering login link.
         /// </summary>
         public string GetLoginLinkUri()
         {
-            return "{0}?{1}".Fill(
-                AccessCodeServiceEndpoint.Uri,
-                configuration.Get<AccessCodeRequestParameters>().ToQueryString());
-        }
+            var client = factory.NewClient();
+            client.BaseUrl = AccessCodeServiceEndpoint.BaseUri;
 
+            var request = factory.NewRequest();
+            request.Resource = AccessCodeServiceEndpoint.Resource;
+
+            request.AddObject(new
+            {
+                response_type = "code",
+                client_id = configuration.ClientId,
+                redirect_uri = configuration.RedirectUri,
+                scope = configuration.Scope
+            });
+
+            return client.BuildUri(request).ToString();
+        }
 
         /// <summary>
         /// Obtains user information using third-party authentication service
@@ -83,14 +92,21 @@ namespace OAuth2.Client
                 throw new ApplicationException(error);
             }
 
+            var client = factory.NewClient();
             client.BaseUrl = AccessTokenServiceEndpoint.BaseUri;
+            
+            var request = factory.NewRequest();
             request.Resource = AccessTokenServiceEndpoint.Resource;
             request.Method = Method.POST;
+            request.AddObject(new
+            {
+                code = parameters["code"],
+                client_id = configuration.ClientId,
+                client_secret = configuration.ClientSecret,
+                redirect_uri = configuration.RedirectUri,
+                grant_type = "authorization_code"
+            });
 
-            var param = configuration.Get<AccessTokenRequestParameters>();
-            param.Code = parameters["code"];
-
-            request.AddObjectPropertiesAsParameters(param);
             var response = client.Execute(request);
             AfterGetAccessToken(response);
 
@@ -113,20 +129,12 @@ namespace OAuth2.Client
         /// <param name="accessToken">The access token.</param>
         private UserInfo GetUserInfo(string accessToken)
         {
+            var client = factory.NewClient();
             client.BaseUrl = UserInfoServiceEndpoint.BaseUri;
-            request.Resource = UserInfoServiceEndpoint.Resource;
-            request.Method = Method.GET;
+            client.Authenticator = new OAuth2UriQueryParameterAuthenticator(accessToken);
 
-            const string name = "access_token";
-            var parameter = request.Parameters.FirstOrDefault(x => x.Name == name);
-            if (parameter == null)
-            {
-                request.AddParameter(name, accessToken);
-            }
-            else
-            {
-                parameter.Value = accessToken;
-            }
+            var request = factory.NewRequest();
+            request.Resource = UserInfoServiceEndpoint.Resource;
             
             OnGetUserInfo(request);
             return ParseUserInfo(client.Execute(request).Content);

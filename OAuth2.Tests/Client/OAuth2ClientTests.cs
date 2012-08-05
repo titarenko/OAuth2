@@ -54,7 +54,7 @@ namespace OAuth2.Tests.Client
                 Code = null
             });
 
-            descendant = new OAuth2ClientDescendant(client, request, config);
+            descendant = new OAuth2ClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IConfigurationManager>());
         }
 
         [Test]
@@ -124,7 +124,7 @@ namespace OAuth2.Tests.Client
             request.Parameters.Should().Contain(x => x.Name == "access_token" && (string) x.Value == "token");
         }
 
-        class OAuth2ClientDescendant : OAuth2.Client.OAuth2Client
+        class OAuth2ClientDescendant : OAuth2Client
         {
             private readonly Endpoint endpoint = new Endpoint
             {
@@ -132,7 +132,8 @@ namespace OAuth2.Tests.Client
                 Resource = "/resource"
             };
 
-            public OAuth2ClientDescendant(IRestClient client, IRestRequest request, IConfiguration configuration) : base(client, request, configuration)
+            public OAuth2ClientDescendant(IRequestFactory factory, IConfigurationManager configurationManager) 
+                : base(factory, configurationManager) 
             {
             }
 

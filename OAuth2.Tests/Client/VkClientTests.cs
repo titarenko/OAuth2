@@ -22,7 +22,7 @@ namespace OAuth2.Tests.Client
         [SetUp]
         public void SetUp()
         {
-            descendant = new VkClientDescendant(null, null, Substitute.For<IConfiguration>());
+            descendant = new VkClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IConfigurationManager>());
         }
 
         [Test]
@@ -89,7 +89,7 @@ namespace OAuth2.Tests.Client
             configuration.GetSection(Arg.Any<Type>()).Returns(configuration);
             configuration.Get<AccessTokenRequestParameters>().Returns(new AccessTokenRequestParameters());
 
-            var descendant = new VkClientDescendant(client, request, configuration);
+            var descendant = new VkClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IConfigurationManager>());
 
             // act
             descendant.GetUserInfo(new NameValueCollection());
@@ -111,7 +111,7 @@ namespace OAuth2.Tests.Client
             var client = Substitute.For<IRestClient>();
             client.Execute(Arg.Is(request)).Returns(response);
 
-            var descendant = new VkClientDescendant(client, request, Substitute.For<IConfiguration>());
+            var descendant = new VkClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IConfigurationManager>());
 
             // act
             descendant.GetUserInfo(new NameValueCollection());
@@ -122,8 +122,8 @@ namespace OAuth2.Tests.Client
 
         private class VkClientDescendant : VkClient
         {
-            public VkClientDescendant(IRestClient client, IRestRequest request, IConfiguration configuration)
-                : base(client, request, configuration)
+            public VkClientDescendant(IRequestFactory factory, IConfigurationManager configurationManager)
+                : base(factory, configurationManager)
             {
             }
 
