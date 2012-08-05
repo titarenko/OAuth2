@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Specialized;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OAuth2.Infrastructure;
@@ -68,13 +69,15 @@ namespace OAuth2.Client
                 configuration.Get<AccessCodeRequestParameters>().ToQueryString());
         }
 
+
         /// <summary>
-        /// Returns access token using given code by querying corresponding service.
+        /// Obtains user information using third-party authentication service
+        /// using data provided via callback request.
         /// </summary>
-        /// <param name="code">The code which was obtained from third-party authentication service.</param>
-        /// <param name="error">The error which was received from third-party authentication service.</param>
-        public string GetAccessToken(string code, string error)
+        /// <param name="parameters">Callback request payload (parameters).</param>
+        public UserInfo GetUserInfo(NameValueCollection parameters)
         {
+            var error = parameters["error"];
             if (!error.IsEmpty())
             {
                 throw new ApplicationException(error);
@@ -84,10 +87,10 @@ namespace OAuth2.Client
             request.Resource = AccessTokenServiceEndpoint.Resource;
             request.Method = Method.POST;
 
-            var parameters = configuration.Get<AccessTokenRequestParameters>();
-            parameters.Code = code;
+            var param = configuration.Get<AccessTokenRequestParameters>();
+            param.Code = parameters["code"];
 
-            request.AddObjectPropertiesAsParameters(parameters);
+            request.AddObjectPropertiesAsParameters(param);
             var response = client.Execute(request);
             AfterGetAccessToken(response);
 
@@ -95,12 +98,12 @@ namespace OAuth2.Client
             try
             {
                 // response can be sent in JSON format
-                return (string)JObject.Parse(content).SelectToken("access_token");
+                return GetUserInfo((string) JObject.Parse(content).SelectToken("access_token"));
             }
             catch (JsonReaderException)
             {
                 // or it can be in "query string" format (param1=val1&param2=val2)
-                return content.ToDictionary()["access_token"];
+                return GetUserInfo(content.ToDictionary()["access_token"]);
             }
         }
 
@@ -108,7 +111,7 @@ namespace OAuth2.Client
         /// Obtains user information using third-party authentication service.
         /// </summary>
         /// <param name="accessToken">The access token.</param>
-        public UserInfo GetUserInfo(string accessToken)
+        private UserInfo GetUserInfo(string accessToken)
         {
             client.BaseUrl = UserInfoServiceEndpoint.BaseUri;
             request.Resource = UserInfoServiceEndpoint.Resource;

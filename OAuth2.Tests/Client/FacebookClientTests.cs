@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
 using OAuth2.Client;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using OAuth2.Parameters;
 using RestSharp;
 
 namespace OAuth2.Tests.Client
@@ -19,7 +22,10 @@ namespace OAuth2.Tests.Client
         [SetUp]
         public void SetUp()
         {
-            descendant = new FacebookClientDescendant(null, null, Substitute.For<IConfiguration>());
+            var configuration = Substitute.For<IConfiguration>();
+            configuration.GetSection(Arg.Any<Type>()).Returns(configuration);
+            configuration.Get<AccessTokenRequestParameters>().Returns(new AccessTokenRequestParameters());
+            descendant = new FacebookClientDescendant(null, null, configuration);
         }
 
         [Test]
@@ -82,10 +88,13 @@ namespace OAuth2.Tests.Client
             var client = Substitute.For<IRestClient>();
             client.Execute(Arg.Is(request)).Returns(response);
 
-            var descendant = new FacebookClientDescendant(client, request, Substitute.For<IConfiguration>());
+            var configuration = Substitute.For<IConfiguration>();
+            configuration.GetSection(Arg.Any<Type>()).Returns(configuration);
+            configuration.Get<AccessTokenRequestParameters>().Returns(new AccessTokenRequestParameters());
+            var descendant = new FacebookClientDescendant(client, request, configuration);
 
             // act
-            descendant.GetUserInfo("token");
+            descendant.GetUserInfo(new NameValueCollection());
 
             // assert
             request.Received(1).AddParameter(Arg.Is("fields"), Arg.Is("id,first_name,last_name,email,picture"));

@@ -1,4 +1,5 @@
-﻿using OAuth2.Infrastructure;
+﻿using System.Collections.Specialized;
+using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
 using RestSharp.Authenticators;
@@ -34,9 +35,8 @@ namespace OAuth2.Client
             return GetLoginRequestUri(GetRequestToken());
         }
 
-        public UserInfo GetUserInfo(string content)
+        public UserInfo GetUserInfo(NameValueCollection parameters)
         {
-            var parameters = HttpUtility.ParseQueryString(content);
             var token = parameters[OAuthTokenKey];
             var verifier = parameters["verifier"];
 

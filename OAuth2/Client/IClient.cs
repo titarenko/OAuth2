@@ -1,3 +1,4 @@
+using System.Collections.Specialized;
 using OAuth2.Models;
 
 namespace OAuth2.Client
@@ -26,7 +27,7 @@ namespace OAuth2.Client
         /// Obtains user information using third-party authentication service 
         /// using data provided via callback request.
         /// </summary>
-        /// <param name="content">Callback request payload (content).</param>
-        UserInfo GetUserInfo(string content);
+        /// <param name="parameters">Callback request payload (parameters).</param>
+        UserInfo GetUserInfo(NameValueCollection parameters);
     }
 }

@@ -51,6 +51,7 @@
     <Compile Include="Client\GoogleClient.cs" />
     <Compile Include="Client\IClient.cs" />
     <Compile Include="Client\OAuthClient.cs" />
+    <Compile Include="Client\RequestFactory.cs" />
     <Compile Include="Client\TwitterClient.cs" />
     <Compile Include="Client\VkClient.cs" />
     <Compile Include="Infrastructure\AppConfig.cs" />
