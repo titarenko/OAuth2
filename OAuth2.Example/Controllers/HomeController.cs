@@ -30,7 +30,7 @@ namespace OAuth2.Example.Controllers
         {
             return View(new IndexViewModel
             {
-                LoginUris = clients.Select(x => x.GetAccessCodeRequestUri())
+                LoginUris = clients.Select(x => x.GetLoginLinkUri())
             });
         }
 
@@ -43,7 +43,7 @@ namespace OAuth2.Example.Controllers
             {
                 try
                 {
-                    return View(client.GetUserInfo(client.GetAccessToken(code, error)));
+                    return View(client.GetUserInfo(Request.RawUrl));
                 }
                 catch
                 {

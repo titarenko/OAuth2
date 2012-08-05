@@ -16,9 +16,9 @@ namespace OAuth2.Tests.Infrastructure
             IClient client = null;
 
             // act & assert
-            client.Invoking(x => x.SafeGet(z => z.GetAccessCodeRequestUri()))
+            client.Invoking(x => x.SafeGet(z => z.GetLoginLinkUri()))
                 .ShouldNotThrow<NullReferenceException>();
-            client.SafeGet(x => x.GetAccessCodeRequestUri()).Should().Be(null);
+            client.SafeGet(x => x.GetLoginLinkUri()).Should().Be(null);
         }
 
         [Test]

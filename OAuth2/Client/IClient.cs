@@ -7,7 +7,7 @@ namespace OAuth2.Client
     /// </summary>
     /// <remarks>
     /// Standard flow is:
-    /// - client instance generates URI for login link
+    /// - client is used for generation of URI for login link (<see cref="GetLoginLinkUri"/>).
     /// - hosting app renders page with login link using aforementioned URI
     /// - user clicks login link - this leads to redirect to third-party service site
     /// - user does authentication and allows app access his/her basic information
@@ -20,19 +20,13 @@ namespace OAuth2.Client
         /// Returns URI of service which should be called in order to start authentication process. 
         /// You should use this URI when rendering login link.
         /// </summary>
-        string GetAccessCodeRequestUri();
+        string GetLoginLinkUri();
 
         /// <summary>
-        /// Returns access token using given code by querying corresponding service.
+        /// Obtains user information using third-party authentication service 
+        /// using data provided via callback request.
         /// </summary>
-        /// <param name="code">The code which was obtained from third-party authentication service.</param>
-        /// <param name="error">The error which was received from third-party authentication service.</param>
-        string GetAccessToken(string code, string error);
-
-        /// <summary>
-        /// Obtains user information using third-party authentication service.
-        /// </summary>
-        /// <param name="accessToken">The access token.</param>
-        UserInfo GetUserInfo(string accessToken);
+        /// <param name="content">Callback request payload (content).</param>
+        UserInfo GetUserInfo(string content);
     }
 }

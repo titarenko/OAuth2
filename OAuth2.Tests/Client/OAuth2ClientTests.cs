@@ -60,7 +60,7 @@ namespace OAuth2.Tests.Client
         public void Should_ReturnCorrectAccessCodeRequestUri()
         {
             // act
-            var uri = descendant.GetAccessCodeRequestUri();
+            var uri = descendant.GetLoginLinkUri();
 
             // assert
             uri.Should().Be("https://base.com/resource?response_type=code&client_id=id&redirect_uri=uri&scope=scope&state=state");
