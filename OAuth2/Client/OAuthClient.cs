@@ -31,6 +31,28 @@ namespace OAuth2.Client
             return GetLoginRequestUri(GetRequestToken());
         }
 
+        public UserInfo GetUserInfo(string content)
+        {
+            var parameters = HttpUtility.ParseQueryString(content);
+            var token = parameters[OAuthTokenKey];
+            var verifier = parameters["verifier"];
+
+            var client = factory.NewClient();
+            client.BaseUrl = AccessTokenRequestEndpoint.BaseUri;
+            client.Authenticator = OAuth1Authenticator.ForAccessToken(
+                configuration.ClientId, configuration.ClientSecret, token, verifier);
+
+            var request = factory.NewRequest();
+            request.Resource = AccessTokenRequestEndpoint.Resource;
+            request.Method = Method.POST;
+
+            var response = client.Execute(request);
+
+            return QueryUserInfo(response.Content);
+        }
+
+        protected abstract UserInfo ParseUserInfo(string content);
+
         private string GetLoginRequestUri(string response)
         {
             var client = factory.NewClient();
@@ -60,26 +82,6 @@ namespace OAuth2.Client
             return queryString[OAuthTokenKey];
         }
 
-        public UserInfo GetUserInfo(string content)
-        {
-            var parameters = HttpUtility.ParseQueryString(content);
-            var token = parameters[OAuthTokenKey];
-            var verifier = parameters["verifier"];
-
-            var client = factory.NewClient();
-            client.BaseUrl = AccessTokenRequestEndpoint.BaseUri;
-            client.Authenticator = OAuth1Authenticator.ForAccessToken(
-                configuration.ClientId, configuration.ClientSecret, token, verifier);
-
-            var request = factory.NewRequest();
-            request.Resource = AccessTokenRequestEndpoint.Resource;
-            request.Method = Method.POST;
-
-            var response = client.Execute(request);
-
-            return QueryUserInfo(response.Content);
-        }
-
         private UserInfo QueryUserInfo(string content)
         {
             var parameters = HttpUtility.ParseQueryString(content);
@@ -98,7 +100,5 @@ namespace OAuth2.Client
 
             return ParseUserInfo(response.Content);
         }
-
-        protected abstract UserInfo ParseUserInfo(string content);
     }
 }
