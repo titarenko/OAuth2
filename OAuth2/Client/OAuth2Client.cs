@@ -2,9 +2,9 @@ using System;
 using System.Collections.Specialized;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-using OAuth2.Parameters;
 using RestSharp;
 
 namespace OAuth2.Client
@@ -26,7 +26,7 @@ namespace OAuth2.Client
     public abstract class OAuth2Client : IClient
     {
         private readonly IRequestFactory factory;
-        private readonly ServiceClientConfiguration configuration;
+        private readonly IClientConfiguration configuration;
 
         /// <summary>
         /// Defines URI of service which issues access code.
@@ -53,7 +53,7 @@ namespace OAuth2.Client
             this.factory = factory;
             configuration = configurationManager
                 .GetConfigSection<OAuth2ConfigurationSection>("oauth2")
-                .Services[GetType().Name];
+                [GetType().Name];
         }
 
         /// <summary>

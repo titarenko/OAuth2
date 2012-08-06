@@ -5,9 +5,9 @@ using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
 using OAuth2.Client;
+using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-using OAuth2.Parameters;
 using RestSharp;
 
 namespace OAuth2.Tests.Client
@@ -24,7 +24,6 @@ namespace OAuth2.Tests.Client
         {
             var configuration = Substitute.For<IConfiguration>();
             configuration.GetSection(Arg.Any<Type>()).Returns(configuration);
-            configuration.Get<AccessTokenRequestParameters>().Returns(new AccessTokenRequestParameters());
             descendant = new FacebookClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IConfigurationManager>());
         }
 
@@ -90,7 +89,6 @@ namespace OAuth2.Tests.Client
 
             var configuration = Substitute.For<IConfiguration>();
             configuration.GetSection(Arg.Any<Type>()).Returns(configuration);
-            configuration.Get<AccessTokenRequestParameters>().Returns(new AccessTokenRequestParameters());
             var descendant = new FacebookClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IConfigurationManager>());
 
             // act

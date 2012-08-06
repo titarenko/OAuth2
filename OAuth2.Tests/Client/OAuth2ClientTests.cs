@@ -5,9 +5,9 @@ using FizzWare.NBuilder;
 using NSubstitute;
 using NUnit.Framework;
 using OAuth2.Client;
+using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-using OAuth2.Parameters;
 using RestSharp;
 using FluentAssertions;
 
@@ -39,21 +39,7 @@ namespace OAuth2.Tests.Client
 
             config = Substitute.For<IConfiguration>();
             config.GetSection(Arg.Any<Type>(), Arg.Any<bool>()).Returns(config);
-            config.Get<AccessCodeRequestParameters>().Returns(new AccessCodeRequestParameters
-            {
-                ClientId = "id",
-                RedirectUri = "uri",
-                Scope = "scope",
-                State = "state"
-            });
-            config.Get<AccessTokenRequestParameters>().Returns(new AccessTokenRequestParameters
-            {
-                ClientId = "id",
-                RedirectUri = "uri",
-                ClientSecret = "secret",
-                Code = null
-            });
-
+            
             descendant = new OAuth2ClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IConfigurationManager>());
         }
 

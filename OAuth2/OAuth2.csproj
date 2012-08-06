@@ -52,30 +52,30 @@
     <Compile Include="Client\OAuthClient.cs" />
     <Compile Include="Client\TwitterClient.cs" />
     <Compile Include="Client\VkClient.cs" />
-    <Compile Include="Infrastructure\AppConfig.cs" />
+    <Compile Include="Configuration\ConfigurationManager.cs" />
+    <Compile Include="Configuration\IConfigurationManager.cs" />
+    <Compile Include="Configuration\IOAuth2Configuration.cs" />
+    <Compile Include="Configuration\IClientConfiguration.cs" />
+    <Compile Include="Configuration\OAuth2ConfigurationSection.cs" />
+    <Compile Include="Configuration\ClientConfiguration.cs" />
+    <Compile Include="Configuration\ServiceCollection.cs" />
     <Compile Include="Infrastructure\Configuration.cs" />
-    <Compile Include="Infrastructure\ConfigurationManager.cs" />
     <Compile Include="Infrastructure\EnumerableExtensions.cs" />
     <Compile Include="Infrastructure\IConfiguration.cs" />
-    <Compile Include="Infrastructure\IConfigurationManager.cs" />
     <Compile Include="Infrastructure\IRequestFactory.cs" />
     <Compile Include="Infrastructure\LibConfig.cs" />
-    <Compile Include="Infrastructure\OAuth2ConfigurationSection.cs" />
     <Compile Include="Infrastructure\RequestFactory.cs" />
-    <Compile Include="Infrastructure\ServiceClientConfiguration.cs" />
     <Compile Include="Infrastructure\QueryStringExtensions.cs" />
     <Compile Include="Infrastructure\RestSharpExtensions.cs" />
     <Compile Include="Infrastructure\SafeExtensions.cs" />
-    <Compile Include="Infrastructure\ServiceCollection.cs" />
     <Compile Include="Infrastructure\StringExtensions.cs" />
     <Compile Include="Models\UserInfo.cs" />
-    <Compile Include="Parameters\AccessCodeRequestParameters.cs" />
-    <Compile Include="Parameters\AccessTokenRequestParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

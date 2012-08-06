@@ -1,11 +1,11 @@
-﻿using System.Configuration;
+using System.Configuration;
 
-namespace OAuth2.Infrastructure
+namespace OAuth2.Configuration
 {
     /// <summary>
     /// Contains settings for service client.
     /// </summary>
-    public class ServiceClientConfiguration : ConfigurationElement
+    public class ClientConfiguration : ConfigurationElement, IClientConfiguration
     {
         private const string ClientTypeNameKey = "clientType";
         private const string ClientIdKey = "clientId";

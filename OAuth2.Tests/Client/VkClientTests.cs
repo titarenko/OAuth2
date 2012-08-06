@@ -4,9 +4,9 @@ using System.Collections.Specialized;
 using NSubstitute;
 using NUnit.Framework;
 using OAuth2.Client;
+using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-using OAuth2.Parameters;
 using RestSharp;
 using FluentAssertions;
 
@@ -18,11 +18,28 @@ namespace OAuth2.Tests.Client
         private const string content = "{\"response\":[{\"uid\":\"1\",\"first_name\":\"Павел\",\"last_name\":\"Дуров\",\"photo\":\"http:\\/\\/cs109.vkontakte.ru\\/u00001\\/c_df2abf56.jpg\"}]}";
 
         private VkClientDescendant descendant;
+        private IRequestFactory factory;
 
         [SetUp]
         public void SetUp()
         {
-            descendant = new VkClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IConfigurationManager>());
+            var client = Substitute.For<IRestClient>();
+            var request = Substitute.For<IRestRequest>();
+
+            factory = Substitute.For<IRequestFactory>();
+            factory.NewClient().Returns(client);
+            factory.NewRequest().Returns(request);
+
+            var configurationManager = Substitute.For<IConfigurationManager>();
+
+            var configurationSection = new OAuth2ConfigurationSection();
+            configurationSection[Arg.Any<string>()].Returns(Substitute.For<IClientConfiguration>());
+
+            configurationManager
+                .GetConfigSection<OAuth2ConfigurationSection>("oauth2")
+                .Returns(configurationSection);
+
+            descendant = new VkClientDescendant(factory, configurationManager);
         }
 
         [Test]
@@ -72,24 +89,18 @@ namespace OAuth2.Tests.Client
             info.PhotoUri.Should().Be("http://cs109.vkontakte.ru/u00001/c_df2abf56.jpg");
         }
 
-        [Test, Ignore]
+        [Test]
         public void Should_ReceiveUserId_WhenAccessTokenResponseReceived()
         {
             // arrange
             var request = Substitute.For<IRestRequest>();
-            request.Parameters.Returns(new List<Parameter>());
-
             var response = Substitute.For<IRestResponse>();
             response.Content.Returns("{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}");
 
             var client = Substitute.For<IRestClient>();
             client.Execute(Arg.Is(request)).Returns(response);
 
-            var configuration = Substitute.For<IConfiguration>();
-            configuration.GetSection(Arg.Any<Type>()).Returns(configuration);
-            configuration.Get<AccessTokenRequestParameters>().Returns(new AccessTokenRequestParameters());
-
-            var descendant = new VkClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IConfigurationManager>());
+            factory.NewClient().Returns(client);
 
             // act
             descendant.GetUserInfo(new NameValueCollection());

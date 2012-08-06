@@ -1,4 +1,5 @@
 ﻿using System.Collections.Specialized;
+using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
@@ -12,7 +13,7 @@ namespace OAuth2.Client
         private const string OAuthTokenKey = "oauth_token";
 
         private readonly IRequestFactory factory;
-        private readonly ServiceClientConfiguration configuration;
+        private readonly IClientConfiguration configuration;
 
         protected abstract Endpoint RequestTokenServiceEndpoint { get; }
 
@@ -27,7 +28,7 @@ namespace OAuth2.Client
             this.factory = factory;
             configuration = configurationManager
                 .GetConfigSection<OAuth2ConfigurationSection>("oauth2")
-                .Services[GetType().Name];
+                [GetType().Name];
         }
 
         public string GetLoginLinkUri()

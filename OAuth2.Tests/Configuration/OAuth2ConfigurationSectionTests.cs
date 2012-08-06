@@ -1,8 +1,8 @@
-﻿using NUnit.Framework;
-using OAuth2.Infrastructure;
 using FluentAssertions;
+using NUnit.Framework;
+using OAuth2.Configuration;
 
-namespace OAuth2.Tests.Infrastructure
+namespace OAuth2.Tests.Configuration
 {
     [TestFixture]
     public class OAuth2ConfigurationSectionTests
@@ -22,7 +22,8 @@ namespace OAuth2.Tests.Infrastructure
             var section = configurationManager.GetConfigSection<OAuth2ConfigurationSection>("oauth2");
 
             // assert
-            section.Services.Count.Should().Be(2);
+            section["SomeClient"].Should().NotBeNull();
+            section["SomeAnotherClient"].Should().NotBeNull();
         }
 
         [Test]
@@ -30,7 +31,7 @@ namespace OAuth2.Tests.Infrastructure
         {
             // act
             var section = configurationManager.GetConfigSection<OAuth2ConfigurationSection>("oauth2");
-            var service = section.Services["SomeAnotherClient"];
+            var service = section["SomeAnotherClient"];
 
             // assert
             service.ClientTypeName.Should().Be("SomeAnotherClient");

@@ -1,4 +1,4 @@
-﻿namespace OAuth2.Infrastructure
+namespace OAuth2.Configuration
 {
     /// <summary>
     /// Defines API for <see cref="System.Configuration.ConfigurationManager"/> wrapper.

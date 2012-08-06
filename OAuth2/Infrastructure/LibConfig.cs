@@ -9,7 +9,7 @@ namespace OAuth2.Infrastructure
     //public class LibConfig : Configuration
     //{
     //    private readonly OAuth2ConfigurationSection configurationSection;
-    //    private readonly ServiceClientConfiguration serviceClientConfiguration;
+    //    private readonly ClientConfiguration serviceClientConfiguration;
 
     //    /// <summary>
     //    /// Initializes a new instance of the <see cref="LibConfig"/> class.
@@ -25,7 +25,7 @@ namespace OAuth2.Infrastructure
     //    /// Initializes a new instance of the <see cref="LibConfig"/> class.
     //    /// </summary>
     //    /// <param name="serviceClientConfiguration">The service element.</param>
-    //    public LibConfig(ServiceClientConfiguration serviceClientConfiguration)
+    //    public LibConfig(ClientConfiguration serviceClientConfiguration)
     //    {
     //        this.serviceClientConfiguration = serviceClientConfiguration;
     //    }
@@ -45,7 +45,7 @@ namespace OAuth2.Infrastructure
 
     //        return new LibConfig(
     //            configurationSection.Services
-    //                .Cast<ServiceClientConfiguration>()
+    //                .Cast<ClientConfiguration>()
     //                .First(x => x.ClientTypeName == name));
     //    }
 

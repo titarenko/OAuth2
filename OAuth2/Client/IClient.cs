@@ -27,7 +27,10 @@ namespace OAuth2.Client
         /// Obtains user information using third-party authentication service 
         /// using data provided via callback request.
         /// </summary>
-        /// <param name="parameters">Callback request payload (parameters).</param>
+        /// <param name="parameters">
+        /// Callback request payload (parameters).
+        /// <example>Request.QueryString</example>
+        /// </param>
         UserInfo GetUserInfo(NameValueCollection parameters);
     }
 }

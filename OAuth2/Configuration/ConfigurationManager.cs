@@ -1,4 +1,4 @@
-namespace OAuth2.Infrastructure
+namespace OAuth2.Configuration
 {
     /// <summary>
     /// Wrapper for <see cref="System.Configuration.ConfigurationManager"/>.
