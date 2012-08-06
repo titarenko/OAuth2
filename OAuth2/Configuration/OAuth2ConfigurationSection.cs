@@ -20,7 +20,7 @@ namespace OAuth2.Configuration
         [ConfigurationProperty(CollectionName), ConfigurationCollection(typeof(ServiceCollection))]
         private ServiceCollection Services
         {
-            get { return (ServiceCollection) this[CollectionName]; }
+            get { return (ServiceCollection) base[CollectionName]; }
         }
     }
 }
