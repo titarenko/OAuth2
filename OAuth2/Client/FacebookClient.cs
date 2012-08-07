@@ -15,9 +15,9 @@ namespace OAuth2.Client
         /// Initializes a new instance of the <see cref="FacebookClient"/> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
-        /// <param name="configurationManager">The configuration manager.</param>
-        public FacebookClient(IRequestFactory factory, IConfigurationManager configurationManager) 
-            : base(factory, configurationManager)
+        /// <param name="configuration">The configuration.</param>
+        public FacebookClient(IRequestFactory factory, IClientConfiguration configuration) 
+            : base(factory, configuration)
         {
         }
 

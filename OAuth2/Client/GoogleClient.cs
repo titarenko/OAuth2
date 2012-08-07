@@ -14,9 +14,9 @@ namespace OAuth2.Client
         /// Initializes a new instance of the <see cref="GoogleClient"/> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
-        /// <param name="configurationManager">The configuration manager.</param>
-        public GoogleClient(IRequestFactory factory, IConfigurationManager configurationManager)
-            : base(factory, configurationManager)
+        /// <param name="configuration">The configuration.</param>
+        public GoogleClient(IRequestFactory factory, IClientConfiguration configuration)
+            : base(factory, configuration)
         {
         }
 

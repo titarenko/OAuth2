@@ -6,6 +6,7 @@ using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
+using RestSharp.Contrib;
 
 namespace OAuth2.Client
 {
@@ -16,7 +17,7 @@ namespace OAuth2.Client
     /// </summary>
     /// <remarks>
     /// Standard flow is:
-    /// - client instance generates URI for login link
+    /// - client instance generates URI for login link (<see cref="__C"/>
     /// - hosting app renders page with login link using aforementioned URI
     /// - user clicks login link - this leads to redirect to third-party service site
     /// - user does authentication and allows app access his/her basic information
@@ -42,18 +43,16 @@ namespace OAuth2.Client
         /// Defines URI of service which allows to obtain information about user which is currently logged in.
         /// </summary>
         protected abstract Endpoint UserInfoServiceEndpoint { get; }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="OAuth2Client"/> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
-        /// <param name="configurationManager">The configuration manager.</param>
-        protected OAuth2Client(IRequestFactory factory, IConfigurationManager configurationManager)
+        /// <param name="configuration">The configuration.</param>
+        protected OAuth2Client(IRequestFactory factory, IClientConfiguration configuration)
         {
             this.factory = factory;
-            configuration = configurationManager
-                .GetConfigSection<OAuth2ConfigurationSection>("oauth2")
-                [GetType().Name];
+            this.configuration = configuration;
         }
 
         /// <summary>
@@ -119,7 +118,7 @@ namespace OAuth2.Client
             catch (JsonReaderException)
             {
                 // or it can be in "query string" format (param1=val1&param2=val2)
-                return GetUserInfo(content.ToDictionary()["access_token"]);
+                return GetUserInfo(HttpUtility.ParseQueryString(content)["access_token"]);
             }
         }
 

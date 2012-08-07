@@ -12,14 +12,14 @@ namespace OAuth2.Client
     public class VkClient : OAuth2Client
     {
         private string userId;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="VkClient"/> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
-        /// <param name="configurationManager">The configuration manager.</param>
-        public VkClient(IRequestFactory factory, IConfigurationManager configurationManager)
-            : base(factory, configurationManager)
+        /// <param name="configuration">The configuration.</param>
+        public VkClient(IRequestFactory factory, IClientConfiguration configuration)
+            : base(factory, configuration)
         {
         }
         

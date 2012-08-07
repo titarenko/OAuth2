@@ -20,7 +20,7 @@ namespace OAuth2.Tests.Client
         [SetUp]
         public void SetUp()
         {
-            descendant = new GoogleClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IConfigurationManager>());
+            descendant = new GoogleClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IClientConfiguration>());
         }
 
         [Test]
@@ -79,8 +79,8 @@ namespace OAuth2.Tests.Client
 
         class GoogleClientDescendant : GoogleClient
         {
-            public GoogleClientDescendant(IRequestFactory factory, IConfigurationManager configurationManager)
-                : base(factory, configurationManager)
+            public GoogleClientDescendant(IRequestFactory factory, IClientConfiguration configuration)
+                : base(factory, configuration)
             {
             }
 

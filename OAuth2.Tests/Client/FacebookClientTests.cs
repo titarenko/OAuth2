@@ -22,9 +22,17 @@ namespace OAuth2.Tests.Client
         [SetUp]
         public void SetUp()
         {
-            var configuration = Substitute.For<IConfiguration>();
-            configuration.GetSection(Arg.Any<Type>()).Returns(configuration);
-            descendant = new FacebookClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IConfigurationManager>());
+            var configuration = Substitute.For<IOAuth2Configuration>();
+            configuration[Arg.Any<string>()].Returns(Substitute.For<IClientConfiguration>());
+
+            var configurationManager = Substitute.For<IConfigurationManager>();
+            configurationManager.GetConfigSection<OAuth2ConfigurationSection>(Arg.Any<string>()).Returns(configuration);
+
+            var requestFactory = Substitute.For<IRequestFactory>();
+            requestFactory.NewClient().Returns(Substitute.For<IRestClient>());
+            requestFactory.NewRequest().Returns(Substitute.For<IRestRequest>());
+
+            descendant = new FacebookClientDescendant(requestFactory, Substitute.For<IClientConfiguration>());
         }
 
         [Test]
@@ -89,7 +97,7 @@ namespace OAuth2.Tests.Client
 
             var configuration = Substitute.For<IConfiguration>();
             configuration.GetSection(Arg.Any<Type>()).Returns(configuration);
-            var descendant = new FacebookClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IConfigurationManager>());
+            var descendant = new FacebookClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IClientConfiguration>());
 
             // act
             descendant.GetUserInfo(new NameValueCollection());
@@ -100,8 +108,8 @@ namespace OAuth2.Tests.Client
 
         class FacebookClientDescendant : FacebookClient
         {
-            public FacebookClientDescendant(IRequestFactory factory, IConfigurationManager configurationManager)
-                : base(factory, configurationManager)
+            public FacebookClientDescendant(IRequestFactory factory, IClientConfiguration configuration)
+                : base(factory, configuration)
             {
             }
 

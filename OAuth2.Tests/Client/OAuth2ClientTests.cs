@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using FizzWare.NBuilder;
 using NSubstitute;
@@ -16,126 +15,170 @@ namespace OAuth2.Tests.Client
     [TestFixture]
     public class OAuth2ClientTests
     {
-        private IRestClient client;
-        private IRestRequest request;
-        private IConfiguration config;
-        private IRestResponse response;
         private OAuth2ClientDescendant descendant;
+
+        private IRequestFactory factory;
+        private IRestClient restClient;
+        private IRestRequest restRequest;
+        private IRestResponse restResponse;
 
         [SetUp]
         public void SetUp()
         {
-            request = Substitute.For<IRestRequest>();
-            request.Parameters.Returns(new List<Parameter>
-            {
-                new Parameter {Name = "param1", Type = ParameterType.GetOrPost, Value = "value1"}
-            });
+            restRequest = Substitute.For<IRestRequest>();
+            restResponse = Substitute.For<IRestResponse>();
 
-            response = Substitute.For<IRestResponse>();
-            response.Content.Returns("access_token=token");
+            restClient = Substitute.For<IRestClient>();
+            restClient.Execute(restRequest).Returns(restResponse);
 
-            client = Substitute.For<IRestClient>();
-            client.Execute(Arg.Is(request)).Returns(response);
+            factory = Substitute.For<IRequestFactory>();
+            factory.NewClient().Returns(restClient);
+            factory.NewRequest().Returns(restRequest);
 
-            config = Substitute.For<IConfiguration>();
-            config.GetSection(Arg.Any<Type>(), Arg.Any<bool>()).Returns(config);
-            
-            descendant = new OAuth2ClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IConfigurationManager>());
+            var configuration = Substitute.For<IClientConfiguration>();
+
+            configuration.ClientId.Returns("client_id");
+            configuration.ClientSecret.Returns("client_secret");
+            configuration.RedirectUri.Returns("http://redirect-uri.net");
+            configuration.Scope.Returns("scope");
+
+            descendant = new OAuth2ClientDescendant(factory, configuration);
         }
 
         [Test]
         public void Should_ReturnCorrectAccessCodeRequestUri()
         {
+            // arrange
+            restClient.BuildUri(restRequest).Returns(new Uri("https://login-link.net/"));
+
             // act
             var uri = descendant.GetLoginLinkUri();
 
             // assert
-            uri.Should().Be("https://base.com/resource?response_type=code&client_id=id&redirect_uri=uri&scope=scope&state=state");
+            uri.Should().Be("https://login-link.net/");
+
+            factory.Received(1).NewClient();
+            factory.Received(1).NewRequest();
+
+            restClient.Received(1).BaseUrl = "https://AccessCodeServiceEndpoint";
+            restRequest.Received(1).Resource = "/AccessCodeServiceEndpoint";
+
+            restRequest.Received(1).AddObject(Arg.Is<object>(
+                x => x.AllPropertiesAreEqualTo(
+                    new
+                    {
+                        response_type = "code",
+                        client_id = "client_id",
+                        redirect_uri = "http://redirect-uri.net",
+                        scope = "scope"
+                    })));
+
+            restClient.Received(1).BuildUri(restRequest);
         }
         
         [Test]
-        public void Should_ThrowException_WhenAccessTokenIsRequestedAndErrorIsNotEmpty()
+        public void Should_ThrowException_WhenParametersForGetUserInfoContainError()
         {
+            // arrange
+            var parameters = new NameValueCollection {{"error", "error2"}};
+
             // act & assert
-            descendant.Invoking(x => x.GetUserInfo(new NameValueCollection {{"error", "error"}}))
+            descendant
+                .Invoking(x => x.GetUserInfo(parameters))
                 .ShouldThrow<ApplicationException>()
-                .WithMessage("error");
+                .WithMessage("error2");
         }
 
         [Test]
         [TestCase("")]
         [TestCase(null)]
-        public void ShouldNot_ThrowException_WhenAccessTokenIsRequestedAndErrorIsEmpty(string error)
+        public void ShouldNot_ThrowException_When_ParametersForGetUserInfoContainEmptyError(string error)
         {
             // act & assert
-            descendant.Invoking(x => x.GetUserInfo(new NameValueCollection())).ShouldNotThrow();
-        }
-
-        [Test, Ignore]
-        public void Should_IssueCorrectRequestForUserInfo()
-        {
-            // arrange
-            response.Content.Returns("access_token=token");
-            
-            // act
-            var info = descendant.GetUserInfo(new NameValueCollection());
-
-            // assert
-            client.BaseUrl.Should().Be("https://base.com");
-            request.Resource.Should().Be("/resource");
-            request.Method.Should().Be(Method.GET);
-
-            request.Received(1).AddParameter(Arg.Is("access_token"), Arg.Is("token"));
-
-            client.Received(2).Execute(Arg.Is(request));
-
-            info.Id.Should().Be("response");
-            info.Email.Should().Be("Email1");
+            descendant
+                .Invoking(x => x.GetUserInfo(new NameValueCollection {{"error", error}}))
+                .ShouldNotThrow();
         }
 
         [Test]
-        public void Should_OverwritePreviousAccessToken()
+        public void Should_IssueCorrectRequestForAccessToken_When_GetUserInfoIsCalled()
         {
-            // arrange
-            request.Parameters.Add(new Parameter
-            {
-                Name = "access_token",
-                Value = "wrong"
-            });
-
             // act
-            descendant.GetUserInfo(new NameValueCollection());
+            descendant.GetUserInfo(new NameValueCollection {{"code", "code"}});
 
             // assert
-            request.Parameters.Should().Contain(x => x.Name == "access_token" && (string) x.Value == "token");
+            restClient.Received(1).BaseUrl = "https://AccessTokenServiceEndpoint";
+            restRequest.Received(1).Resource = "/AccessTokenServiceEndpoint";
+            restRequest.Received(1).Method = Method.POST;
+            restRequest.Received(1).AddObject(Arg.Is<object>(x => x.AllPropertiesAreEqualTo(
+                new
+                {
+                    code = "code",
+                    client_id = "client_id",
+                    client_secret = "client_secret",
+                    redirect_uri = "http://redirect-uri.net",
+                    grant_type = "authorization_code"
+                })));
+        }
+
+        [Test]
+        [TestCase("access_token=token")]
+        [TestCase("{\"access_token\": \"token\"")]
+        public void Should_IssueCorrectRequestForUserInfo_When_GetUserInfoIsCalled(string response)
+        {
+            // arrange
+            restResponse.Content.Returns(response);
+
+            // act
+            descendant.GetUserInfo(new NameValueCollection {{"code", "code"}});
+
+            // assert
+            restClient.Received(1).BaseUrl = "https://UserInfoServiceEndpoint";
+            restRequest.Received(1).Resource = "/UserInfoServiceEndpoint";
+            restClient.Authenticator.Should().BeOfType<OAuth2UriQueryParameterAuthenticator>();
         }
 
         class OAuth2ClientDescendant : OAuth2Client
         {
-            private readonly Endpoint endpoint = new Endpoint
-            {
-                BaseUri = "https://base.com",
-                Resource = "/resource"
-            };
-
-            public OAuth2ClientDescendant(IRequestFactory factory, IConfigurationManager configurationManager) 
-                : base(factory, configurationManager) 
+            public OAuth2ClientDescendant(IRequestFactory factory, IClientConfiguration configuration) 
+                : base(factory, configuration) 
             {
             }
 
             protected override Endpoint AccessCodeServiceEndpoint
             {
-                get { return endpoint; }
+                get
+                {
+                    return new Endpoint
+                    {
+                        BaseUri = "https://AccessCodeServiceEndpoint",
+                        Resource = "/AccessCodeServiceEndpoint"
+                    };
+                }
             }
 
             protected override Endpoint AccessTokenServiceEndpoint
             {
-                get { return endpoint; }
+                get
+                {
+                    return new Endpoint
+                    {
+                        BaseUri = "https://AccessTokenServiceEndpoint",
+                        Resource = "/AccessTokenServiceEndpoint"
+                    };
+                }
             }
 
             protected override Endpoint UserInfoServiceEndpoint
             {
-                get { return endpoint; }
+                get
+                {
+                    return new Endpoint
+                    {
+                        BaseUri = "https://UserInfoServiceEndpoint",
+                        Resource = "/UserInfoServiceEndpoint"
+                    };
+                }
             }
 
             protected override UserInfo ParseUserInfo(string content)

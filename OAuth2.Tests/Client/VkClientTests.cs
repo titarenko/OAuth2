@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using NSubstitute;
 using NUnit.Framework;
@@ -33,13 +32,12 @@ namespace OAuth2.Tests.Client
             var configurationManager = Substitute.For<IConfigurationManager>();
 
             var configurationSection = new OAuth2ConfigurationSection();
-            configurationSection[Arg.Any<string>()].Returns(Substitute.For<IClientConfiguration>());
 
             configurationManager
                 .GetConfigSection<OAuth2ConfigurationSection>("oauth2")
                 .Returns(configurationSection);
 
-            descendant = new VkClientDescendant(factory, configurationManager);
+            descendant = new VkClientDescendant(factory, Substitute.For<IClientConfiguration>());
         }
 
         [Test]
@@ -122,7 +120,7 @@ namespace OAuth2.Tests.Client
             var client = Substitute.For<IRestClient>();
             client.Execute(Arg.Is(request)).Returns(response);
 
-            var descendant = new VkClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IConfigurationManager>());
+            var descendant = new VkClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IClientConfiguration>());
 
             // act
             descendant.GetUserInfo(new NameValueCollection());
@@ -133,8 +131,8 @@ namespace OAuth2.Tests.Client
 
         private class VkClientDescendant : VkClient
         {
-            public VkClientDescendant(IRequestFactory factory, IConfigurationManager configurationManager)
-                : base(factory, configurationManager)
+            public VkClientDescendant(IRequestFactory factory, IClientConfiguration configuration)
+                : base(factory, configuration)
             {
             }
 
