@@ -23,12 +23,10 @@ namespace OAuth2.Client
 
         protected abstract Endpoint UserInfoServiceEndpoint { get; }
 
-        protected OAuthClient(IRequestFactory factory, IConfigurationManager configurationManager)
+        protected OAuthClient(IRequestFactory factory, IClientConfiguration configuration)
         {
             this.factory = factory;
-            configuration = configurationManager
-                .GetConfigSection<OAuth2ConfigurationSection>("oauth2")
-                [GetType().Name];
+            this.configuration = configuration;
         }
 
         public string GetLoginLinkUri()

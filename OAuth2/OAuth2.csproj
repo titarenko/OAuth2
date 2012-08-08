@@ -59,11 +59,8 @@
     <Compile Include="Configuration\OAuth2ConfigurationSection.cs" />
     <Compile Include="Configuration\ClientConfiguration.cs" />
     <Compile Include="Configuration\ServiceCollection.cs" />
-    <Compile Include="Infrastructure\Configuration.cs" />
     <Compile Include="Infrastructure\EnumerableExtensions.cs" />
-    <Compile Include="Infrastructure\IConfiguration.cs" />
     <Compile Include="Infrastructure\IRequestFactory.cs" />
-    <Compile Include="Infrastructure\LibConfig.cs" />
     <Compile Include="Infrastructure\ObjectExtensions.cs" />
     <Compile Include="Infrastructure\RequestFactory.cs" />
     <Compile Include="Infrastructure\QueryStringExtensions.cs" />

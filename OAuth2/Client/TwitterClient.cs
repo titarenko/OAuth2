@@ -7,8 +7,8 @@ namespace OAuth2.Client
 {
     public class TwitterClient : OAuthClient
     {
-        public TwitterClient(IRequestFactory factory, IConfigurationManager configurationManager)
-            : base(factory, configurationManager)
+        public TwitterClient(IRequestFactory factory, IClientConfiguration configuration)
+            : base(factory, configuration)
         {
         }
 
