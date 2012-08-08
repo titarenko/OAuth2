@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 namespace OAuth2.Infrastructure
 {
@@ -8,16 +7,6 @@ namespace OAuth2.Infrastructure
     /// </summary>
     public static class StringExtensions
     {
-        /// <summary>
-        /// Converts string from camel to snake case.
-        /// </summary>
-        /// <param name="line">The line.</param>
-        public static string FromCamelToSnakeCase(this string line)
-        {
-            var value = Regex.Replace(line, "([A-Z]+)", match => "_" + match.Groups[1].Value.ToLowerInvariant());
-            return value.StartsWith("_") ? value.Substring(1) : value;
-        }
-
         /// <summary>
         /// Alias for <code>string.Format</code>.
         /// </summary>

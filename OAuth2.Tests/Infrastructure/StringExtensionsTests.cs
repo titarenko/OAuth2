@@ -8,15 +8,6 @@ namespace OAuth2.Tests.Infrastructure
     public class StringExtensionsTests
     {
         [Test]
-        [TestCase("code", "Code")]
-        [TestCase("client_id", "ClientId")]
-        [TestCase("client_secret", "ClientSecret")]
-        public void Should_ReturnResultForInput_WhenFromCamelToSnakeCaseIsCalled(string result, string input)
-        {
-            input.FromCamelToSnakeCase().Should().Be(result);
-        }
-
-        [Test]
         [TestCase("key.subkey", "{0}.{1}", "key", "subkey")]
         public void Should_ReturnFormattedString_WhenFillIsCalled(string formatted, string format, params object[] args)
         {

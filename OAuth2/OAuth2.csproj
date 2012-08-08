@@ -63,8 +63,6 @@
     <Compile Include="Infrastructure\IRequestFactory.cs" />
     <Compile Include="Infrastructure\ObjectExtensions.cs" />
     <Compile Include="Infrastructure\RequestFactory.cs" />
-    <Compile Include="Infrastructure\QueryStringExtensions.cs" />
-    <Compile Include="Infrastructure\RestSharpExtensions.cs" />
     <Compile Include="Infrastructure\SafeExtensions.cs" />
     <Compile Include="Infrastructure\StringExtensions.cs" />
     <Compile Include="Models\UserInfo.cs" />

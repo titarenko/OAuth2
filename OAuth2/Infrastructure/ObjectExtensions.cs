@@ -2,8 +2,15 @@
 
 namespace OAuth2.Infrastructure
 {
+    /// <summary>
+    /// Common extensions.
+    /// </summary>
     public static class ObjectExtensions
     {
+        /// <summary>
+        /// Returns true if all equally named and typed properties have 
+        /// same values on two different objects (types of objects can be different).
+        /// </summary>
         public static bool AllPropertiesAreEqualTo(this object @this, object other)
         {
             var thisProperties = @this.GetType().GetProperties().Where(x => x.CanRead).ToList();
