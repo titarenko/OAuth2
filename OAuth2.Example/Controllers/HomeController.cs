@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using OAuth2.Client;
 using OAuth2.Example.Models;
@@ -30,7 +31,7 @@ namespace OAuth2.Example.Controllers
         {
             return View(new IndexViewModel
             {
-                LoginInfos = clients.Select(x => new LoginInfo { NetworkName = x.NetworkName, Uri = x.GetAccessCodeRequestUri()})
+                LoginInfos = clients.Select(x => new LoginInfo { NetworkName = x.NetworkName, Uri = x.GetAccessCodeRequestUri(new Uri("http://www.edadev.com")) })
             });
         }
 

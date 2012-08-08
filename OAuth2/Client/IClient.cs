@@ -1,3 +1,4 @@
+using System;
 using OAuth2.Models;
 
 namespace OAuth2.Client
@@ -22,6 +23,8 @@ namespace OAuth2.Client
         /// You should use this URI when rendering login link.
         /// </summary>
         string GetAccessCodeRequestUri();
+
+        string GetAccessCodeRequestUri(Uri callbackSiteUri);
 
         /// <summary>
         /// Returns access token using given code by querying corresponding service.

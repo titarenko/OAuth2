@@ -67,11 +67,20 @@ namespace OAuth2.Client
         /// Returns URI of service which should be called in order to start authentication process. 
         /// You should use this URI when rendering login link.
         /// </summary>
+
         public string GetAccessCodeRequestUri()
         {
+            return GetAccessCodeRequestUri(null);
+        }
+
+        public string GetAccessCodeRequestUri(Uri callbackSiteUri)
+        {
+            AccessCodeRequestParameters parameters = configuration.Get<AccessCodeRequestParameters>();
+            if (callbackSiteUri != null)
+                parameters.RedirectUri = "{0}{1}".Fill(callbackSiteUri.AbsoluteUri, parameters.RedirectUri.TrimStart('/').TrimEnd('/'));
             return "{0}?{1}".Fill(
                 AccessCodeServiceEndpoint.Uri,
-                configuration.Get<AccessCodeRequestParameters>().ToQueryString());
+                parameters.ToQueryString());
         }
 
         /// <summary>
