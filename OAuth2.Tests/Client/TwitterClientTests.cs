@@ -28,7 +28,7 @@ namespace OAuth2.Tests.Client
                 .GetConfigSection<OAuth2ConfigurationSection>("oauth2")
                 .Returns(new OAuth2ConfigurationSection());
 
-            descendant = new TwitterClientDescendant(factory, configurationManager);
+            descendant = new TwitterClientDescendant(factory, Substitute.For<IClientConfiguration>());
         }
 
         [Test]
@@ -102,8 +102,8 @@ namespace OAuth2.Tests.Client
 
         class TwitterClientDescendant : TwitterClient
         {
-            public TwitterClientDescendant(IRequestFactory factory, IConfigurationManager configurationManager) 
-                : base(factory, configurationManager)
+            public TwitterClientDescendant(IRequestFactory factory, IClientConfiguration configuration) 
+                : base(factory, configuration)
             {
             }
 
