@@ -17,27 +17,14 @@ namespace OAuth2.Tests.Client
         private const string content = "{\"response\":[{\"uid\":\"1\",\"first_name\":\"Павел\",\"last_name\":\"Дуров\",\"photo\":\"http:\\/\\/cs109.vkontakte.ru\\/u00001\\/c_df2abf56.jpg\"}]}";
 
         private VkClientDescendant descendant;
-        private IRequestFactory factory;
+        private IRequestFactory requestFactory;
 
         [SetUp]
         public void SetUp()
         {
-            var client = Substitute.For<IRestClient>();
-            var request = Substitute.For<IRestRequest>();
-
-            factory = Substitute.For<IRequestFactory>();
-            factory.NewClient().Returns(client);
-            factory.NewRequest().Returns(request);
-
-            var configurationManager = Substitute.For<IConfigurationManager>();
-
-            var configurationSection = new OAuth2ConfigurationSection();
-
-            configurationManager
-                .GetConfigSection<OAuth2ConfigurationSection>("oauth2")
-                .Returns(configurationSection);
-
-            descendant = new VkClientDescendant(factory, Substitute.For<IClientConfiguration>());
+            requestFactory = Substitute.For<IRequestFactory>();
+            descendant = new VkClientDescendant(requestFactory, 
+                Substitute.For<IClientConfiguration>());
         }
 
         [Test]
@@ -91,20 +78,14 @@ namespace OAuth2.Tests.Client
         public void Should_ReceiveUserId_WhenAccessTokenResponseReceived()
         {
             // arrange
-            var request = Substitute.For<IRestRequest>();
-            var response = Substitute.For<IRestResponse>();
-            response.Content.Returns("{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}");
-
-            var client = Substitute.For<IRestClient>();
-            client.Execute(Arg.Is(request)).Returns(response);
-
-            factory.NewClient().Returns(client);
+            var response = requestFactory.NewClient().Execute(requestFactory.NewRequest());
+            response.Content.Returns("{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}", content);
 
             // act
             descendant.GetUserInfo(new NameValueCollection());
 
             // assert
-            response.ReceivedCalls().Should().Contain(x => x.GetMethodInfo().Name == "get_Content");
+            var notUsed = response.Received().Content;
         }
 
         [Test, Ignore]

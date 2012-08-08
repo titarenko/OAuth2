@@ -18,21 +18,14 @@ namespace OAuth2.Tests.Client
         private const string content = "{\"email\":\"email\",\"first_name\":\"name\",\"last_name\":\"surname\",\"id\":\"id\",\"picture\":{\"data\":{\"url\":\"picture\"}}}";
 
         private FacebookClientDescendant descendant;
+        private IRequestFactory requestFactory;
 
         [SetUp]
         public void SetUp()
         {
-            var configuration = Substitute.For<IOAuth2Configuration>();
-            configuration[Arg.Any<string>()].Returns(Substitute.For<IClientConfiguration>());
-
-            var configurationManager = Substitute.For<IConfigurationManager>();
-            configurationManager.GetConfigSection<OAuth2ConfigurationSection>(Arg.Any<string>()).Returns(configuration);
-
-            var requestFactory = Substitute.For<IRequestFactory>();
-            requestFactory.NewClient().Returns(Substitute.For<IRestClient>());
-            requestFactory.NewRequest().Returns(Substitute.For<IRestRequest>());
-
-            descendant = new FacebookClientDescendant(requestFactory, Substitute.For<IClientConfiguration>());
+            requestFactory = Substitute.For<IRequestFactory>();
+            descendant = new FacebookClientDescendant(
+                requestFactory, Substitute.For<IClientConfiguration>());
         }
 
         [Test]
@@ -86,24 +79,15 @@ namespace OAuth2.Tests.Client
         public void Should_AddExtraParameters_WhenOnGetUserInfoIsCalled()
         {
             // arrange
-            var request = Substitute.For<IRestRequest>();
-            request.Parameters.Returns(new List<Parameter>());
-
-            var response = Substitute.For<IRestResponse>();
-            response.Content.Returns(content);
-
-            var client = Substitute.For<IRestClient>();
-            client.Execute(Arg.Is(request)).Returns(response);
-
-            var configuration = Substitute.For<IConfiguration>();
-            configuration.GetSection(Arg.Any<Type>()).Returns(configuration);
-            var descendant = new FacebookClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IClientConfiguration>());
+            requestFactory.NewClient().Execute(requestFactory.NewRequest()).Content.Returns(content);
 
             // act
             descendant.GetUserInfo(new NameValueCollection());
 
             // assert
-            request.Received(1).AddParameter(Arg.Is("fields"), Arg.Is("id,first_name,last_name,email,picture"));
+            requestFactory.NewRequest()
+                .Received(1)
+                .AddParameter(Arg.Is("fields"), Arg.Is("id,first_name,last_name,email,picture"));
         }
 
         class FacebookClientDescendant : FacebookClient
