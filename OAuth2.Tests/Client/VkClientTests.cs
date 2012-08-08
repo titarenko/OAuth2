@@ -17,13 +17,13 @@ namespace OAuth2.Tests.Client
         private const string content = "{\"response\":[{\"uid\":\"1\",\"first_name\":\"Павел\",\"last_name\":\"Дуров\",\"photo\":\"http:\\/\\/cs109.vkontakte.ru\\/u00001\\/c_df2abf56.jpg\"}]}";
 
         private VkClientDescendant descendant;
-        private IRequestFactory requestFactory;
+        private IRequestFactory factory;
 
         [SetUp]
         public void SetUp()
         {
-            requestFactory = Substitute.For<IRequestFactory>();
-            descendant = new VkClientDescendant(requestFactory, 
+            factory = Substitute.For<IRequestFactory>();
+            descendant = new VkClientDescendant(factory, 
                 Substitute.For<IClientConfiguration>());
         }
 
@@ -78,7 +78,7 @@ namespace OAuth2.Tests.Client
         public void Should_ReceiveUserId_WhenAccessTokenResponseReceived()
         {
             // arrange
-            var response = requestFactory.NewClient().Execute(requestFactory.NewRequest());
+            var response = factory.NewClient().Execute(factory.NewRequest());
             response.Content.Returns("{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}", content);
 
             // act
@@ -88,26 +88,21 @@ namespace OAuth2.Tests.Client
             var notUsed = response.Received().Content;
         }
 
-        [Test, Ignore]
+        [Test]
         public void Should_AddExtraParameters_WhenOnGetUserInfoIsCalled()
         {
             // arrange
-            var request = Substitute.For<IRestRequest>();
-            request.Parameters.Returns(new List<Parameter>());
-
-            var response = Substitute.For<IRestResponse>();
-            response.Content.Returns(content);
-
-            var client = Substitute.For<IRestClient>();
-            client.Execute(Arg.Is(request)).Returns(response);
-
-            var descendant = new VkClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IClientConfiguration>());
+            var restClient = factory.NewClient();
+            var restRequest = factory.NewRequest();
+            restClient.Execute(restRequest).Content.Returns(
+                "{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}", 
+                content);
 
             // act
             descendant.GetUserInfo(new NameValueCollection());
 
             // assert
-            request.Received(1).AddParameter(Arg.Is("fields"), Arg.Is("uid,first_name,last_name,photo"));
+            restRequest.Received().AddParameter("fields", "uid,first_name,last_name,photo");
         }
 
         private class VkClientDescendant : VkClient
