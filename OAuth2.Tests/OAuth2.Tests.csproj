@@ -59,12 +59,14 @@
     <Compile Include="Client\EndpointTests.cs" />
     <Compile Include="Client\FacebookClientTests.cs" />
     <Compile Include="Client\GoogleClientTests.cs" />
+    <Compile Include="Client\OAuthClientTests.cs" />
     <Compile Include="Client\TwitterClientTests.cs" />
     <Compile Include="Client\VkClientTests.cs" />
     <Compile Include="Configuration\OAuth2ConfigurationSectionTests.cs" />
     <Compile Include="Infrastructure\ConfigurationManagerTests.cs" />
     <Compile Include="Infrastructure\EnumerableExtensionsTests.cs" />
     <Compile Include="Infrastructure\QueryStringExtensionsTests.cs" />
+    <Compile Include="Infrastructure\RequestFactoryTests.cs" />
     <Compile Include="Infrastructure\RestSharpExtensionsTests.cs" />
     <Compile Include="Infrastructure\SafeExtensionsTests.cs" />
     <Compile Include="Infrastructure\StringExtensionsTests.cs" />
