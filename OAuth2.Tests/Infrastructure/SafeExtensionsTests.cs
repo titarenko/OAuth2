@@ -12,24 +12,21 @@ namespace OAuth2.Tests.Infrastructure
         [Test]
         public void Should_NotThrow_WhenSafeGetIsCalledOnNull()
         {
-            // arrange
-            IClient client = null;
-
             // act & assert
-            client.Invoking(x => x.SafeGet(z => z.GetLoginLinkUri()))
+            ((IClient)null).Invoking(x => x.SafeGet(z => z.GetLoginLinkUri()))
                 .ShouldNotThrow<NullReferenceException>();
-            client.SafeGet(x => x.GetLoginLinkUri()).Should().Be(null);
+            ((IClient)null).SafeGet(x => x.GetLoginLinkUri()).Should().Be(null);
         }
 
         [Test]
         public void Should_ReturnResultObtainedFromSelector_WhenSafeGetIsCalledOnInstance()
         {
             // arrange
-            var value = "abc";
+            const string value = "abc";
             Func<string, string> selector = x => x.Substring(1);
 
             // act & assert
-            value.SafeGet(selector).Should().Be(selector(value));
+            value.SafeGet(selector).Should().Be("bc");
         }
     }
 }
