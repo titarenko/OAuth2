@@ -11,9 +11,12 @@ namespace OAuth2.Client
     public abstract class OAuthClient : IClient
     {
         private const string OAuthTokenKey = "oauth_token";
+        private const string OAuthTokenSecretKey = "oauth_token_secret";
 
         private readonly IRequestFactory factory;
         private readonly IClientConfiguration configuration;
+
+        private string secret;
 
         protected abstract Endpoint RequestTokenServiceEndpoint { get; }
 
@@ -37,12 +40,12 @@ namespace OAuth2.Client
         public UserInfo GetUserInfo(NameValueCollection parameters)
         {
             var token = parameters[OAuthTokenKey];
-            var verifier = parameters["verifier"];
+            var verifier = parameters["oauth_verifier"];
 
             var client = factory.NewClient();
             client.BaseUrl = AccessTokenServiceEndpoint.BaseUri;
             client.Authenticator = OAuth1Authenticator.ForAccessToken(
-                configuration.ClientId, configuration.ClientSecret, token, verifier);
+                configuration.ClientId, configuration.ClientSecret, token, secret, verifier);
 
             var request = factory.NewRequest();
             request.Resource = AccessTokenServiceEndpoint.Resource;
@@ -55,19 +58,20 @@ namespace OAuth2.Client
 
         protected abstract UserInfo ParseUserInfo(string content);
 
-        private string GetLoginRequestUri(string response)
+        private string GetLoginRequestUri(NameValueCollection response)
         {
             var client = factory.NewClient();
             client.BaseUrl = LoginServiceEndpoint.BaseUri;
 
             var request = factory.NewRequest();
             request.Resource = LoginServiceEndpoint.Resource;
-            request.AddParameter(OAuthTokenKey, response);
+            request.AddParameter(OAuthTokenKey, response[OAuthTokenKey]);
+            secret = response[OAuthTokenSecretKey];
 
             return client.BuildUri(request).ToString();
         }
 
-        private string GetRequestToken()
+        private NameValueCollection GetRequestToken()
         {
             var client = factory.NewClient();
             client.BaseUrl = RequestTokenServiceEndpoint.BaseUri;
@@ -81,7 +85,7 @@ namespace OAuth2.Client
             var response = client.Execute(request);
             var queryString = HttpUtility.ParseQueryString(response.Content);
 
-            return queryString[OAuthTokenKey];
+            return queryString;
         }
 
         private UserInfo QueryUserInfo(string content)

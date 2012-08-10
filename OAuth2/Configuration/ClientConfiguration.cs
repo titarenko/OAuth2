@@ -43,7 +43,7 @@ namespace OAuth2.Configuration
         /// <summary>
         /// Scope - contains set of permissions which user should give to your application.
         /// </summary>
-        [ConfigurationProperty(ScopeKey, IsRequired = true)]
+        [ConfigurationProperty(ScopeKey)]
         public string Scope
         {
             get { return (string) this[ScopeKey]; }

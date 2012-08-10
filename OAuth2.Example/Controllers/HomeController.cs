@@ -15,7 +15,7 @@ namespace OAuth2.Example.Controllers
         /// Initializes a new instance of the <see cref="HomeController"/> class.
         /// </summary>
         /// <param name="client">The client.</param>
-        public HomeController(IClient client)
+        public HomeController(LinkedinClient client)
         {
             this.client = client;
         }
@@ -34,7 +34,7 @@ namespace OAuth2.Example.Controllers
         /// <summary>
         /// Renders information received from authentication service.
         /// </summary>
-        public ActionResult Auth(string code, string error)
+        public ActionResult Auth()
         {
             return View(client.GetUserInfo(Request.QueryString));
         }
