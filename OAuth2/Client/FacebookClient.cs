@@ -91,5 +91,10 @@ namespace OAuth2.Client
                 PhotoUri = response["picture"]["data"]["url"].Value<string>()
             };
         }
+
+        public override string ProviderName
+        {
+            get { return "Facebook"; }
+        }
     }
 }

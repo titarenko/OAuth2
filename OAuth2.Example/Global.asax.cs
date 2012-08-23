@@ -87,13 +87,14 @@ namespace OAuth2.Example
                 context =>
                 context
                     .Resolve<IConfigurationManager>()
-                    .GetConfigSection<OAuth2ConfigurationSection>("oauth2")["LinkedinClient"]);
+                    .GetConfigSection<OAuth2ConfigurationSection>("oauth2")["VkClient"]);
 
-            builder.Register(context =>
-                                 {
-                                     var sessionScope = (ILifetimeScope) Session["Autofac_LifetimeScope"];
-                                     return sessionScope.Resolve<LinkedinClient>();
-                                 });
+            //builder.Register(context =>
+            //                 context.Resolve<LinkedinClient>());
+                                 //{
+                                 //    var sessionScope = (ILifetimeScope) Session["Autofac_LifetimeScope"];
+                                 //    return sessionScope.Resolve<LinkedinClient>();
+                                 //});
 
             DependencyResolver.SetResolver(new AutofacDependencyResolver(builder.Build()));
         }

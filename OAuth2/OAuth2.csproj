@@ -68,6 +68,7 @@
     <Compile Include="Infrastructure\RequestFactory.cs" />
     <Compile Include="Infrastructure\SafeExtensions.cs" />
     <Compile Include="Infrastructure\StringExtensions.cs" />
+    <Compile Include="Infrastructure\WebUtils.cs" />
     <Compile Include="Models\UserInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

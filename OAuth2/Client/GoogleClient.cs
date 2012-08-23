@@ -64,7 +64,12 @@ namespace OAuth2.Client
                 };
             }
         }
-        
+
+        public override string ProviderName
+        {
+            get { return "Google"; }
+        }
+
         /// <summary>
         /// Should return parsed <see cref="UserInfo"/> from content received from third-party service.
         /// </summary>

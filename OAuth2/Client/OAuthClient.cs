@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
@@ -32,9 +33,17 @@ namespace OAuth2.Client
             this.configuration = configuration;
         }
 
-        public string GetLoginLinkUri()
+        public abstract string ProviderName { get; }
+
+
+        public string GetLoginLinkUri(string state = null)
         {
-            return GetLoginRequestUri(GetRequestToken());
+            var requestToken = GetRequestToken();
+
+            if (!string.IsNullOrEmpty(state))
+                requestToken["state"] = state;
+
+            return GetLoginRequestUri(requestToken);
         }
 
         public UserInfo GetUserInfo(NameValueCollection parameters)
@@ -66,7 +75,7 @@ namespace OAuth2.Client
             var request = factory.NewRequest();
             request.Resource = LoginServiceEndpoint.Resource;
             request.AddParameter(OAuthTokenKey, response[OAuthTokenKey]);
-            secret = response[OAuthTokenSecretKey];
+            secret = response[OAuthTokenSecretKey];            
 
             return client.BuildUri(request).ToString();
         }
@@ -76,7 +85,7 @@ namespace OAuth2.Client
             var client = factory.NewClient();
             client.BaseUrl = RequestTokenServiceEndpoint.BaseUri;
             client.Authenticator = OAuth1Authenticator.ForRequestToken(
-                configuration.ClientId, configuration.ClientSecret, configuration.RedirectUri);
+                configuration.ClientId, configuration.ClientSecret, WebUtils.ResolveServerUrl(configuration.RedirectUri));
 
             var request = factory.NewRequest();
             request.Resource = RequestTokenServiceEndpoint.Resource;
@@ -104,7 +113,9 @@ namespace OAuth2.Client
 
             var response = client.Execute(request);
 
-            return ParseUserInfo(response.Content);
+            var result = ParseUserInfo(response.Content);
+            result.ProviderName = ProviderName;
+            return result;
         }
     }
 }

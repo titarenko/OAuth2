@@ -68,6 +68,11 @@ namespace OAuth2.Client
             }
         }
 
+        public override string ProviderName
+        {
+            get { return "Vkontakte"; }
+        }
+
         /// <summary>
         /// Called just after obtaining response with access token from third-party service.
         /// Allows to read extra data returned along with access token.
