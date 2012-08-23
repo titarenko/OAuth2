@@ -1,7 +1,7 @@
 ﻿@using OAuth2.Example
-@model OAuth2.Example.Models.IndexViewModel
+@model IEnumerable<OAuth2.Example.Models.LoginInfoModel>
 
-@foreach (var uri in Model.LoginUris)
+@foreach (var loginInfo in Model)
 {
-    <p><a href="@uri">Log In (@uri.Cut(40))</a></p>
+    <p><a href="@loginInfo.LoginUri">Log In (@loginInfo.ProviderName)</a></p>
 }

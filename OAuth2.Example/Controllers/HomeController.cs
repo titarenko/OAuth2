@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
 using OAuth2.Client;
 using OAuth2.Example.Models;
 
@@ -25,10 +26,13 @@ namespace OAuth2.Example.Controllers
         /// </summary>
         public ActionResult Index()
         {
-            return View(new IndexViewModel
-            {
-                LoginUris = new[] {client.GetLoginLinkUri("test")}
-            });
+            var model = new List<LoginInfoModel>();
+            model.Add(new LoginInfoModel
+                        {
+                            ProviderName = client.ProviderName,
+                            LoginUri = client.GetLoginLinkUri("test")
+                        });
+            return View(model);
         }
 
         /// <summary>
