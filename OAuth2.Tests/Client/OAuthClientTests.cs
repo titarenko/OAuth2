@@ -178,6 +178,11 @@ namespace OAuth2.Tests.Client
                 }
             }
 
+            public override string ProviderName
+            {
+                get { return "OAuthClientTest"; }
+            }
+
             protected override UserInfo ParseUserInfo(string content)
             {
                 return Builder<UserInfo>.CreateNew()

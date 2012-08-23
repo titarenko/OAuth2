@@ -60,6 +60,11 @@ namespace OAuth2.Client
             }
         }
 
+        public override string ProviderName
+        {
+            get { return "Twitter"; }
+        }
+
         protected override UserInfo ParseUserInfo(string content)
         {
             var response = JObject.Parse(content);

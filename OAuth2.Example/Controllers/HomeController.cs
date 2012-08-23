@@ -15,7 +15,7 @@ namespace OAuth2.Example.Controllers
         /// Initializes a new instance of the <see cref="HomeController"/> class.
         /// </summary>
         /// <param name="client">The client.</param>
-        public HomeController(LinkedinClient client)
+        public HomeController(VkClient client)
         {
             this.client = client;
         }
@@ -27,7 +27,7 @@ namespace OAuth2.Example.Controllers
         {
             return View(new IndexViewModel
             {
-                LoginUris = new[] {client.GetLoginLinkUri()}
+                LoginUris = new[] {client.GetLoginLinkUri("test")}
             });
         }
 

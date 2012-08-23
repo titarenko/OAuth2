@@ -27,8 +27,7 @@ namespace OAuth2.Client
     public abstract class OAuth2Client : IClient
     {
         private readonly IRequestFactory factory;
-        private readonly IClientConfiguration configuration;
-
+        private readonly IClientConfiguration configuration;        
         /// <summary>
         /// Defines URI of service which issues access code.
         /// </summary>
@@ -55,12 +54,15 @@ namespace OAuth2.Client
             this.configuration = configuration;
         }
 
+        public abstract string ProviderName { get; }
+
         /// <summary>
         /// Returns URI of service which should be called in order to start authentication process.
         /// You should use this URI when rendering login link.
         /// </summary>
-        public string GetLoginLinkUri()
-        {
+
+        public string GetLoginLinkUri(string state = null)
+        {            
             var client = factory.NewClient();
             client.BaseUrl = AccessCodeServiceEndpoint.BaseUri;
 
@@ -71,10 +73,10 @@ namespace OAuth2.Client
             {
                 response_type = "code",
                 client_id = configuration.ClientId,
-                redirect_uri = configuration.RedirectUri,
-                scope = configuration.Scope
+                redirect_uri = WebUtils.ResolveServerUrl(configuration.RedirectUri),
+                scope = configuration.Scope,
+                state = !string.IsNullOrEmpty(state) ? state : string.Empty
             });
-
             return client.BuildUri(request).ToString();
         }
 
@@ -93,7 +95,7 @@ namespace OAuth2.Client
 
             var client = factory.NewClient();
             client.BaseUrl = AccessTokenServiceEndpoint.BaseUri;
-            
+
             var request = factory.NewRequest();
             request.Resource = AccessTokenServiceEndpoint.Resource;
             request.Method = Method.POST;
@@ -102,7 +104,7 @@ namespace OAuth2.Client
                 code = parameters["code"],
                 client_id = configuration.ClientId,
                 client_secret = configuration.ClientSecret,
-                redirect_uri = configuration.RedirectUri,
+                redirect_uri = WebUtils.ResolveServerUrl(configuration.RedirectUri),
                 grant_type = "authorization_code"
             });
 
@@ -113,7 +115,7 @@ namespace OAuth2.Client
             try
             {
                 // response can be sent in JSON format
-                return GetUserInfo((string) JObject.Parse(content).SelectToken("access_token"));
+                return GetUserInfo((string)JObject.Parse(content).SelectToken("access_token"));
             }
             catch (JsonReaderException)
             {
@@ -134,9 +136,11 @@ namespace OAuth2.Client
 
             var request = factory.NewRequest();
             request.Resource = UserInfoServiceEndpoint.Resource;
-            
+
             OnGetUserInfo(request);
-            return ParseUserInfo(client.Execute(request).Content);
+            var result = ParseUserInfo(client.Execute(request).Content);
+            result.ProviderName = ProviderName;
+            return result;
         }
 
         /// <summary>

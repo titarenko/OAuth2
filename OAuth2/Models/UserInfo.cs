@@ -11,6 +11,11 @@ namespace OAuth2.Models
         public string Id { get; set; }
 
         /// <summary>
+        /// Provider name.
+        /// </summary>
+        public string ProviderName { get; set; }
+
+        /// <summary>
         /// Email address.
         /// </summary>
         public string Email { get; set; }

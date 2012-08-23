@@ -84,5 +84,10 @@ namespace OAuth2.Client
         {
             throw new System.NotImplementedException();
         }
+
+        public override string ProviderName
+        {
+            get { return "LinkedIn"; }
+        }
     }
 }
