@@ -70,7 +70,8 @@ namespace OAuth2.Tests.Client
                         response_type = "code",
                         client_id = "client_id",
                         redirect_uri = "http://redirect-uri.net",
-                        scope = "scope"
+                        scope = "scope",
+                        state = (string) null
                     })));
 
             restClient.Received(1).BuildUri(restRequest);

@@ -85,7 +85,7 @@ namespace OAuth2.Client
             var client = factory.NewClient();
             client.BaseUrl = RequestTokenServiceEndpoint.BaseUri;
             client.Authenticator = OAuth1Authenticator.ForRequestToken(
-                configuration.ClientId, configuration.ClientSecret, WebUtils.ResolveServerUrl(configuration.RedirectUri));
+                configuration.ClientId, configuration.ClientSecret, configuration.RedirectUri);
 
             var request = factory.NewRequest();
             request.Resource = RequestTokenServiceEndpoint.Resource;

@@ -73,9 +73,9 @@ namespace OAuth2.Client
             {
                 response_type = "code",
                 client_id = configuration.ClientId,
-                redirect_uri = WebUtils.ResolveServerUrl(configuration.RedirectUri),
+                redirect_uri = configuration.RedirectUri,
                 scope = configuration.Scope,
-                state = !string.IsNullOrEmpty(state) ? state : string.Empty
+                state
             });
             return client.BuildUri(request).ToString();
         }
@@ -104,7 +104,7 @@ namespace OAuth2.Client
                 code = parameters["code"],
                 client_id = configuration.ClientId,
                 client_secret = configuration.ClientSecret,
-                redirect_uri = WebUtils.ResolveServerUrl(configuration.RedirectUri),
+                redirect_uri = configuration.RedirectUri,
                 grant_type = "authorization_code"
             });
 
