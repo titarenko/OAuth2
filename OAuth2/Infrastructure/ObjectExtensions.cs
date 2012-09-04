@@ -20,8 +20,9 @@ namespace OAuth2.Infrastructure
                     let otherProperty = otherProperties.FirstOrDefault(
                         x => x.Name == thisProperty.Name &&
                              x.PropertyType == thisProperty.PropertyType)
-                    where otherProperty != null &&
-                          thisProperty.GetValue(@this, null).Equals(otherProperty.GetValue(other, null))
+                    let value = thisProperty.GetValue(@this, null)
+                    let otherValue = otherProperty == null ? null : otherProperty.GetValue(other, null)
+                    where value == null && otherValue == null || value != null && value.Equals(otherValue)
                     select 1).Sum() == thisProperties.Count;
         }
     }
