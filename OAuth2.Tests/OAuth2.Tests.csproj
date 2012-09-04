@@ -65,6 +65,7 @@
     <Compile Include="Configuration\OAuth2ConfigurationSectionTests.cs" />
     <Compile Include="Infrastructure\ConfigurationManagerTests.cs" />
     <Compile Include="Infrastructure\EnumerableExtensionsTests.cs" />
+    <Compile Include="Infrastructure\ObjectExtensionsTests.cs" />
     <Compile Include="Infrastructure\RequestFactoryTests.cs" />
     <Compile Include="Infrastructure\SafeExtensionsTests.cs" />
     <Compile Include="Infrastructure\StringExtensionsTests.cs" />
