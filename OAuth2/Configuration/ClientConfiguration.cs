@@ -1,5 +1,5 @@
 using System.Configuration;
-using System.Web;
+using OAuth2.Infrastructure;
 
 namespace OAuth2.Configuration
 {
@@ -59,13 +59,8 @@ namespace OAuth2.Configuration
         {
             get
             {
-                return GetFullUri((string) this[RedirectUriKey]);
+                return UriUtility.ToAbsolute((string) this[RedirectUriKey]);
             }
-        }
-
-        private string GetFullUri(string uri)
-        {
-            return uri.Contains("~") ? VirtualPathUtility.ToAbsolute(uri) : uri;
         }
     }
 }
