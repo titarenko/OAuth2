@@ -1,4 +1,3 @@
-using System;
 using System.Configuration;
 using System.Web;
 
@@ -66,19 +65,7 @@ namespace OAuth2.Configuration
 
         private string GetFullUri(string uri)
         {
-            if (!uri.StartsWith("~"))
-            {
-                return uri;
-            }
-
-            if (HttpContext.Current == null)
-            {
-                throw new ApplicationException(
-                    "Cannot resolve relative URI outside of ASP.NET application " +
-                    "(current HTTP context is NULL).");
-            }
-
-            return HttpContext.Current.Request.ApplicationPath + uri.Substring(1);
+            return uri.Contains("~") ? VirtualPathUtility.ToAbsolute(uri) : uri;
         }
     }
 }
