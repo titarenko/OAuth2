@@ -10,3 +10,4 @@ packages
 *.dotCover
 log.txt
 *ncrunch*
+*.gpState
