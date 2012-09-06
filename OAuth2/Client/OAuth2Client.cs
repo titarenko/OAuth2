@@ -11,23 +11,30 @@ using RestSharp.Contrib;
 namespace OAuth2.Client
 {
     /// <summary>
-    /// Base class for any OAuth2 client implementation within this library.
-    /// Essentially descendants of this class are intended for doing user authentication using
-    /// certain third-party service.
+    /// Base class for OAuth2 client implementation.
     /// </summary>
-    /// <remarks>
-    /// Standard flow is:
-    /// - client instance generates URI for login link (<see cref="__C"/>
-    /// - hosting app renders page with login link using aforementioned URI
-    /// - user clicks login link - this leads to redirect to third-party service site
-    /// - user does authentication and allows app access his/her basic information
-    /// - third-party service redirects user to hosting app
-    /// - hosting app reads user information using <see cref="GetUserInfo"/> method on callback
-    /// </remarks>
     public abstract class OAuth2Client : IClient
     {
+        private const string AccessTokenKey = "access_token";
+
         private readonly IRequestFactory factory;
-        private readonly IClientConfiguration configuration;        
+        private readonly IClientConfiguration configuration;
+
+        /// <summary>
+        /// Friendly name of provider (OAuth2 service).
+        /// </summary>
+        public abstract string ProviderName { get; }
+        
+        /// <summary>
+        /// Access token returned by provider. Can be used for further calls of provider API.
+        /// </summary>
+        public string AccessToken { get; private set; }
+
+        /// <summary>
+        /// State (any additional information that was provided by application and is posted back by service).
+        /// </summary>
+        public string State { get; private set; }
+
         /// <summary>
         /// Defines URI of service which issues access code.
         /// </summary>
@@ -39,7 +46,8 @@ namespace OAuth2.Client
         protected abstract Endpoint AccessTokenServiceEndpoint { get; }
 
         /// <summary>
-        /// Defines URI of service which allows to obtain information about user which is currently logged in.
+        /// Defines URI of service which allows to obtain information about user 
+        /// who is currently logged in.
         /// </summary>
         protected abstract Endpoint UserInfoServiceEndpoint { get; }
 
@@ -54,13 +62,13 @@ namespace OAuth2.Client
             this.configuration = configuration;
         }
 
-        public abstract string ProviderName { get; }
-
         /// <summary>
         /// Returns URI of service which should be called in order to start authentication process.
-        /// You should use this URI when rendering login link.
+        /// This URI should be used for rendering login link.
         /// </summary>
-
+        /// <remarks>
+        /// Any additional information that will be posted back by service.
+        /// </remarks>
         public string GetLoginLinkUri(string state = null)
         {            
             var client = factory.NewClient();
@@ -77,22 +85,34 @@ namespace OAuth2.Client
                 scope = configuration.Scope,
                 state
             });
+
             return client.BuildUri(request).ToString();
         }
 
         /// <summary>
-        /// Obtains user information using third-party authentication service
-        /// using data provided via callback request.
+        /// Obtains user information using OAuth2 service and
+        /// data provided via callback request.
         /// </summary>
         /// <param name="parameters">Callback request payload (parameters).</param>
         public UserInfo GetUserInfo(NameValueCollection parameters)
         {
+            State = parameters["state"];
+
             var error = parameters["error"];
             if (!error.IsEmpty())
             {
                 throw new ApplicationException(error);
             }
 
+            return GetUserInfo(AccessToken = GetAccessToken(parameters));
+        }
+
+        /// <summary>
+        /// Issues query for access token and parses response.
+        /// </summary>
+        /// <param name="parameters">Callback request payload (parameters).</param>
+        private string GetAccessToken(NameValueCollection parameters)
+        {
             var client = factory.NewClient();
             client.BaseUrl = AccessTokenServiceEndpoint.BaseUri;
 
@@ -115,17 +135,17 @@ namespace OAuth2.Client
             try
             {
                 // response can be sent in JSON format
-                return GetUserInfo((string)JObject.Parse(content).SelectToken("access_token"));
+                return (string) JObject.Parse(content).SelectToken(AccessTokenKey);
             }
             catch (JsonReaderException)
             {
                 // or it can be in "query string" format (param1=val1&param2=val2)
-                return GetUserInfo(HttpUtility.ParseQueryString(content)["access_token"]);
+                return HttpUtility.ParseQueryString(content)[AccessTokenKey];
             }
         }
 
         /// <summary>
-        /// Obtains user information using third-party authentication service.
+        /// Obtains user information using provider API.
         /// </summary>
         /// <param name="accessToken">The access token.</param>
         private UserInfo GetUserInfo(string accessToken)
@@ -137,32 +157,34 @@ namespace OAuth2.Client
             var request = factory.NewRequest();
             request.Resource = UserInfoServiceEndpoint.Resource;
 
-            OnGetUserInfo(request);
+            BeforeGetUserInfo(request);
+
             var result = ParseUserInfo(client.Execute(request).Content);
             result.ProviderName = ProviderName;
+
             return result;
         }
 
         /// <summary>
-        /// Called just before issuing request to third-party service when everything is ready.
+        /// Should return parsed <see cref="UserInfo"/> using content received from provider.
+        /// </summary>
+        /// <param name="content">The content which is received from provider.</param>
+        protected abstract UserInfo ParseUserInfo(string content);
+
+        /// <summary>
+        /// Called just before issuing request to service when everything is ready.
         /// Allows to add extra parameters to request or do any other needed preparations.
         /// </summary>
-        protected virtual void OnGetUserInfo(IRestRequest request)
+        protected virtual void BeforeGetUserInfo(IRestRequest request)
         {
         }
 
         /// <summary>
-        /// Called just after obtaining response with access token from third-party service.
+        /// Called just after obtaining response with access token from service.
         /// Allows to read extra data returned along with access token.
         /// </summary>
         protected virtual void AfterGetAccessToken(IRestResponse response)
         {
         }
-
-        /// <summary>
-        /// Should return parsed <see cref="UserInfo"/> from content received from third-party service.
-        /// </summary>
-        /// <param name="content">The content which is received from third-party service.</param>
-        protected abstract UserInfo ParseUserInfo(string content);
     }
 }

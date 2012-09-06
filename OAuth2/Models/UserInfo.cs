@@ -11,7 +11,7 @@ namespace OAuth2.Models
         public string Id { get; set; }
 
         /// <summary>
-        /// Provider name.
+        /// Friendly name of OAuth/OAuth2 provider. Supposed to be unique per client.
         /// </summary>
         public string ProviderName { get; set; }
 

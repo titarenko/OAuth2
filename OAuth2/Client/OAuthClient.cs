@@ -9,6 +9,9 @@ using RestSharp.Contrib;
 
 namespace OAuth2.Client
 {
+    /// <summary>
+    /// Base class for OAuth (version 1) client implementation.
+    /// </summary>
     public abstract class OAuthClient : IClient
     {
         private const string OAuthTokenKey = "oauth_token";
@@ -34,8 +37,7 @@ namespace OAuth2.Client
         }
 
         public abstract string ProviderName { get; }
-
-
+        
         public string GetLoginLinkUri(string state = null)
         {
             var requestToken = GetRequestToken();
@@ -101,7 +103,7 @@ namespace OAuth2.Client
         {
             var parameters = HttpUtility.ParseQueryString(content);
             var token = parameters[OAuthTokenKey];
-            var secret = parameters["oauth_token_secret"];
+            var secret = parameters[OAuthTokenSecretKey];
 
             var client = factory.NewClient();
             client.BaseUrl = UserInfoServiceEndpoint.BaseUri;

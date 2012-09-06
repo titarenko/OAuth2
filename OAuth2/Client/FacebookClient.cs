@@ -70,7 +70,7 @@ namespace OAuth2.Client
         /// Called just before issuing request to third-party service when everything is ready.
         /// Allows to add extra parameters to request or do any other needed preparations.
         /// </summary>
-        protected override void OnGetUserInfo(IRestRequest request)
+        protected override void BeforeGetUserInfo(IRestRequest request)
         {
             request.AddParameter("fields", "id,first_name,last_name,email,picture");
         }
