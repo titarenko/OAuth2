@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
@@ -22,53 +21,81 @@ namespace OAuth2.Client
 
         private string secret;
 
+        /// <summary>
+        /// Friendly name of provider (OAuth service).
+        /// </summary>
+        public abstract string ProviderName { get; }
+
+        /// <summary>
+        /// Defines URI of service which is called for obtaining request token.
+        /// </summary>
         protected abstract Endpoint RequestTokenServiceEndpoint { get; }
 
+        /// <summary>
+        /// Defines URI of service which should be called to initiate authentication process.
+        /// </summary>
         protected abstract Endpoint LoginServiceEndpoint { get; }
 
+        /// <summary>
+        /// Defines URI of service which issues access token.
+        /// </summary>
         protected abstract Endpoint AccessTokenServiceEndpoint { get; }
 
+        /// <summary>
+        /// Defines URI of service which is called to obtain user information.
+        /// </summary>
         protected abstract Endpoint UserInfoServiceEndpoint { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OAuthClient" /> class.
+        /// </summary>
+        /// <param name="factory">The factory.</param>
+        /// <param name="configuration">The configuration.</param>
         protected OAuthClient(IRequestFactory factory, IClientConfiguration configuration)
         {
             this.factory = factory;
             this.configuration = configuration;
         }
 
-        public abstract string ProviderName { get; }
-        
+        /// <summary>
+        /// Returns URI of service which should be called in order to start authentication process.
+        /// You should use this URI when rendering login link.
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
         public string GetLoginLinkUri(string state = null)
         {
             var requestToken = GetRequestToken();
-
-            if (!string.IsNullOrEmpty(state))
+            if (!state.IsEmpty())
+            {
                 requestToken["state"] = state;
+            }
 
             return GetLoginRequestUri(requestToken);
         }
 
-        public UserInfo GetUserInfo(NameValueCollection parameters)
+        /// <summary>
+        /// Issues request for request token and returns result.
+        /// </summary>
+        private NameValueCollection GetRequestToken()
         {
-            var token = parameters[OAuthTokenKey];
-            var verifier = parameters["oauth_verifier"];
-
             var client = factory.NewClient();
-            client.BaseUrl = AccessTokenServiceEndpoint.BaseUri;
-            client.Authenticator = OAuth1Authenticator.ForAccessToken(
-                configuration.ClientId, configuration.ClientSecret, token, secret, verifier);
+            client.BaseUrl = RequestTokenServiceEndpoint.BaseUri;
+            client.Authenticator = OAuth1Authenticator.ForRequestToken(
+                configuration.ClientId, configuration.ClientSecret, configuration.RedirectUri);
 
             var request = factory.NewRequest();
-            request.Resource = AccessTokenServiceEndpoint.Resource;
+            request.Resource = RequestTokenServiceEndpoint.Resource;
             request.Method = Method.POST;
 
             var response = client.Execute(request);
-
-            return QueryUserInfo(response.Content);
+            return HttpUtility.ParseQueryString(response.Content);
         }
 
-        protected abstract UserInfo ParseUserInfo(string content);
-
+        /// <summary>
+        /// Composes login link URI.
+        /// </summary>
+        /// <param name="response">Content of response for request token request.</param>
         private string GetLoginRequestUri(NameValueCollection response)
         {
             var client = factory.NewClient();
@@ -82,26 +109,48 @@ namespace OAuth2.Client
             return client.BuildUri(request).ToString();
         }
 
-        private NameValueCollection GetRequestToken()
+        /// <summary>
+        /// Obtains user information using third-party authentication service
+        /// using data provided via callback request.
+        /// </summary>
+        /// <param name="parameters">Callback request payload (parameters).
+        /// <example>Request.QueryString</example></param>
+        /// <returns></returns>
+        public UserInfo GetUserInfo(NameValueCollection parameters)
+        {
+            var token = parameters[OAuthTokenKey];
+            var verifier = parameters["oauth_verifier"];
+
+            return QueryUserInfo(GetAccessToken(token, verifier));
+        }
+
+        /// <summary>
+        /// Obtains access token by calling corresponding service.
+        /// </summary>
+        /// <param name="token">Token posted with callback issued by provider.</param>
+        /// <param name="verifier">Verifier posted with callback issued by provider.</param>
+        /// <returns>Access token and other extra info.</returns>
+        private NameValueCollection GetAccessToken(string token, string verifier)
         {
             var client = factory.NewClient();
-            client.BaseUrl = RequestTokenServiceEndpoint.BaseUri;
-            client.Authenticator = OAuth1Authenticator.ForRequestToken(
-                configuration.ClientId, configuration.ClientSecret, configuration.RedirectUri);
+            client.BaseUrl = AccessTokenServiceEndpoint.BaseUri;
+            client.Authenticator = OAuth1Authenticator.ForAccessToken(
+                configuration.ClientId, configuration.ClientSecret, token, secret, verifier);
 
             var request = factory.NewRequest();
-            request.Resource = RequestTokenServiceEndpoint.Resource;
+            request.Resource = AccessTokenServiceEndpoint.Resource;
             request.Method = Method.POST;
 
             var response = client.Execute(request);
-            var queryString = HttpUtility.ParseQueryString(response.Content);
-
-            return queryString;
+            return HttpUtility.ParseQueryString(response.Content);
         }
 
-        private UserInfo QueryUserInfo(string content)
+        /// <summary>
+        /// Queries user info using corresponding service and data received by access token request.
+        /// </summary>
+        /// <param name="parameters">Access token request result.</param>
+        private UserInfo QueryUserInfo(NameValueCollection parameters)
         {
-            var parameters = HttpUtility.ParseQueryString(content);
             var token = parameters[OAuthTokenKey];
             var secret = parameters[OAuthTokenSecretKey];
 
@@ -117,7 +166,13 @@ namespace OAuth2.Client
 
             var result = ParseUserInfo(response.Content);
             result.ProviderName = ProviderName;
+
             return result;
         }
+
+        /// <summary>
+        /// Should return parsed <see cref="UserInfo"/> using content of callback issued by service.
+        /// </summary>
+        protected abstract UserInfo ParseUserInfo(string content);
     }
 }
