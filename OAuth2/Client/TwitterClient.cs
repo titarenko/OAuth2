@@ -5,6 +5,9 @@ using OAuth2.Models;
 
 namespace OAuth2.Client
 {
+    /// <summary>
+    /// Twitter authentication client.
+    /// </summary>
     public class TwitterClient : OAuthClient
     {
         public TwitterClient(IRequestFactory factory, IClientConfiguration configuration)
@@ -12,6 +15,9 @@ namespace OAuth2.Client
         {
         }
 
+        /// <summary>
+        /// Defines URI of service which is called for obtaining request token.
+        /// </summary>
         protected override Endpoint RequestTokenServiceEndpoint
         {
             get
@@ -24,6 +30,9 @@ namespace OAuth2.Client
             }
         }
 
+        /// <summary>
+        /// Defines URI of service which should be called to initiate authentication process.
+        /// </summary>
         protected override Endpoint LoginServiceEndpoint
         {
             get
@@ -36,6 +45,9 @@ namespace OAuth2.Client
             }
         }
 
+        /// <summary>
+        /// Defines URI of service which issues access token.
+        /// </summary>
         protected override Endpoint AccessTokenServiceEndpoint
         {
             get
@@ -48,6 +60,9 @@ namespace OAuth2.Client
             }
         }
 
+        /// <summary>
+        /// Defines URI of service which is called to obtain user information.
+        /// </summary>
         protected override Endpoint UserInfoServiceEndpoint
         {
             get
@@ -60,11 +75,17 @@ namespace OAuth2.Client
             }
         }
 
+        /// <summary>
+        /// Friendly name of provider (OAuth service).
+        /// </summary>
         public override string ProviderName
         {
             get { return "Twitter"; }
         }
 
+        /// <summary>
+        /// Should return parsed <see cref="UserInfo" /> using content of callback issued by service.
+        /// </summary>
         protected override UserInfo ParseUserInfo(string content)
         {
             var response = JObject.Parse(content);

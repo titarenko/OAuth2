@@ -4,6 +4,9 @@ using OAuth2.Models;
 
 namespace OAuth2.Client
 {
+    /// <summary>
+    /// LinkedIn authentication client.
+    /// </summary>
     public class LinkedinClient : OAuthClient
     {
         /// <summary>
@@ -85,6 +88,9 @@ namespace OAuth2.Client
             throw new System.NotImplementedException();
         }
 
+        /// <summary>
+        /// Friendly name of provider (OAuth service).
+        /// </summary>
         public override string ProviderName
         {
             get { return "LinkedIn"; }

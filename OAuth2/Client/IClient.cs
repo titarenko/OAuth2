@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Specialized;
 using OAuth2.Models;
 
@@ -18,12 +17,16 @@ namespace OAuth2.Client
     /// </remarks>
     public interface IClient
     {
+        /// <summary>
+        /// Friendly name of provider (third-party authentication service). 
+        /// Defined by client implementation developer and supposed to be unique.
+        /// </summary>
         string ProviderName { get; }
+
         /// <summary>
         /// Returns URI of service which should be called in order to start authentication process. 
         /// You should use this URI when rendering login link.
         /// </summary>
-
         string GetLoginLinkUri(string state = null);
 
         /// <summary>
