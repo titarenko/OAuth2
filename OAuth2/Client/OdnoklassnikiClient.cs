@@ -18,7 +18,7 @@ namespace OAuth2.Client
         private readonly IClientConfiguration configuration;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FacebookClient"/> class.
+        /// Initializes a new instance of the <see cref="OdnoklassnikiClient"/> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
@@ -74,22 +74,7 @@ namespace OAuth2.Client
         }
 
 
-        /// <summary>
-        /// Returns MD5 Hash of input.
-        /// </summary>
-        /// <param name="line">The line.</param>
-        public static string GetMD5(string input)
-        {
-            var x = new System.Security.Cryptography.MD5CryptoServiceProvider();
-            var bs = Encoding.UTF8.GetBytes(input);
-            bs = x.ComputeHash(bs);
-            var s = new StringBuilder();
-            foreach (var b in bs)
-            {
-                s.Append(b.ToString("x2").ToLower());
-            }
-            return s.ToString();
-        }
+
 
         /// <summary>
         /// Called just before issuing request to third-party service when everything is ready.
@@ -100,12 +85,12 @@ namespace OAuth2.Client
             // Source document
             // http://dev.odnoklassniki.ru/wiki/pages/viewpage.action?pageId=12878032
 
-            request.AddParameter("application_key", configuration.ClientPublicKey);
+            request.AddParameter("application_key", configuration.ClientPublic);
             request.AddParameter("method", "users.getCurrentUser");
 
             // workaround for current design, oauth_token is always present in URL, so we need emulate it for correct request signing 
-            var tempParam = new Parameter() { Name = "oauth_token", Value = AccessToken };
-            request.AddParameter(tempParam);
+            var fakeParam = new Parameter() { Name = "oauth_token", Value = AccessToken };
+            request.AddParameter(fakeParam);
 
             // Signing.
             // Call API methods using access_token instead of session_key parameter
@@ -114,10 +99,10 @@ namespace OAuth2.Client
             // sig = md5( request_params_composed_string+ md5(access_token + application_secret_key)  )
             // Don't include access_token into request_params_composed_string
             string signature = string.Concat(request.Parameters.OrderBy(x => x.Name).Select(x => string.Format("{0}={1}", x.Name, x.Value)).ToList());
-            signature = GetMD5(signature + GetMD5(AccessToken + configuration.ClientSecret));
+            signature = StringExtensions.GetMD5Hash(signature + StringExtensions.GetMD5Hash(AccessToken + configuration.ClientSecret));
 
-            // Removing temp param to prevent dups
-            request.Parameters.Remove(tempParam);
+            // Removing fake param to prevent dups
+            request.Parameters.Remove(fakeParam);
 
             request.AddParameter("access_token", AccessToken);
             request.AddParameter("sig", signature);

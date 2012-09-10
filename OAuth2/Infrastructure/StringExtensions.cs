@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 
 namespace OAuth2.Infrastructure
 {
@@ -34,6 +35,24 @@ namespace OAuth2.Infrastructure
         public static bool IsEmpty(this string line)
         {
             return string.IsNullOrWhiteSpace(line);
+        }
+
+
+        /// <summary>
+        /// Returns MD5 Hash of input.
+        /// </summary>
+        /// <param name="line">The line.</param>
+        public static string GetMD5Hash(string input)
+        {
+            var x = new System.Security.Cryptography.MD5CryptoServiceProvider();
+            var bs = Encoding.UTF8.GetBytes(input);
+            bs = x.ComputeHash(bs);
+            var s = new StringBuilder();
+            foreach (var b in bs)
+            {
+                s.Append(b.ToString("x2").ToLower());
+            }
+            return s.ToString();
         }
     }
 }
