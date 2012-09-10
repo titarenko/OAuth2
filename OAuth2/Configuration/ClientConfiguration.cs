@@ -11,8 +11,10 @@ namespace OAuth2.Configuration
         private const string ClientTypeNameKey = "clientType";
         private const string ClientIdKey = "clientId";
         private const string ClientSecretKey = "clientSecret";
+        private const string ClientPublicKey = "clientPublic";
         private const string ScopeKey = "scope";
         private const string RedirectUriKey = "redirectUri";
+
 
         /// <summary>
         /// Name of client type.
@@ -39,6 +41,15 @@ namespace OAuth2.Configuration
         public string ClientSecret
         {
             get { return (string) this[ClientSecretKey]; }
+        }
+
+        /// <summary>
+        /// Client secret.
+        /// </summary>
+        [ConfigurationProperty(ClientPublicKey)]
+        public string ClientPublic
+        {
+            get { return (string)this[ClientPublicKey]; }
         }
 
         /// <summary>
