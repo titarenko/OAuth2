@@ -5,8 +5,6 @@ using OAuth2.Models;
 using RestSharp;
 using System;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace OAuth2.Client
 {
