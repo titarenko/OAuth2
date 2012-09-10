@@ -21,6 +21,11 @@ namespace OAuth2.Configuration
         string ClientSecret { get; }
 
         /// <summary>
+        /// Public key.
+        /// </summary>
+        string ClientPublicKey { get; }
+
+        /// <summary>
         /// Scope - contains set of permissions which user should give to your application.
         /// </summary>
         string Scope { get; }
