@@ -75,7 +75,6 @@ namespace OAuth2.Client
         {
             // Source document 
             // http://api.yandex.com/oauth/doc/dg/yandex-oauth-dg.pdf
-            request.AddParameter("format", "json");
         }
 
         /// <summary>
