@@ -7,7 +7,7 @@ using RestSharp;
 namespace OAuth2.Client
 {
     /// <summary>
-    /// LiveConnect authentication client.
+    /// Windows Live authentication client.
     /// </summary>
     public class WindowsLiveClient : OAuth2Client
     {

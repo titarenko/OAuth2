@@ -97,7 +97,7 @@ namespace OAuth2.Client
             // sig = md5( request_params_composed_string+ md5(access_token + application_secret_key)  )
             // Don't include access_token into request_params_composed_string
             string signature = string.Concat(request.Parameters.OrderBy(x => x.Name).Select(x => string.Format("{0}={1}", x.Name, x.Value)).ToList());
-            signature = StringExtensions.GetMD5Hash(signature + StringExtensions.GetMD5Hash(AccessToken + configuration.ClientSecret));
+            signature = (signature + (AccessToken + configuration.ClientSecret).GetMd5Hash()).GetMd5Hash();
 
             // Removing fake param to prevent dups
             request.Parameters.Remove(fakeParam);

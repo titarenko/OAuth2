@@ -90,7 +90,7 @@ namespace OAuth2.Client
 
             //sign=hex_md5('app_id={client_id}method=users.getInfosecure=1session_key={access_token}{secret_key}')
             string signature = string.Concat(request.Parameters.OrderBy(x => x.Name).Select(x => string.Format("{0}={1}", x.Name, x.Value)).ToList());            
-            signature = StringExtensions.GetMD5Hash(signature+configuration.ClientSecret);
+            signature = (signature+configuration.ClientSecret).GetMd5Hash();
             
             request.Parameters.Remove(fakeParam);
 

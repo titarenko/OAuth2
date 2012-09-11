@@ -32,5 +32,12 @@ namespace OAuth2.Tests.Infrastructure
         {
             @string.IsEmpty().Should().Be(testResult);
         }
+
+        [Test]
+        [TestCase("abba", "54a8723466e5d487247f3d93d51c66bc")]
+        public void Should_ReturnExpectedMD5Hash_When_CalledOnGivenString(string given, string expected)
+        {
+            given.GetMd5Hash().Should().Be(expected);
+        }
     }
 }

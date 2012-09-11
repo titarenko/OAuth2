@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace OAuth2.Infrastructure
@@ -41,18 +43,13 @@ namespace OAuth2.Infrastructure
         /// <summary>
         /// Returns MD5 Hash of input.
         /// </summary>
-        /// <param name="line">The line.</param>
-        public static string GetMD5Hash(string input)
+        /// <param name="input">The line.</param>
+        public static string GetMd5Hash(this string input)
         {
-            var x = new System.Security.Cryptography.MD5CryptoServiceProvider();
-            var bs = Encoding.UTF8.GetBytes(input);
-            bs = x.ComputeHash(bs);
-            var s = new StringBuilder();
-            foreach (var b in bs)
-            {
-                s.Append(b.ToString("x2").ToLower());
-            }
-            return s.ToString();
+            var provider = new MD5CryptoServiceProvider();
+            var bytes = Encoding.UTF8.GetBytes(input);
+            bytes = provider.ComputeHash(bytes);
+            return BitConverter.ToString(bytes).Replace("-", "").ToLowerInvariant();
         }
     }
 }
