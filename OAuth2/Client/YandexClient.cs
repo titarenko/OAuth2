@@ -8,7 +8,7 @@ using System.Linq;
 namespace OAuth2.Client
 {
     /// <summary>
-    /// Facebook authentication client.
+    /// Yandex authentication client.
     /// </summary>
     public class YandexClient : OAuth2Client
     {

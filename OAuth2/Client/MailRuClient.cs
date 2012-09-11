@@ -8,7 +8,7 @@ using System.Linq;
 namespace OAuth2.Client
 {
     /// <summary>
-    /// Facebook authentication client.
+    /// Mail.Ru authentication client.
     /// </summary>
     public class MailRuClient : OAuth2Client
     {

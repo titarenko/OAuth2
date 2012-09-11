@@ -9,7 +9,7 @@ using System.Linq;
 namespace OAuth2.Client
 {
     /// <summary>
-    /// Facebook authentication client.
+    /// Odnoklassniki authentication client.
     /// </summary>
     public class OdnoklassnikiClient : OAuth2Client
     {
