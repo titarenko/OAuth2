@@ -16,7 +16,7 @@ namespace OAuth2.Example.Controllers
         /// Initializes a new instance of the <see cref="HomeController"/> class.
         /// </summary>
         /// <param name="client">The client.</param>
-        public HomeController(OdnoklassnikiClient client)
+        public HomeController(WindowsLiveClient client)
         {
             this.client = client;
         }
