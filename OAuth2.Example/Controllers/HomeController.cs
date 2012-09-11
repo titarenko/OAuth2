@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Web.Caching;
 using System.Web.Mvc;
 using OAuth2.Client;
 using OAuth2.Example.Models;
@@ -16,7 +18,7 @@ namespace OAuth2.Example.Controllers
         /// Initializes a new instance of the <see cref="HomeController"/> class.
         /// </summary>
         /// <param name="client">The client.</param>
-        public HomeController(VkClient client)
+        public HomeController(LinkedinClient client)
         {
             this.client = client;
         }
@@ -26,12 +28,15 @@ namespace OAuth2.Example.Controllers
         /// </summary>
         public ActionResult Index()
         {
-            var model = new List<LoginInfoModel>();
-            model.Add(new LoginInfoModel
-                        {
-                            ProviderName = client.ProviderName,
-                            LoginUri = client.GetLoginLinkUri("test")
-                        });
+            Session.Add("client", client);
+            var model = new List<LoginInfoModel>
+            {
+                new LoginInfoModel
+                {
+                    ProviderName = client.ProviderName,
+                    LoginUri = client.GetLoginLinkUri()
+                }
+            };
             return View(model);
         }
 
@@ -40,6 +45,7 @@ namespace OAuth2.Example.Controllers
         /// </summary>
         public ActionResult Auth()
         {
+            var client = (IClient) Session["client"];
             return View(client.GetUserInfo(Request.QueryString));
         }
     }

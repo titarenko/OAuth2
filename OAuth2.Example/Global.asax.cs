@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Autofac;
 using Autofac.Integration.Mvc;
 using OAuth2.Client;
 using OAuth2.Configuration;
-using OAuth2.Example.Controllers;
 using RestSharp;
-using Autofac.Builder;
 
 namespace OAuth2.Example
 {
@@ -23,19 +19,6 @@ namespace OAuth2.Example
             RegisterRoutes(RouteTable.Routes);
 
             SetDependencyResolver();
-        }
-
-        protected void Session_Start(object sender, EventArgs e)
-        {
-            var resolver = (AutofacDependencyResolver) DependencyResolver.Current;
-            var sessionScope = resolver.ApplicationContainer.BeginLifetimeScope("session");
-            Session["Autofac_LifetimeScope"] = sessionScope;
-        }
-
-        protected void Session_End(object sender, EventArgs e)
-        {
-            var sessionScope = (ILifetimeScope) Session["Autofac_LifetimeScope"];
-            sessionScope.Dispose();
         }
 
         private void RegisterGlobalFilters(GlobalFilterCollection filters)
@@ -79,7 +62,7 @@ namespace OAuth2.Example
             builder
                 .RegisterAssemblyTypes(
                     Assembly.GetExecutingAssembly(),
-                    Assembly.GetAssembly(typeof (Client.OAuth2Client)),
+                    Assembly.GetAssembly(typeof (OAuth2Client)),
                     Assembly.GetAssembly(typeof (RestClient)))
                 .AsImplementedInterfaces().AsSelf();
 
@@ -87,14 +70,7 @@ namespace OAuth2.Example
                 context =>
                 context
                     .Resolve<IConfigurationManager>()
-                    .GetConfigSection<OAuth2ConfigurationSection>("oauth2")["VkClient"]);
-
-            //builder.Register(context =>
-            //                 context.Resolve<LinkedinClient>());
-                                 //{
-                                 //    var sessionScope = (ILifetimeScope) Session["Autofac_LifetimeScope"];
-                                 //    return sessionScope.Resolve<LinkedinClient>();
-                                 //});
+                    .GetConfigSection<OAuth2ConfigurationSection>("oauth2")["LinkedinClient"]);
 
             DependencyResolver.SetResolver(new AutofacDependencyResolver(builder.Build()));
         }

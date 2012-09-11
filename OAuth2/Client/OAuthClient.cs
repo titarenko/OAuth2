@@ -61,17 +61,11 @@ namespace OAuth2.Client
         /// Returns URI of service which should be called in order to start authentication process.
         /// You should use this URI when rendering login link.
         /// </summary>
-        /// <param name="state"></param>
+        /// <param name="state">Any additional information needed by application.</param>
         /// <returns></returns>
         public string GetLoginLinkUri(string state = null)
         {
-            var requestToken = GetRequestToken();
-            if (!state.IsEmpty())
-            {
-                requestToken["state"] = state;
-            }
-
-            return GetLoginRequestUri(requestToken);
+            return GetLoginRequestUri(GetRequestToken(), state);
         }
 
         /// <summary>
@@ -96,7 +90,8 @@ namespace OAuth2.Client
         /// Composes login link URI.
         /// </summary>
         /// <param name="response">Content of response for request token request.</param>
-        private string GetLoginRequestUri(NameValueCollection response)
+        /// <param name="state">Any additional information needed by application.</param>
+        private string GetLoginRequestUri(NameValueCollection response, string state = null)
         {
             var client = factory.NewClient();
             client.BaseUrl = LoginServiceEndpoint.BaseUri;
@@ -104,6 +99,10 @@ namespace OAuth2.Client
             var request = factory.NewRequest();
             request.Resource = LoginServiceEndpoint.Resource;
             request.AddParameter(OAuthTokenKey, response[OAuthTokenKey]);
+            if (!state.IsEmpty())
+            {
+                request.AddParameter("state", state);
+            }
             secret = response[OAuthTokenSecretKey];            
 
             return client.BuildUri(request).ToString();
