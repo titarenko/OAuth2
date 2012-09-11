@@ -87,7 +87,7 @@ namespace OAuth2.Example
                 context =>
                 context
                     .Resolve<IConfigurationManager>()
-                    .GetConfigSection<OAuth2ConfigurationSection>("oauth2")["OdnoklassnikiClient"]);
+                    .GetConfigSection<OAuth2ConfigurationSection>("oauth2")["MailRuClient"]);
 
             //builder.Register(context =>
             //                 context.Resolve<LinkedinClient>());
