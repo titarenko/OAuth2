@@ -3,24 +3,22 @@ using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
-using System;
 using System.Linq;
 
 namespace OAuth2.Client
 {
     /// <summary>
-    /// Odnoklassniki authentication client.
+    /// Mail.Ru authentication client.
     /// </summary>
-    public class OdnoklassnikiClient : OAuth2Client
+    public class MailRuClient : OAuth2Client
     {
         private readonly IClientConfiguration configuration;
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="OdnoklassnikiClient"/> class.
+        /// Initializes a new instance of the <see cref="MailRuClient"/> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        public OdnoklassnikiClient(IRequestFactory factory, IClientConfiguration configuration)
+        public MailRuClient(IRequestFactory factory, IClientConfiguration configuration) 
             : base(factory, configuration)
         {
             this.configuration = configuration;
@@ -35,7 +33,7 @@ namespace OAuth2.Client
             {
                 return new Endpoint
                 {
-                    BaseUri = "http://www.odnoklassniki.ru",
+                    BaseUri = "https://connect.mail.ru",
                     Resource = "/oauth/authorize"
                 };
             }
@@ -50,8 +48,8 @@ namespace OAuth2.Client
             {
                 return new Endpoint
                 {
-                    BaseUri = "http://api.odnoklassniki.ru",
-                    Resource = "/oauth/token.do"
+                    BaseUri = "https://connect.mail.ru",
+                    Resource = "/oauth/token"
                 };
             }
         }
@@ -65,14 +63,11 @@ namespace OAuth2.Client
             {
                 return new Endpoint
                 {
-                    BaseUri = "http://api.odnoklassniki.ru",
-                    Resource = "/fb.do"
+                    BaseUri = "http://www.appsmail.ru",
+                    Resource = "/platform/api"                    
                 };
             }
         }
-
-
-
 
         /// <summary>
         /// Called just before issuing request to third-party service when everything is ready.
@@ -80,30 +75,26 @@ namespace OAuth2.Client
         /// </summary>
         protected override void BeforeGetUserInfo(IRestRequest request)
         {
-            // Source document
-            // http://dev.odnoklassniki.ru/wiki/pages/viewpage.action?pageId=12878032
+            // Source documents
+            // http://api.mail.ru/docs/guides/restapi/
+            // http://api.mail.ru/docs/reference/rest/users.getInfo/
 
-            request.AddParameter("application_key", configuration.ClientPublic);
-            request.AddParameter("method", "users.getCurrentUser");
+            request.AddParameter("app_id", configuration.ClientId);
+            request.AddParameter("method", "users.getInfo");
+            request.AddParameter("secure", "1");            
+            request.AddParameter("session_key", AccessToken);
 
             // workaround for current design, oauth_token is always present in URL, so we need emulate it for correct request signing 
             var fakeParam = new Parameter() { Name = "oauth_token", Value = AccessToken };
             request.AddParameter(fakeParam);
 
-            // Signing.
-            // Call API methods using access_token instead of session_key parameter
-            // Calculate every request signature parameter sig using a little bit different way described in
-            // http://dev.odnoklassniki.ru/wiki/display/ok/Authentication+and+Authorization
-            // sig = md5( request_params_composed_string+ md5(access_token + application_secret_key)  )
-            // Don't include access_token into request_params_composed_string
-            string signature = string.Concat(request.Parameters.OrderBy(x => x.Name).Select(x => string.Format("{0}={1}", x.Name, x.Value)).ToList());
-            signature = StringExtensions.GetMD5Hash(signature + StringExtensions.GetMD5Hash(AccessToken + configuration.ClientSecret));
-
-            // Removing fake param to prevent dups
+            //sign=hex_md5('app_id={client_id}method=users.getInfosecure=1session_key={access_token}{secret_key}')
+            string signature = string.Concat(request.Parameters.OrderBy(x => x.Name).Select(x => string.Format("{0}={1}", x.Name, x.Value)).ToList());            
+            signature = StringExtensions.GetMD5Hash(signature+configuration.ClientSecret);
+            
             request.Parameters.Remove(fakeParam);
 
-            request.AddParameter("access_token", AccessToken);
-            request.AddParameter("sig", signature);
+            request.AddParameter("sig", signature);            
         }
 
         /// <summary>
@@ -112,19 +103,20 @@ namespace OAuth2.Client
         /// <param name="content">The content which is received from third-party service.</param>
         protected override UserInfo ParseUserInfo(string content)
         {
-            var response = JObject.Parse(content);
+            var response = JArray.Parse(content);
             return new UserInfo
             {
-                Id = response["uid"].Value<string>(),
-                FirstName = response["first_name"].Value<string>(),
-                LastName = response["last_name"].Value<string>(),
-                PhotoUri = response["pic_1"].Value<string>()
+                Id = response[0]["uid"].Value<string>(),
+                FirstName = response[0]["first_name"].Value<string>(),
+                LastName = response[0]["last_name"].Value<string>(),
+                Email = response[0]["email"].Value<string>(),
+                PhotoUri = response[0]["pic"].Value<string>()
             };
         }
 
         public override string ProviderName
         {
-            get { return "Odnoklassniki"; }
+            get { return "Mail.ru"; }
         }
     }
 }
