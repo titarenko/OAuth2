@@ -87,7 +87,7 @@ namespace OAuth2.Example
                 context =>
                 context
                     .Resolve<IConfigurationManager>()
-                    .GetConfigSection<OAuth2ConfigurationSection>("oauth2")["FoursquareClient"]);
+                    .GetConfigSection<OAuth2ConfigurationSection>("oauth2")["WindowsLiveClient"]);
 
             //builder.Register(context =>
             //                 context.Resolve<LinkedinClient>());
