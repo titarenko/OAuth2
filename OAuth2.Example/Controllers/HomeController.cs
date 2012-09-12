@@ -47,9 +47,8 @@ namespace OAuth2.Example.Controllers
 
         /// <summary>
         /// Redirect to login url of selected provider.
-        /// </summary>
-        [HttpPost]
-        public RedirectResult Index(string providerName)
+        /// </summary>        
+        public RedirectResult Login(string providerName)
         {
             this.ProviderName = providerName;
             var client = authorizationManager.Clients.First(c => c.ProviderName == providerName);

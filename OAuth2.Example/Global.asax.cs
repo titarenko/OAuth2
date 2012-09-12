@@ -33,6 +33,17 @@ namespace OAuth2.Example
             routes.IgnoreRoute("{*favicon}", new { favicon = @"(.*/)?favicon.ico(/.*)?" });
 
             routes.MapRoute(
+                "Login", // Route name
+                "login/{providerName}", // URL with parameters
+                new
+                {
+                    controller = "Home",
+                    action = "Login",
+                    id = UrlParameter.Optional
+                });
+
+
+            routes.MapRoute(
                 "Auth", // Route name
                 "Auth", // URL with parameters
                 new
@@ -63,8 +74,8 @@ namespace OAuth2.Example
             builder
                 .RegisterAssemblyTypes(
                     Assembly.GetExecutingAssembly(),
-                    Assembly.GetAssembly(typeof (OAuth2Client)),
-                    Assembly.GetAssembly(typeof (RestClient)))
+                    Assembly.GetAssembly(typeof(OAuth2Client)),
+                    Assembly.GetAssembly(typeof(RestClient)))
                 .AsImplementedInterfaces().AsSelf();
 
             builder.RegisterType<AuthorizationManager>()
