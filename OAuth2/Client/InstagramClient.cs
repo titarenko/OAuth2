@@ -69,12 +69,13 @@ namespace OAuth2.Client
             }
         }
 
-        // Instagram returns userinfo after access_token request
-        // Source document 
-        // http://instagram.com/developer/authentication/
+
         protected override void AfterGetAccessToken(IRestResponse response)
         {
             base.AfterGetAccessToken(response);
+            // Instagram returns userinfo on access_token request
+            // Source document 
+            // http://instagram.com/developer/authentication/
             responseContent = response.Content;
         }
 
@@ -92,7 +93,6 @@ namespace OAuth2.Client
                 Id = response["user"]["id"].Value<string>(),
                 FirstName = names.Count() > 0 ? names.First() : response["user"]["username"].Value<string>(),
                 LastName = names.Count() > 1 ? names.Last() : string.Empty,
-//                Email = response["email"].Value<string>(),
                 PhotoUri = response["user"]["profile_picture"].Value<string>()
             };
         }
