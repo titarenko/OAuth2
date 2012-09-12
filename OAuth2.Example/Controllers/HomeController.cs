@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Web.Caching;
 using System.Web.Mvc;
 using OAuth2.Client;
 using OAuth2.Example.Models;
+using OAuth2.Models;
 
 namespace OAuth2.Example.Controllers
 {
@@ -12,15 +14,15 @@ namespace OAuth2.Example.Controllers
     /// </summary>
     public class HomeController : Controller
     {
-        private readonly IClient client;
+        private readonly AuthorizationManager authorizationManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController"/> class.
         /// </summary>
         /// <param name="client">The client.</param>
-        public HomeController(LinkedinClient client)
+        public HomeController(AuthorizationManager authorizationManager)
         {
-            this.client = client;
+            this.authorizationManager = authorizationManager;
         }
 
         /// <summary>
@@ -28,15 +30,12 @@ namespace OAuth2.Example.Controllers
         /// </summary>
         public ActionResult Index()
         {
-            Session.Add("client", client);
-            var model = new List<LoginInfoModel>
-            {
-                new LoginInfoModel
+            Session.Add("authorizationManager", authorizationManager);
+            var model = authorizationManager.Clients.Select(client => new LoginInfoModel
                 {
                     ProviderName = client.ProviderName,
                     LoginUri = client.GetLoginLinkUri()
-                }
-            };
+                });
             return View(model);
         }
 
@@ -45,8 +44,22 @@ namespace OAuth2.Example.Controllers
         /// </summary>
         public ActionResult Auth()
         {
-            var client = (IClient) Session["client"];
-            return View(client.GetUserInfo(Request.QueryString));
+            var authorizationManager = (AuthorizationManager)Session["authorizationManager"];
+            foreach (var client in authorizationManager.Clients)
+            {
+                try
+                {
+                    UserInfo userInfo = client.GetUserInfo(Request.QueryString);
+                    return View(userInfo);
+                }
+                catch
+                {
+                    // this is bad - don't use such "common" catches - 
+                    // but at the moment we do not have means to distinguish
+                    // clients, so we just trying them one by one
+                }
+            }
+            return View();                    
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using System.Web.Routing;
 using Autofac;
+using Autofac.Core;
 using Autofac.Integration.Mvc;
 using OAuth2.Client;
 using OAuth2.Configuration;
@@ -66,11 +67,16 @@ namespace OAuth2.Example
                     Assembly.GetAssembly(typeof (RestClient)))
                 .AsImplementedInterfaces().AsSelf();
 
-            builder.Register(
-                context =>
-                context
-                    .Resolve<IConfigurationManager>()
-                    .GetConfigSection<OAuth2ConfigurationSection>("oauth2")["LinkedinClient"]);
+            builder.RegisterType<AuthorizationManager>()
+                .WithParameter(new NamedParameter("sectionName", "oauth2"));
+
+            //builder.Register(
+            //    context =>
+            //    context
+            //        .Resolve<AuthorizationManager>(new NamedParameter("sectionName","oauth2"))
+            //        //.Resolve<IConfigurationManager>()
+            //        //.GetConfigSection<OAuth2ConfigurationSection>("oauth2")["LinkedinClient"]
+            //);
 
             DependencyResolver.SetResolver(new AutofacDependencyResolver(builder.Build()));
         }

@@ -10,11 +10,11 @@ namespace OAuth2.Configuration
     {
         private const string ClientTypeNameKey = "clientType";
         private const string ClientIdKey = "clientId";
+        private const string EnabledKey = "enabled";
         private const string ClientSecretKey = "clientSecret";
         private const string ClientPublicKey = "clientPublic";
         private const string ScopeKey = "scope";
         private const string RedirectUriKey = "redirectUri";
-
 
         /// <summary>
         /// Name of client type.
@@ -32,6 +32,15 @@ namespace OAuth2.Configuration
         public string ClientId
         {
             get { return (string) this[ClientIdKey]; }
+        }
+
+        /// <summary>
+        /// Client state: enabled or disabled.
+        /// </summary>
+        [ConfigurationProperty(EnabledKey, DefaultValue = true)]
+        public bool Enabled
+        {
+            get { return (bool)this[EnabledKey]; }
         }
 
         /// <summary>
