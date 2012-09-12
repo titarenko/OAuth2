@@ -25,6 +25,15 @@ namespace OAuth2.Configuration
         }
 
         /// <summary>
+        /// Returns settings for service client with given index.
+        /// </summary>
+        public ClientConfiguration this[int index]
+        {
+            get { return (ClientConfiguration)BaseGet(index); }
+        }
+
+
+        /// <summary>
         /// When overridden in a derived class, creates a new <see cref="T:System.Configuration.ConfigurationElement"/>.
         /// </summary>
         /// <returns>

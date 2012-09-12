@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Web.Caching;
 using System.Web.Mvc;
 using OAuth2.Client;
 using OAuth2.Example.Models;
+using OAuth2.Models;
 
 namespace OAuth2.Example.Controllers
 {
@@ -12,15 +14,23 @@ namespace OAuth2.Example.Controllers
     /// </summary>
     public class HomeController : Controller
     {
-        private readonly IClient client;
+        private readonly AuthorizationManager authorizationManager;
+
+        private const string ProviderNameKey = "providerName";
+
+        private string ProviderName
+        {
+            get { return (string)Session[ProviderNameKey]; }
+            set { Session[ProviderNameKey] = value; }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController"/> class.
         /// </summary>
         /// <param name="client">The client.</param>
-        public HomeController(LinkedinClient client)
+        public HomeController(AuthorizationManager authorizationManager)
         {
-            this.client = client;
+            this.authorizationManager = authorizationManager;
         }
 
         /// <summary>
@@ -28,16 +38,21 @@ namespace OAuth2.Example.Controllers
         /// </summary>
         public ActionResult Index()
         {
-            Session.Add("client", client);
-            var model = new List<LoginInfoModel>
-            {
-                new LoginInfoModel
+            var model = authorizationManager.Clients.Select(client => new LoginInfoModel
                 {
-                    ProviderName = client.ProviderName,
-                    LoginUri = client.GetLoginLinkUri()
-                }
-            };
+                    ProviderName = client.ProviderName
+                });
             return View(model);
+        }
+
+        /// <summary>
+        /// Redirect to login url of selected provider.
+        /// </summary>        
+        public RedirectResult Login(string providerName)
+        {
+            this.ProviderName = providerName;
+            var client = authorizationManager.Clients.First(c => c.ProviderName.Equals(providerName, StringComparison.InvariantCultureIgnoreCase));
+            return new RedirectResult(client.GetLoginLinkUri());
         }
 
         /// <summary>
@@ -45,8 +60,9 @@ namespace OAuth2.Example.Controllers
         /// </summary>
         public ActionResult Auth()
         {
-            var client = (IClient) Session["client"];
-            return View(client.GetUserInfo(Request.QueryString));
+            var client = authorizationManager.Clients.First(c => c.ProviderName.Equals(ProviderName, StringComparison.InvariantCultureIgnoreCase));
+            UserInfo userInfo = client.GetUserInfo(Request.QueryString);
+            return View(userInfo);
         }
     }
 }
