@@ -62,6 +62,7 @@
     <Compile Include="Client\Impl\TwitterClientTests.cs" />
     <Compile Include="Client\Impl\VkClientTests.cs" />
     <Compile Include="Client\Impl\WindowsLiveClientTests.cs" />
+    <Compile Include="Client\Impl\YandexClientTests.cs" />
     <Compile Include="Client\OAuth2ClientTests.cs" />
     <Compile Include="Client\EndpointTests.cs" />
     <Compile Include="Client\OAuthClientTests.cs" />
