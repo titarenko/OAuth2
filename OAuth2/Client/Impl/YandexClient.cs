@@ -1,22 +1,23 @@
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
 
-namespace OAuth2.Client
+namespace OAuth2.Client.Impl
 {
     /// <summary>
-    /// Windows Live authentication client.
+    /// Yandex authentication client.
     /// </summary>
-    public class WindowsLiveClient : OAuth2Client
+    public class YandexClient : OAuth2Client
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="WindowsLiveClient"/> class.
+        /// Initializes a new instance of the <see cref="YandexClient"/> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        public WindowsLiveClient(IRequestFactory factory, IClientConfiguration configuration) 
+        public YandexClient(IRequestFactory factory, IClientConfiguration configuration)
             : base(factory, configuration)
         {
         }
@@ -30,8 +31,8 @@ namespace OAuth2.Client
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://login.live.com",
-                    Resource = "/oauth20_authorize.srf"
+                    BaseUri = "https://oauth.yandex.ru",
+                    Resource = "/authorize"
                 };
             }
         }
@@ -45,8 +46,8 @@ namespace OAuth2.Client
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://login.live.com",
-                    Resource = "/oauth20_token.srf"
+                    BaseUri = "https://oauth.yandex.ru",
+                    Resource = "/token"
                 };
             }
         }
@@ -60,8 +61,8 @@ namespace OAuth2.Client
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://apis.live.net/v5.0",
-                    Resource = "/me"
+                    BaseUri = "https://login.yandex.ru",
+                    Resource = "/info"
                 };
             }
         }
@@ -72,7 +73,8 @@ namespace OAuth2.Client
         /// </summary>
         protected override void BeforeGetUserInfo(IRestRequest request)
         {
-           request.AddParameter("access_token", AccessToken);
+            // Source document 
+            // http://api.yandex.com/oauth/doc/dg/yandex-oauth-dg.pdf
         }
 
         /// <summary>
@@ -82,19 +84,19 @@ namespace OAuth2.Client
         protected override UserInfo ParseUserInfo(string content)
         {
             var response = JObject.Parse(content);
+            var names = response["real_name"].Value<string>().Split(' ');
             return new UserInfo
             {
                 Id = response["id"].Value<string>(),
-                FirstName = response["first_name"].Value<string>(),
-                LastName = response["last_name"].Value<string>(),
-                Email = response["emails"]["preferred"].Value<string>(),
-                PhotoUri = string.Format("https://cid-{0}.users.storage.live.com/users/0x{0}/myprofile/expressionprofile/profilephoto:Win8Static,UserTileSmall,UserTileStatic/MeControlXXLUserTile?ck=2&ex=24", response["id"].Value<string>())
+                FirstName = names.Count() > 0 ? names.First() : response["display_name"].Value<string>(),
+                LastName = names.Count() > 1 ? names.Last() : string.Empty,
+                Email = response["default_email"].Value<string>(),
             };
         }
 
         public override string ProviderName
         {
-            get { return "WindowsLive"; }
+            get { return "Yandex"; }
         }
     }
 }

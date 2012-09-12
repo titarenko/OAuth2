@@ -1,25 +1,22 @@
-using System.Linq;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
 
-namespace OAuth2.Client
+namespace OAuth2.Client.Impl
 {
     /// <summary>
-    /// Instagram authentication client.
+    /// Windows Live authentication client.
     /// </summary>
-    public class InstagramClient : OAuth2Client
+    public class WindowsLiveClient : OAuth2Client
     {
-        private string responseContent;
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="InstagramClient"/> class.
+        /// Initializes a new instance of the <see cref="WindowsLiveClient"/> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        public InstagramClient(IRequestFactory factory, IClientConfiguration configuration) 
+        public WindowsLiveClient(IRequestFactory factory, IClientConfiguration configuration) 
             : base(factory, configuration)
         {
         }
@@ -33,8 +30,8 @@ namespace OAuth2.Client
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://api.instagram.com",
-                    Resource = "/oauth/authorize"
+                    BaseUri = "https://login.live.com",
+                    Resource = "/oauth20_authorize.srf"
                 };
             }
         }
@@ -48,8 +45,8 @@ namespace OAuth2.Client
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://api.instagram.com",
-                    Resource = "/oauth/access_token"
+                    BaseUri = "https://login.live.com",
+                    Resource = "/oauth20_token.srf"
                 };
             }
         }
@@ -63,22 +60,20 @@ namespace OAuth2.Client
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://api.instagram.com",
-                    Resource = "/oauth/access_token"
+                    BaseUri = "https://apis.live.net/v5.0",
+                    Resource = "/me"
                 };
             }
         }
 
-
-        protected override void AfterGetAccessToken(IRestResponse response)
+        /// <summary>
+        /// Called just before issuing request to third-party service when everything is ready.
+        /// Allows to add extra parameters to request or do any other needed preparations.
+        /// </summary>
+        protected override void BeforeGetUserInfo(IRestRequest request)
         {
-            base.AfterGetAccessToken(response);
-            // Instagram returns userinfo on access_token request
-            // Source document 
-            // http://instagram.com/developer/authentication/
-            responseContent = response.Content;
+           request.AddParameter("access_token", AccessToken);
         }
-
 
         /// <summary>
         /// Should return parsed <see cref="UserInfo"/> from content received from third-party service.
@@ -86,23 +81,20 @@ namespace OAuth2.Client
         /// <param name="content">The content which is received from third-party service.</param>
         protected override UserInfo ParseUserInfo(string content)
         {
-            var response = JObject.Parse(responseContent);
-            var names = response["user"]["full_name"].Value<string>().Split(' ');
+            var response = JObject.Parse(content);
             return new UserInfo
             {
-                Id = response["user"]["id"].Value<string>(),
-                FirstName = names.Count() > 0 ? names.First() : response["user"]["username"].Value<string>(),
-                LastName = names.Count() > 1 ? names.Last() : string.Empty,
-                PhotoUri = response["user"]["profile_picture"].Value<string>()
+                Id = response["id"].Value<string>(),
+                FirstName = response["first_name"].Value<string>(),
+                LastName = response["last_name"].Value<string>(),
+                Email = response["emails"]["preferred"].Value<string>(),
+                PhotoUri = string.Format("https://cid-{0}.users.storage.live.com/users/0x{0}/myprofile/expressionprofile/profilephoto:Win8Static,UserTileSmall,UserTileStatic/MeControlXXLUserTile?ck=2&ex=24", response["id"].Value<string>())
             };
         }
 
-        /// <summary>
-        /// Friendly name of provider (OAuth2 service).
-        /// </summary>
         public override string ProviderName
         {
-            get { return "Instagram"; }
+            get { return "WindowsLive"; }
         }
     }
 }

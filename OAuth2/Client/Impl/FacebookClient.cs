@@ -2,20 +2,21 @@ using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using RestSharp;
 
-namespace OAuth2.Client
+namespace OAuth2.Client.Impl
 {
     /// <summary>
-    /// Google authentication client.
+    /// Facebook authentication client.
     /// </summary>
-    public class GoogleClient : OAuth2Client
+    public class FacebookClient : OAuth2Client
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GoogleClient"/> class.
+        /// Initializes a new instance of the <see cref="FacebookClient"/> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        public GoogleClient(IRequestFactory factory, IClientConfiguration configuration)
+        public FacebookClient(IRequestFactory factory, IClientConfiguration configuration) 
             : base(factory, configuration)
         {
         }
@@ -29,8 +30,8 @@ namespace OAuth2.Client
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://accounts.google.com",
-                    Resource = "/o/oauth2/auth"
+                    BaseUri = "https://www.facebook.com",
+                    Resource = "/dialog/oauth"
                 };
             }
         }
@@ -44,8 +45,8 @@ namespace OAuth2.Client
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://accounts.google.com",
-                    Resource = "/o/oauth2/token"
+                    BaseUri = "https://graph.facebook.com",
+                    Resource = "/oauth/access_token"
                 };
             }
         }
@@ -59,18 +60,19 @@ namespace OAuth2.Client
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://www.googleapis.com",
-                    Resource = "/oauth2/v1/userinfo"
+                    BaseUri = "https://graph.facebook.com",
+                    Resource = "/me"
                 };
             }
         }
 
         /// <summary>
-        /// Friendly name of provider (OAuth2 service).
+        /// Called just before issuing request to third-party service when everything is ready.
+        /// Allows to add extra parameters to request or do any other needed preparations.
         /// </summary>
-        public override string ProviderName
+        protected override void BeforeGetUserInfo(IRestRequest request)
         {
-            get { return "Google"; }
+            request.AddParameter("fields", "id,first_name,last_name,email,picture");
         }
 
         /// <summary>
@@ -83,11 +85,19 @@ namespace OAuth2.Client
             return new UserInfo
             {
                 Id = response["id"].Value<string>(),
+                FirstName = response["first_name"].Value<string>(),
+                LastName = response["last_name"].Value<string>(),
                 Email = response["email"].Value<string>(),
-                FirstName = response["given_name"].Value<string>(),
-                LastName = response["family_name"].Value<string>(),
-                PhotoUri = response["picture"].SafeGet(x => x.Value<string>())
+                PhotoUri = response["picture"]["data"]["url"].Value<string>()
             };
+        }
+
+        /// <summary>
+        /// Friendly name of provider (OAuth2 service).
+        /// </summary>
+        public override string ProviderName
+        {
+            get { return "Facebook"; }
         }
     }
 }

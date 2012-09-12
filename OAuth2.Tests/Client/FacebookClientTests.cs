@@ -5,6 +5,7 @@ using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
 using OAuth2.Client;
+using OAuth2.Client.Impl;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;

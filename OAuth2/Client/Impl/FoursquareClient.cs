@@ -4,19 +4,19 @@ using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
 
-namespace OAuth2.Client
+namespace OAuth2.Client.Impl
 {
     /// <summary>
-    /// Facebook authentication client.
+    /// Foursquare authentication client.
     /// </summary>
-    public class FacebookClient : OAuth2Client
+    public class FoursquareClient : OAuth2Client
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FacebookClient"/> class.
+        /// Initializes a new instance of the <see cref="FoursquareClient"/> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        public FacebookClient(IRequestFactory factory, IClientConfiguration configuration) 
+        public FoursquareClient(IRequestFactory factory, IClientConfiguration configuration) 
             : base(factory, configuration)
         {
         }
@@ -30,8 +30,8 @@ namespace OAuth2.Client
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://www.facebook.com",
-                    Resource = "/dialog/oauth"
+                    BaseUri = "https://foursquare.com",
+                    Resource = "/oauth2/authorize"
                 };
             }
         }
@@ -45,8 +45,8 @@ namespace OAuth2.Client
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://graph.facebook.com",
-                    Resource = "/oauth/access_token"
+                    BaseUri = "https://foursquare.com",
+                    Resource = "/oauth2/access_token"
                 };
             }
         }
@@ -60,8 +60,8 @@ namespace OAuth2.Client
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://graph.facebook.com",
-                    Resource = "/me"
+                    BaseUri = "https://api.foursquare.com",
+                    Resource = "/v2/users/self"
                 };
             }
         }
@@ -72,7 +72,8 @@ namespace OAuth2.Client
         /// </summary>
         protected override void BeforeGetUserInfo(IRestRequest request)
         {
-            request.AddParameter("fields", "id,first_name,last_name,email,picture");
+            // Source document 
+            // https://developer.foursquare.com/overview/auth.html
         }
 
         /// <summary>
@@ -84,20 +85,17 @@ namespace OAuth2.Client
             var response = JObject.Parse(content);
             return new UserInfo
             {
-                Id = response["id"].Value<string>(),
-                FirstName = response["first_name"].Value<string>(),
-                LastName = response["last_name"].Value<string>(),
-                Email = response["email"].Value<string>(),
-                PhotoUri = response["picture"]["data"]["url"].Value<string>()
+                Id = response["response"]["user"]["id"].Value<string>(),
+                FirstName = response["response"]["user"]["firstName"].Value<string>(),
+                LastName = response["response"]["user"]["lastName"].Value<string>(),
+                Email = response["response"]["user"]["contact"]["email"].Value<string>(),
+                PhotoUri = response["response"]["user"]["photo"].Value<string>()
             };
         }
 
-        /// <summary>
-        /// Friendly name of provider (OAuth2 service).
-        /// </summary>
         public override string ProviderName
         {
-            get { return "Facebook"; }
+            get { return "Foursquare"; }
         }
     }
 }

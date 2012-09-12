@@ -1,12 +1,10 @@
-﻿using OAuth2.Configuration;
-using OAuth2.Infrastructure;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
+using OAuth2.Client;
+using OAuth2.Configuration;
+using OAuth2.Infrastructure;
 
-namespace OAuth2.Client
+namespace OAuth2
 {
     public class AuthorizationManager
     {

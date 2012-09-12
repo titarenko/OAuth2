@@ -2,21 +2,20 @@ using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-using RestSharp;
 
-namespace OAuth2.Client
+namespace OAuth2.Client.Impl
 {
     /// <summary>
-    /// Foursquare authentication client.
+    /// Google authentication client.
     /// </summary>
-    public class FoursquareClient : OAuth2Client
+    public class GoogleClient : OAuth2Client
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FoursquareClient"/> class.
+        /// Initializes a new instance of the <see cref="GoogleClient"/> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        public FoursquareClient(IRequestFactory factory, IClientConfiguration configuration) 
+        public GoogleClient(IRequestFactory factory, IClientConfiguration configuration)
             : base(factory, configuration)
         {
         }
@@ -30,8 +29,8 @@ namespace OAuth2.Client
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://foursquare.com",
-                    Resource = "/oauth2/authorize"
+                    BaseUri = "https://accounts.google.com",
+                    Resource = "/o/oauth2/auth"
                 };
             }
         }
@@ -45,8 +44,8 @@ namespace OAuth2.Client
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://foursquare.com",
-                    Resource = "/oauth2/access_token"
+                    BaseUri = "https://accounts.google.com",
+                    Resource = "/o/oauth2/token"
                 };
             }
         }
@@ -60,20 +59,18 @@ namespace OAuth2.Client
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://api.foursquare.com",
-                    Resource = "/v2/users/self"
+                    BaseUri = "https://www.googleapis.com",
+                    Resource = "/oauth2/v1/userinfo"
                 };
             }
         }
 
         /// <summary>
-        /// Called just before issuing request to third-party service when everything is ready.
-        /// Allows to add extra parameters to request or do any other needed preparations.
+        /// Friendly name of provider (OAuth2 service).
         /// </summary>
-        protected override void BeforeGetUserInfo(IRestRequest request)
+        public override string ProviderName
         {
-            // Source document 
-            // https://developer.foursquare.com/overview/auth.html
+            get { return "Google"; }
         }
 
         /// <summary>
@@ -85,17 +82,12 @@ namespace OAuth2.Client
             var response = JObject.Parse(content);
             return new UserInfo
             {
-                Id = response["response"]["user"]["id"].Value<string>(),
-                FirstName = response["response"]["user"]["firstName"].Value<string>(),
-                LastName = response["response"]["user"]["lastName"].Value<string>(),
-                Email = response["response"]["user"]["contact"]["email"].Value<string>(),
-                PhotoUri = response["response"]["user"]["photo"].Value<string>()
+                Id = response["id"].Value<string>(),
+                Email = response["email"].Value<string>(),
+                FirstName = response["given_name"].Value<string>(),
+                LastName = response["family_name"].Value<string>(),
+                PhotoUri = response["picture"].SafeGet(x => x.Value<string>())
             };
-        }
-
-        public override string ProviderName
-        {
-            get { return "Foursquare"; }
         }
     }
 }

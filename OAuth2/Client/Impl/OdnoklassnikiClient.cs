@@ -1,12 +1,11 @@
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
-using System;
-using System.Linq;
 
-namespace OAuth2.Client
+namespace OAuth2.Client.Impl
 {
     /// <summary>
     /// Odnoklassniki authentication client.
