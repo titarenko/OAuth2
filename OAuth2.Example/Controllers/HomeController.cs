@@ -16,6 +16,14 @@ namespace OAuth2.Example.Controllers
     {
         private readonly AuthorizationManager authorizationManager;
 
+        private const string ProviderNameKey = "providerName";
+
+        private string ProviderName
+        {
+            get { return (string)Session[ProviderNameKey]; }
+            set { Session[ProviderNameKey] = value; }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController"/> class.
         /// </summary>
@@ -29,13 +37,23 @@ namespace OAuth2.Example.Controllers
         /// Renders home page with login link.
         /// </summary>
         public ActionResult Index()
-        {            
+        {
             var model = authorizationManager.Clients.Select(client => new LoginInfoModel
                 {
-                    ProviderName = client.ProviderName,
-                    LoginUri = client.GetLoginLinkUri()
+                    ProviderName = client.ProviderName
                 });
             return View(model);
+        }
+
+        /// <summary>
+        /// Redirect to login url of selected provider.
+        /// </summary>
+        [HttpPost]
+        public RedirectResult Index(string providerName)
+        {
+            this.ProviderName = providerName;
+            var client = authorizationManager.Clients.First(c => c.ProviderName == providerName);
+            return new RedirectResult(client.GetLoginLinkUri());
         }
 
         /// <summary>
@@ -43,21 +61,9 @@ namespace OAuth2.Example.Controllers
         /// </summary>
         public ActionResult Auth()
         {
-            foreach (var client in authorizationManager.Clients)
-            {
-                try
-                {
-                    UserInfo userInfo = client.GetUserInfo(Request.QueryString);
-                    return View(userInfo);
-                }
-                catch
-                {
-                    // this is bad - don't use such "common" catches - 
-                    // but at the moment we do not have means to distinguish
-                    // clients, so we just trying them one by one
-                }
-            }
-            return View();                    
+            var client = authorizationManager.Clients.First(c => c.ProviderName == this.ProviderName);
+            UserInfo userInfo = client.GetUserInfo(Request.QueryString);
+            return View(userInfo);
         }
     }
 }

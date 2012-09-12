@@ -8,6 +8,5 @@ namespace OAuth2.Example.Models
     public class LoginInfoModel
     {
         public string ProviderName { get; set; }
-        public string LoginUri { get; set; }
     }
 }
