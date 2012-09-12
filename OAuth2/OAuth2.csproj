@@ -60,6 +60,8 @@
     <Compile Include="Client\TwitterClient.cs" />
     <Compile Include="Client\VkClient.cs" />
     <Compile Include="Client\YandexClient.cs" />
+    <Compile Include="AuthorizationManager.cs" />
+    <Compile Include="InstagramClient.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Configuration\IConfigurationManager.cs" />
     <Compile Include="Configuration\IOAuth2Configuration.cs" />
