@@ -69,10 +69,7 @@ namespace OAuth2.Client.Impl
                 };
             }
         }
-
-
-
-
+        
         /// <summary>
         /// Called just before issuing request to third-party service when everything is ready.
         /// Allows to add extra parameters to request or do any other needed preparations.
@@ -121,6 +118,9 @@ namespace OAuth2.Client.Impl
             };
         }
 
+        /// <summary>
+        /// Friendly name of provider (OAuth2 service).
+        /// </summary>
         public override string ProviderName
         {
             get { return "Odnoklassniki"; }
