@@ -13,7 +13,7 @@ namespace OAuth2.Configuration
         /// <summary>
         /// Client state: enabled or disabled.
         /// </summary>
-        bool Enabled { get; }
+        bool IsEnabled { get; }
 
         /// <summary>
         /// Client ID (ID of your application).

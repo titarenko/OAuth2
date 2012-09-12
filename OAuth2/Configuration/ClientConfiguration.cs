@@ -38,7 +38,7 @@ namespace OAuth2.Configuration
         /// Client state: enabled or disabled.
         /// </summary>
         [ConfigurationProperty(EnabledKey, DefaultValue = true)]
-        public bool Enabled
+        public bool IsEnabled
         {
             get { return (bool)this[EnabledKey]; }
         }

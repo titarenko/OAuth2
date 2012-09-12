@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Configuration;
 
 namespace OAuth2.Configuration
@@ -7,6 +8,17 @@ namespace OAuth2.Configuration
     /// </summary>
     public class ServiceCollection : ConfigurationElementCollection
     {
+        /// <summary>
+        /// Returns enumerable collection of client configurations.
+        /// </summary>
+        public IEnumerable<ClientConfiguration> AsEnumerable()
+        {
+            for (var i = 0; i < Count; i++)
+            {
+                yield return this[i];
+            }
+        }
+
         /// <summary>
         /// Gets the type of the <see cref="T:System.Configuration.ConfigurationElementCollection"/>.
         /// </summary>

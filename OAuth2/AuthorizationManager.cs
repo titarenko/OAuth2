@@ -1,43 +1,54 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using OAuth2.Client;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
+using System.Linq;
 
 namespace OAuth2
 {
     public class AuthorizationManager
     {
-        private readonly string sectonName;
-        private IRequestFactory requestFactory;
+        private readonly IRequestFactory requestFactory;
+        private readonly OAuth2ConfigurationSection configurationSection;
 
-        public AuthorizationManager(IRequestFactory requestFactory, string sectionName)
+        private IList<IClient> clients;
+
+        public AuthorizationManager() : 
+            this(new ConfigurationManager(), "oauth2", new RequestFactory())
+        {
+        }
+
+        public AuthorizationManager(
+            IConfigurationManager configurationManager, 
+            string configurationSectionName, 
+            IRequestFactory requestFactory)
         {
             this.requestFactory = requestFactory;
-            this.sectonName = sectionName;
+            configurationSection = configurationManager
+                .GetConfigSection<OAuth2ConfigurationSection>(configurationSectionName);
         }
 
         public virtual IEnumerable<IClient> Clients
         {
             get
             {
-                IList<IClient> result = new List<IClient>();
-                var configSection = System.Configuration.ConfigurationManager.GetSection(sectonName) as OAuth2ConfigurationSection;
-
-                for (int i = 0; i < configSection.Services.Count; i++)
+                if (clients == null)
                 {
-                    var item = configSection.Services[i];
-                    if (item.Enabled)
-                    {
-                        Type type = Type.GetType(string.Format("{0}.{1}", typeof(OAuth2Client).Namespace, item.ClientTypeName));
+                    var types = Assembly.GetExecutingAssembly().GetTypes()
+                        .Where(typeof (IClient).IsAssignableFrom).ToList();
+                    Func<ClientConfiguration, Type> getType = 
+                        configuration => types.First(x => x.Name == configuration.ClientTypeName);
 
-                        var ctor = type.GetConstructor(new Type[] { typeof(IRequestFactory), typeof(IClientConfiguration) });
-                        IClient client = ctor.Invoke(new object[] { requestFactory, item }) as IClient;
-                        if (client != null)
-                            result.Add(client);
-                    }
+                    clients = configurationSection.Services.AsEnumerable()
+                        .Where(configuration => configuration.IsEnabled)
+                        .Select(configuration => (IClient) Activator.CreateInstance(
+                            getType(configuration), requestFactory, configuration))
+                        .ToList();
                 }
-                return result;
+
+                return clients;
             }
         }
     }
