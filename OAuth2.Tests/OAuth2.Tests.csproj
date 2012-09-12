@@ -58,6 +58,7 @@
     <Compile Include="Client\Impl\FacebookClientTests.cs" />
     <Compile Include="Client\Impl\FoursquareClientTests.cs" />
     <Compile Include="Client\Impl\GoogleClientTests.cs" />
+    <Compile Include="Client\Impl\InstagramClientTests.cs" />
     <Compile Include="Client\Impl\LinkedInClientTests.cs" />
     <Compile Include="Client\Impl\TwitterClientTests.cs" />
     <Compile Include="Client\Impl\VkClientTests.cs" />

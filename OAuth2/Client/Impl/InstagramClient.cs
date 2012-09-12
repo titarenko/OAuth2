@@ -68,8 +68,7 @@ namespace OAuth2.Client.Impl
                 };
             }
         }
-
-
+        
         protected override void AfterGetAccessToken(IRestResponse response)
         {
             base.AfterGetAccessToken(response);
@@ -78,8 +77,7 @@ namespace OAuth2.Client.Impl
             // http://instagram.com/developer/authentication/
             responseContent = response.Content;
         }
-
-
+        
         /// <summary>
         /// Should return parsed <see cref="UserInfo"/> from content received from third-party service.
         /// </summary>
