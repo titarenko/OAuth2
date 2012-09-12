@@ -70,14 +70,6 @@ namespace OAuth2.Example
             builder.RegisterType<AuthorizationManager>()
                 .WithParameter(new NamedParameter("sectionName", "oauth2"));
 
-            //builder.Register(
-            //    context =>
-            //    context
-            //        .Resolve<AuthorizationManager>(new NamedParameter("sectionName","oauth2"))
-            //        //.Resolve<IConfigurationManager>()
-            //        //.GetConfigSection<OAuth2ConfigurationSection>("oauth2")["LinkedinClient"]
-            //);
-
             DependencyResolver.SetResolver(new AutofacDependencyResolver(builder.Build()));
         }
     }
