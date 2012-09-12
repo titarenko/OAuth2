@@ -60,6 +60,7 @@
     <Compile Include="Client\Impl\GoogleClientTests.cs" />
     <Compile Include="Client\Impl\InstagramClientTests.cs" />
     <Compile Include="Client\Impl\LinkedInClientTests.cs" />
+    <Compile Include="Client\Impl\MailRuClientTests.cs" />
     <Compile Include="Client\Impl\OdnoklassnikiClientTests.cs" />
     <Compile Include="Client\Impl\TwitterClientTests.cs" />
     <Compile Include="Client\Impl\VkClientTests.cs" />

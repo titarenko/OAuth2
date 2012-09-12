@@ -114,6 +114,9 @@ namespace OAuth2.Client.Impl
             };
         }
 
+        /// <summary>
+        /// Friendly name of provider (OAuth2 service).
+        /// </summary>
         public override string ProviderName
         {
             get { return "MailRu"; }
