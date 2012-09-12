@@ -51,7 +51,7 @@ namespace OAuth2.Example.Controllers
         public RedirectResult Login(string providerName)
         {
             this.ProviderName = providerName;
-            var client = authorizationManager.Clients.First(c => c.ProviderName == providerName);
+            var client = authorizationManager.Clients.First(c => c.ProviderName.Equals(providerName, StringComparison.InvariantCultureIgnoreCase));
             return new RedirectResult(client.GetLoginLinkUri());
         }
 
@@ -60,7 +60,7 @@ namespace OAuth2.Example.Controllers
         /// </summary>
         public ActionResult Auth()
         {
-            var client = authorizationManager.Clients.First(c => c.ProviderName == this.ProviderName);
+            var client = authorizationManager.Clients.First(c => c.ProviderName.Equals(ProviderName, StringComparison.InvariantCultureIgnoreCase));
             UserInfo userInfo = client.GetUserInfo(Request.QueryString);
             return View(userInfo);
         }
