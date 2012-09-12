@@ -51,7 +51,7 @@
     <Compile Include="Client\Impl\FoursquareClient.cs" />
     <Compile Include="Client\Impl\GoogleClient.cs" />
     <Compile Include="Client\Impl\InstagramClient.cs" />
-    <Compile Include="Client\Impl\LinkedinClient.cs" />
+    <Compile Include="Client\Impl\LinkedInClient.cs" />
     <Compile Include="Client\Impl\MailRuClient.cs" />
     <Compile Include="Client\Impl\OdnoklassnikiClient.cs" />
     <Compile Include="Client\Impl\TwitterClient.cs" />

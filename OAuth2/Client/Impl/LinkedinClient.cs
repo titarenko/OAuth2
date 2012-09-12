@@ -7,14 +7,14 @@ namespace OAuth2.Client.Impl
     /// <summary>
     /// LinkedIn authentication client.
     /// </summary>
-    public class LinkedinClient : OAuthClient
+    public class LinkedInClient : OAuthClient
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LinkedinClient"/> class.
+        /// Initializes a new instance of the <see cref="LinkedInClient"/> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        public LinkedinClient(IRequestFactory factory, IClientConfiguration configuration) 
+        public LinkedInClient(IRequestFactory factory, IClientConfiguration configuration) 
             : base(factory, configuration)
         {
         }
