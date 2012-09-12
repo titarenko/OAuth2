@@ -13,13 +13,26 @@ namespace OAuth2
         private readonly IRequestFactory requestFactory;
         private readonly OAuth2ConfigurationSection configurationSection;
 
-        private IList<IClient> clients;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthorizationManager" /> class.
+        /// </summary>
+        /// <remarks>
+        /// Since this is boundary class, we decided to create 
+        /// parameterless constructor where default implementations of dependencies are used.
+        /// So, despite we encourage you to employ IoC pattern, 
+        /// you are still able to just create instance of manager manually and then use it in your project.
+        /// </remarks>
         public AuthorizationManager() : 
             this(new ConfigurationManager(), "oauth2", new RequestFactory())
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthorizationManager" /> class.
+        /// </summary>
+        /// <param name="configurationManager">The configuration manager.</param>
+        /// <param name="configurationSectionName">Name of the configuration section.</param>
+        /// <param name="requestFactory">The request factory.</param>
         public AuthorizationManager(
             IConfigurationManager configurationManager, 
             string configurationSectionName, 
@@ -30,25 +43,23 @@ namespace OAuth2
                 .GetConfigSection<OAuth2ConfigurationSection>(configurationSectionName);
         }
 
+        /// <summary>
+        /// Returns collection of clients which were configured 
+        /// using application configuration file and are enabled.
+        /// </summary>
         public virtual IEnumerable<IClient> Clients
         {
             get
             {
-                if (clients == null)
-                {
-                    var types = Assembly.GetExecutingAssembly().GetTypes()
-                        .Where(typeof (IClient).IsAssignableFrom).ToList();
-                    Func<ClientConfiguration, Type> getType = 
-                        configuration => types.First(x => x.Name == configuration.ClientTypeName);
+                var types = Assembly.GetExecutingAssembly().GetTypes()
+                    .Where(typeof (IClient).IsAssignableFrom).ToList();
+                Func<ClientConfiguration, Type> getType = 
+                    configuration => types.First(x => x.Name == configuration.ClientTypeName);
 
-                    clients = configurationSection.Services.AsEnumerable()
-                        .Where(configuration => configuration.IsEnabled)
-                        .Select(configuration => (IClient) Activator.CreateInstance(
-                            getType(configuration), requestFactory, configuration))
-                        .ToList();
-                }
-
-                return clients;
+                return configurationSection.Services.AsEnumerable()
+                    .Where(configuration => configuration.IsEnabled)
+                    .Select(configuration => (IClient) Activator.CreateInstance(
+                        getType(configuration), requestFactory, configuration));
             }
         }
     }
