@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
 using OAuth2.Client;
@@ -8,7 +8,7 @@ using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
 
-namespace OAuth2.Tests.Client
+namespace OAuth2.Tests.Client.Impl
 {
     public class TwitterClientTests
     {

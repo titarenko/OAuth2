@@ -55,13 +55,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Client\Impl\FacebookClientTests.cs" />
+    <Compile Include="Client\Impl\GoogleClientTests.cs" />
+    <Compile Include="Client\Impl\LinkedInClientTests.cs" />
+    <Compile Include="Client\Impl\TwitterClientTests.cs" />
+    <Compile Include="Client\Impl\VkClientTests.cs" />
     <Compile Include="Client\OAuth2ClientTests.cs" />
     <Compile Include="Client\EndpointTests.cs" />
-    <Compile Include="Client\FacebookClientTests.cs" />
-    <Compile Include="Client\GoogleClientTests.cs" />
     <Compile Include="Client\OAuthClientTests.cs" />
-    <Compile Include="Client\TwitterClientTests.cs" />
-    <Compile Include="Client\VkClientTests.cs" />
     <Compile Include="Configuration\OAuth2ConfigurationSectionTests.cs" />
     <Compile Include="Infrastructure\ConfigurationManagerTests.cs" />
     <Compile Include="Infrastructure\EnumerableExtensionsTests.cs" />
