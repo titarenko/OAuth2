@@ -116,7 +116,7 @@ namespace OAuth2.Client
 
         public override string ProviderName
         {
-            get { return "Mail.ru"; }
+            get { return "MailRu"; }
         }
     }
 }
