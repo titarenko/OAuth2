@@ -29,8 +29,7 @@ namespace OAuth2.Example.Controllers
         /// Renders home page with login link.
         /// </summary>
         public ActionResult Index()
-        {
-            Session.Add("authorizationManager", authorizationManager);
+        {            
             var model = authorizationManager.Clients.Select(client => new LoginInfoModel
                 {
                     ProviderName = client.ProviderName,
@@ -44,7 +43,6 @@ namespace OAuth2.Example.Controllers
         /// </summary>
         public ActionResult Auth()
         {
-            var authorizationManager = (AuthorizationManager)Session["authorizationManager"];
             foreach (var client in authorizationManager.Clients)
             {
                 try
