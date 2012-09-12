@@ -1,23 +1,25 @@
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
-using System.Linq;
 
 namespace OAuth2.Client
 {
     /// <summary>
-    /// Yandex authentication client.
+    /// Instagram authentication client.
     /// </summary>
-    public class YandexClient : OAuth2Client
+    public class InstagramClient : OAuth2Client
     {
+        private string responseContent;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="YandexClient"/> class.
+        /// Initializes a new instance of the <see cref="InstagramClient"/> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        public YandexClient(IRequestFactory factory, IClientConfiguration configuration)
+        public InstagramClient(IRequestFactory factory, IClientConfiguration configuration) 
             : base(factory, configuration)
         {
         }
@@ -31,8 +33,8 @@ namespace OAuth2.Client
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://oauth.yandex.ru",
-                    Resource = "/authorize"
+                    BaseUri = "https://api.instagram.com",
+                    Resource = "/oauth/authorize"
                 };
             }
         }
@@ -46,8 +48,8 @@ namespace OAuth2.Client
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://oauth.yandex.ru",
-                    Resource = "/token"
+                    BaseUri = "https://api.instagram.com",
+                    Resource = "/oauth/access_token"
                 };
             }
         }
@@ -61,21 +63,22 @@ namespace OAuth2.Client
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://login.yandex.ru",
-                    Resource = "/info"
+                    BaseUri = "https://api.instagram.com",
+                    Resource = "/oauth/access_token"
                 };
             }
         }
 
-        /// <summary>
-        /// Called just before issuing request to third-party service when everything is ready.
-        /// Allows to add extra parameters to request or do any other needed preparations.
-        /// </summary>
-        protected override void BeforeGetUserInfo(IRestRequest request)
+
+        protected override void AfterGetAccessToken(IRestResponse response)
         {
+            base.AfterGetAccessToken(response);
+            // Instagram returns userinfo on access_token request
             // Source document 
-            // http://api.yandex.com/oauth/doc/dg/yandex-oauth-dg.pdf
+            // http://instagram.com/developer/authentication/
+            responseContent = response.Content;
         }
+
 
         /// <summary>
         /// Should return parsed <see cref="UserInfo"/> from content received from third-party service.
@@ -83,20 +86,23 @@ namespace OAuth2.Client
         /// <param name="content">The content which is received from third-party service.</param>
         protected override UserInfo ParseUserInfo(string content)
         {
-            var response = JObject.Parse(content);
-            var names = response["real_name"].Value<string>().Split(' ');
+            var response = JObject.Parse(responseContent);
+            var names = response["user"]["full_name"].Value<string>().Split(' ');
             return new UserInfo
             {
-                Id = response["id"].Value<string>(),
-                FirstName = names.Count() > 0 ? names.First() : response["display_name"].Value<string>(),
+                Id = response["user"]["id"].Value<string>(),
+                FirstName = names.Count() > 0 ? names.First() : response["user"]["username"].Value<string>(),
                 LastName = names.Count() > 1 ? names.Last() : string.Empty,
-                Email = response["default_email"].Value<string>(),
+                PhotoUri = response["user"]["profile_picture"].Value<string>()
             };
         }
 
+        /// <summary>
+        /// Friendly name of provider (OAuth2 service).
+        /// </summary>
         public override string ProviderName
         {
-            get { return "Yandex"; }
+            get { return "Instagram"; }
         }
     }
 }

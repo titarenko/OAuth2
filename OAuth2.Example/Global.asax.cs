@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using System.Web.Routing;
 using Autofac;
+using Autofac.Core;
 using Autofac.Integration.Mvc;
 using OAuth2.Client;
 using OAuth2.Configuration;
@@ -30,6 +31,17 @@ namespace OAuth2.Example
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
             routes.IgnoreRoute("{*favicon}", new { favicon = @"(.*/)?favicon.ico(/.*)?" });
+
+            routes.MapRoute(
+                "Login", // Route name
+                "login/{providerName}", // URL with parameters
+                new
+                {
+                    controller = "Home",
+                    action = "Login",
+                    id = UrlParameter.Optional
+                });
+
 
             routes.MapRoute(
                 "Auth", // Route name
@@ -62,15 +74,12 @@ namespace OAuth2.Example
             builder
                 .RegisterAssemblyTypes(
                     Assembly.GetExecutingAssembly(),
-                    Assembly.GetAssembly(typeof (OAuth2Client)),
-                    Assembly.GetAssembly(typeof (RestClient)))
+                    Assembly.GetAssembly(typeof(OAuth2Client)),
+                    Assembly.GetAssembly(typeof(RestClient)))
                 .AsImplementedInterfaces().AsSelf();
 
-            builder.Register(
-                context =>
-                context
-                    .Resolve<IConfigurationManager>()
-                    .GetConfigSection<OAuth2ConfigurationSection>("oauth2")["LinkedinClient"]);
+            builder.RegisterType<AuthorizationManager>()
+                .WithParameter(new NamedParameter("sectionName", "oauth2"));
 
             DependencyResolver.SetResolver(new AutofacDependencyResolver(builder.Build()));
         }

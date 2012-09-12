@@ -18,7 +18,7 @@ namespace OAuth2.Configuration
         }
 
         [ConfigurationProperty(CollectionName), ConfigurationCollection(typeof(ServiceCollection))]
-        private ServiceCollection Services
+        public ServiceCollection Services
         {
             get { return (ServiceCollection) base[CollectionName]; }
         }

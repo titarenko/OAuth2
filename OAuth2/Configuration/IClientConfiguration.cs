@@ -11,6 +11,11 @@ namespace OAuth2.Configuration
         string ClientTypeName { get; }
 
         /// <summary>
+        /// Client state: enabled or disabled.
+        /// </summary>
+        bool Enabled { get; }
+
+        /// <summary>
         /// Client ID (ID of your application).
         /// </summary>
         string ClientId { get; }
