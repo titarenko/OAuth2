@@ -1,8 +1,6 @@
-﻿@using OAuth2.Example
-@model IEnumerable<OAuth2.Example.Models.LoginInfoModel>
+﻿@model IEnumerable<OAuth2.Example.Models.LoginInfoModel>
 
 @foreach (var loginInfo in Model)
 {    
-    <p>@Html.ActionLink(string.Format("Log In ({0})", loginInfo.ProviderName), "login", "home", new { providerName = @loginInfo.ProviderName.ToLower()}, null)</p>    
+    <p>@Html.ActionLink(string.Format("Log In ({0})", loginInfo.ProviderName), "Login", "Home", new { providerName = @loginInfo.ProviderName }, null)</p>
 }
-

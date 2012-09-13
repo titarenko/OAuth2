@@ -1,11 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Web.Caching;
+﻿using System.Linq;
 using System.Web.Mvc;
 using OAuth2.Client;
 using OAuth2.Example.Models;
-using OAuth2.Models;
 
 namespace OAuth2.Example.Controllers
 {
@@ -27,7 +23,7 @@ namespace OAuth2.Example.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController"/> class.
         /// </summary>
-        /// <param name="client">The client.</param>
+        /// <param name="authorizationManager">The authorization manager.</param>
         public HomeController(AuthorizationManager authorizationManager)
         {
             this.authorizationManager = authorizationManager;
@@ -50,9 +46,8 @@ namespace OAuth2.Example.Controllers
         /// </summary>        
         public RedirectResult Login(string providerName)
         {
-            this.ProviderName = providerName;
-            var client = authorizationManager.Clients.First(c => c.ProviderName.Equals(providerName, StringComparison.InvariantCultureIgnoreCase));
-            return new RedirectResult(client.GetLoginLinkUri());
+            ProviderName = providerName;
+            return new RedirectResult(GetClient().GetLoginLinkUri());
         }
 
         /// <summary>
@@ -60,9 +55,12 @@ namespace OAuth2.Example.Controllers
         /// </summary>
         public ActionResult Auth()
         {
-            var client = authorizationManager.Clients.First(c => c.ProviderName.Equals(ProviderName, StringComparison.InvariantCultureIgnoreCase));
-            UserInfo userInfo = client.GetUserInfo(Request.QueryString);
-            return View(userInfo);
+            return View(GetClient().GetUserInfo(Request.QueryString));
+        }
+
+        private IClient GetClient()
+        {
+            return authorizationManager.Clients.First(c => c.ProviderName == ProviderName);
         }
     }
 }
