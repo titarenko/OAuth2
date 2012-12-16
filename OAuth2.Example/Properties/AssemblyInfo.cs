@@ -2,5 +2,5 @@
 
 [assembly: AssemblyTitle("OAuth2.Example")]
 
-[assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyFileVersion("1.0.*")]
+[assembly: AssemblyVersion("0.8.*")]
+[assembly: AssemblyFileVersion("0.8.*")]

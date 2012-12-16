@@ -1,115 +1,102 @@
 # OAuth2 #
 
-OAuth2 is a library intended for user authentication using third-party services such as Google API, Facebook API and so on.
+OAuth2 is a library for doing authentication with help of third-party services such as Google API, Facebook API and so on using OAuth/OAuth2 protocol.
 
 ## Standard flow ##
 
 Following are the steps of standard usage flow:
 
-- client instance generates URI for login link (`GetAccessCodeRequestUri` method)
-- hosting app renders page with login link using aforementioned URI
-- user clicks login link - this leads to redirect to third-party service site
-- user does authentication and allows app access his/her basic information
-- third-party service redirects user to hosting app
-- hosting app reads user information using `GetUserInfo` method on callback
+- generate login URL and render page with it
+- define callback which will be called by third-party service on successful authentication
+- retrieve user info on callback from third-party service
 
 ## Usage example ##
 
-Everything you need is:
+- Install OAuth2 package via NuGet
 
-- Install OAuth2 package via NuGet (`Install-Package OAuth2`)
-- Obtain and render link (once user clicks it, they will be redirected to third-party authentication service)
-- Receive callback from third-party service and read information about user (name, email, photo URI and unique identifier within third-party service)
+`Install-Package OAuth2`
 
-Controller:
+- Configure library
 
-	public class HomeController : Controller
+	<configSections>
+		<section name="oauth2" type="OAuth2.Configuration.OAuth2ConfigurationSection, OAuth2, Version=0.8.*, Culture=neutral"/>
+	</configSections>
+
+	<oauth2>		
+		<services>
+			<add clientType="GoogleClient"
+				enabled="true"
+				clientId="000000000000.apps.googleusercontent.com"
+				clientSecret="AAAAAAAAAAAAAAAAAAAAAAAA"
+				scope="https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"
+				redirectUri="~/auth" />
+			<add clientType="WindowsLiveClient"
+				enabled="false"
+				clientId="AAAAAAAAAAAAAAA"
+				clientSecret="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+				scope="wl.basic wl.emails"
+				redirectUri="oauth2.example.local/auth" />
+		</services>
+	</oauth2>
+
+- Instantiate AuthorizationRoot (use IoC container or do manual "newing" using default ctor)
+
+	public RootController(AuthorizationRoot authorizationRoot)
 	{
-	    private readonly IClient client;
-	
-	    /// <summary>
-	    /// Initializes a new instance of the <see cref="HomeController"/> class.
-	    /// </summary>
-	    /// <param name="client">The client.</param>
-	    public HomeController(IClient client)
-	    {
-	        this.client = client;
-	    }
-	
-	    /// <summary>
-	    /// Renders home page with login link.
-	    /// </summary>
-	    public ActionResult Index()
-	    {
-	        return View(client.GetAccessCodeRequestUri());
-	    }
-	
-	    /// <summary>
-	    /// Renders information received from authentication service.
-	    /// </summary>
-	    public ActionResult Auth(string code, string error)
-	    {
-	        return View(client.GetUserInfo(client.GetAccessToken(code, error)));
-	    }
+		this.authorizationRoot = authorizationRoot;
 	}
 
-RegisterRoutes (Global.asax.cs):
+	public RootController() : this(new AuthorizationRoot())
+	{
+	}
 
-	routes.MapRoute(
-        "Auth", // Route name
-        "Auth", // URL with parameters
-        new
-        {
-            controller = "Home",
-            action = "Auth",
-            id = UrlParameter.Optional
-        });
+- Obtain login URL and render page with it
 
-Auth View:
+	public ActionResult Index()
+	{
+		var uri = authorizationRoot.Clients[0].GetLoginLinkUri();
+		return View(uri);
+	}
+
+- Define action for receiving callback from third-party service
+
+	public ActionResult Auth()
+    {
+		var info = authorizationRoot.Clients[0].GetUserInfo(Request.QueryString);
+        return View(info);
+    }
+
+- Use user info as you wish, for example, display user details:
 
 	@model OAuth2.Models.UserInfo
-	
+
 	<p>
-	    @if (@Model.PhotoUri.IsEmpty())
-	    {
-	        @:"No photo"
-	    }
-	    else
-	    {
-	        <img src="@Model.PhotoUri" alt="photo"/>
-	    }
+		@if (@Model.PhotoUri.IsEmpty())
+		{
+			@:"No photo"
+		}
+		else
+		{
+			<img src="@Model.PhotoUri" alt="photo"/>
+		}
 	</p>
 	<p>
-	    @Model.FirstName @Model.LastName (@Model.Email) [@Model.Id]
+		@Model.FirstName @Model.LastName (@Model.Email) [@Model.Id, @Model.ProviderName]
 	</p>
 
-AppSettings (Web.config):
+## Supported Services ##
 
-  	<appSettings>
-		...
-
-		<add key="RedirectUri" value="http://localhost:53023/Auth"/>
-		
-		<add key="GoogleClient.ClientId" value="000000000000.apps.googleusercontent.com"/>
-		<add key="GoogleClient.ClientSecret" value="AAAAAAAAAAAAAAAAAAAAAAAA"/>
-		<add key="GoogleClient.Scope" value="https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"/>
-		
-		<add key="FacebookClient.ClientId" value="000000000000000"/>
-		<add key="FacebookClient.ClientSecret" value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"/>
-		<add key="FacebookClient.Scope" value="email"/>
-		
-		<add key="VkClient.ClientId" value="0000000"/>
-		<add key="VkClient.ClientSecret" value="AAAAAAAAAAAAAAAAAAAA"/>
-		<add key="VkClient.Scope" value="offline"/>
-	</appSettings>
-
-## Supported Sevices##
-
-Currently OAuth2 supports receiving user information via:
-
-- Google
 - Facebook
+- Foursquare
+- Google
+- Instagram
+- LinkedIn
+- MailRu
+- Odnoklassniki
+- Twitter
 - VK (Vkontakte)
+- Windows Live
+- Yandex
 
 ## Goals ##
 
@@ -118,11 +105,11 @@ Before I started working on this project I considered available solutions: sever
 - some of them were too complex for such simple task as authentication via OAuth2
 - some - didn't have usage examples or documentation
 
-So, I decided to implement this library striving to achieve next goals:
+So, I decided to implement this library striving to achieve following goals:
 
 - simplicity - so even newbie can just call couple of methods and receive expected results
+- well-documented, testable and tested (!) code - current coverage (according to NCrunch) is greater than 80%, several acceptance tests are also implemented (SpecFlow + WatiN)
 - self-education :) - it was interesting to see how OAuth2 works
-- well-documented, testable and tested (!) code - current coverage (according to dotCover) is about 100%
 
 ## Dependencies ##
 
@@ -131,10 +118,15 @@ This library is dependent on:
 - RestSharp (http://restsharp.org/)
 - Newtonsoft.Json (http://json.codeplex.com/)
 
+## Contributors ##
+
+- Constantin Titarenko (started development, defined library structure, released initial version)
+- Andrew Semack (helped a lot with improvements on configuration, as well as with extending list of supported services by implementing their clients)
+
 ## License ##
 
 The MIT License (MIT)
-Copyright (c) 2012 Constantin Titarenko
+Copyright (c) 2012 Constantin Titarenko, Andrew Semack
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
