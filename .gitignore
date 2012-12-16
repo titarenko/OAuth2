@@ -11,3 +11,4 @@ packages
 log.txt
 *ncrunch*
 *.gpState
+*.DotSettings

@@ -46,7 +46,7 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AuthorizationManager.cs" />
+    <Compile Include="AuthorizationRoot.cs" />
     <Compile Include="Client\Impl\FacebookClient.cs" />
     <Compile Include="Client\Impl\FoursquareClient.cs" />
     <Compile Include="Client\Impl\GoogleClient.cs" />

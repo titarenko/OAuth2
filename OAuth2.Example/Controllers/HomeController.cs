@@ -10,7 +10,7 @@ namespace OAuth2.Example.Controllers
     /// </summary>
     public class HomeController : Controller
     {
-        private readonly AuthorizationManager authorizationManager;
+        private readonly AuthorizationRoot authorizationRoot;
 
         private const string ProviderNameKey = "providerName";
 
@@ -23,10 +23,10 @@ namespace OAuth2.Example.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController"/> class.
         /// </summary>
-        /// <param name="authorizationManager">The authorization manager.</param>
-        public HomeController(AuthorizationManager authorizationManager)
+        /// <param name="authorizationRoot">The authorization manager.</param>
+        public HomeController(AuthorizationRoot authorizationRoot)
         {
-            this.authorizationManager = authorizationManager;
+            this.authorizationRoot = authorizationRoot;
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace OAuth2.Example.Controllers
         /// </summary>
         public ActionResult Index()
         {
-            var model = authorizationManager.Clients.Select(client => new LoginInfoModel
+            var model = authorizationRoot.Clients.Select(client => new LoginInfoModel
                 {
                     ProviderName = client.ProviderName
                 });
@@ -60,7 +60,7 @@ namespace OAuth2.Example.Controllers
 
         private IClient GetClient()
         {
-            return authorizationManager.Clients.First(c => c.ProviderName == ProviderName);
+            return authorizationRoot.Clients.First(c => c.ProviderName == ProviderName);
         }
     }
 }

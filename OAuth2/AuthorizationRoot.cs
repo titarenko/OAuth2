@@ -8,13 +8,13 @@ using System.Linq;
 
 namespace OAuth2
 {
-    public class AuthorizationManager
+    public class AuthorizationRoot
     {
         private readonly IRequestFactory requestFactory;
         private readonly OAuth2ConfigurationSection configurationSection;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AuthorizationManager" /> class.
+        /// Initializes a new instance of the <see cref="AuthorizationRoot" /> class.
         /// </summary>
         /// <remarks>
         /// Since this is boundary class, we decided to create 
@@ -22,18 +22,18 @@ namespace OAuth2
         /// So, despite we encourage you to employ IoC pattern, 
         /// you are still able to just create instance of manager manually and then use it in your project.
         /// </remarks>
-        public AuthorizationManager() : 
+        public AuthorizationRoot() : 
             this(new ConfigurationManager(), "oauth2", new RequestFactory())
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AuthorizationManager" /> class.
+        /// Initializes a new instance of the <see cref="AuthorizationRoot" /> class.
         /// </summary>
         /// <param name="configurationManager">The configuration manager.</param>
         /// <param name="configurationSectionName">Name of the configuration section.</param>
         /// <param name="requestFactory">The request factory.</param>
-        public AuthorizationManager(
+        public AuthorizationRoot(
             IConfigurationManager configurationManager, 
             string configurationSectionName, 
             IRequestFactory requestFactory)

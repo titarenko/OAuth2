@@ -78,7 +78,7 @@ namespace OAuth2.Example
                     Assembly.GetAssembly(typeof(RestClient)))
                 .AsImplementedInterfaces().AsSelf();
 
-            builder.RegisterType<AuthorizationManager>()
+            builder.RegisterType<AuthorizationRoot>()
                 .WithParameter(new NamedParameter("sectionName", "oauth2"));
 
             DependencyResolver.SetResolver(new AutofacDependencyResolver(builder.Build()));
