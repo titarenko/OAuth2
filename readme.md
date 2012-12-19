@@ -20,72 +20,84 @@ Several simple steps to plug in the library into your app:
 
 - Install OAuth2 package via NuGet
 
-		Install-Package OAuth2
+```shell
+Install-Package OAuth2
+```
 
 - Configure library
 
-		<configSections>
-			<section name="oauth2" type="OAuth2.Configuration.OAuth2ConfigurationSection, OAuth2, Version=0.8.*, Culture=neutral"/>
-		</configSections>	
-		<oauth2>		
-			<services>
-				<add clientType="GoogleClient"
-					enabled="true"
-					clientId="000000000000.apps.googleusercontent.com"
-					clientSecret="AAAAAAAAAAAAAAAAAAAAAAAA"
-					scope="https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"
-					redirectUri="~/auth" />
-				<add clientType="WindowsLiveClient"
-					enabled="false"
-					clientId="AAAAAAAAAAAAAAA"
-					clientSecret="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-					scope="wl.basic wl.emails"
-					redirectUri="oauth2.example.local/auth" />
-			</services>
-		</oauth2>
+```xml
+<configSections>
+    <section name="oauth2" type="OAuth2.Configuration.OAuth2ConfigurationSection, OAuth2, Version=0.8.*, Culture=neutral"/>
+</configSections>
+<oauth2>
+    <services>
+        <add clientType="GoogleClient"
+            enabled="true"
+            clientId="000000000000.apps.googleusercontent.com"
+            clientSecret="AAAAAAAAAAAAAAAAAAAAAAAA"
+            scope="https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"
+            redirectUri="~/auth" />
+        <add clientType="WindowsLiveClient"
+            enabled="false"
+            clientId="AAAAAAAAAAAAAAA"
+            clientSecret="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            scope="wl.basic wl.emails"
+            redirectUri="oauth2.example.local/auth" />
+    </services>
+</oauth2>
+```
 
 - Instantiate AuthorizationRoot (use IoC container or do manual "newing" using default ctor)
 
-		public RootController(AuthorizationRoot authorizationRoot)
-		{
-			this.authorizationRoot = authorizationRoot;
-		}	
-		public RootController() : this(new AuthorizationRoot())
-		{
-		}
+```c#
+public RootController(AuthorizationRoot authorizationRoot)
+{
+    this.authorizationRoot = authorizationRoot;
+}
+public RootController() : this(new AuthorizationRoot())
+{
+}
+```
 
 - Obtain login URL and render page with it
 
-		public ActionResult Index()
-		{
-			var uri = authorizationRoot.Clients[0].GetLoginLinkUri();
-			return View(uri);
-		}
+```c#
+public ActionResult Index()
+{
+    var uri = authorizationRoot.Clients[0].GetLoginLinkUri();
+    return View(uri);
+}
+```
 
 - Define action for receiving callback from third-party service
 
-		public ActionResult Auth()
-	    {
-			var info = authorizationRoot.Clients[0].GetUserInfo(Request.QueryString);
-	        return View(info);
-	    }
+```c#
+public ActionResult Auth()
+{
+    var info = authorizationRoot.Clients[0].GetUserInfo(Request.QueryString);
+    return View(info);
+}
+```
 
 - Use user info as you wish, for example, display user details:
 
-		@model OAuth2.Models.UserInfo
-		<p>
-			@if (@Model.PhotoUri.IsEmpty())
-			{
-				@:"No photo"
-			}
-			else
-			{
-				<img src="@Model.PhotoUri" alt="photo"/>
-			}
-		</p>
-		<p>
-			@Model.FirstName @Model.LastName (@Model.Email) [@Model.Id, @Model.ProviderName]
-		</p>
+```html
+@model OAuth2.Models.UserInfo
+<p>
+    @if (@Model.PhotoUri.IsEmpty())
+    {
+        @:"No photo"
+    }
+    else
+    {
+        <img src="@Model.PhotoUri" alt="photo"/>
+    }
+</p>
+<p>
+    @Model.FirstName @Model.LastName (@Model.Email) [@Model.Id, @Model.ProviderName]
+</p>
+```
 
 ## Supported Services ##
 
