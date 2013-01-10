@@ -42,7 +42,7 @@ namespace OAuth2
             configurationSection = configurationManager
                 .GetConfigSection<OAuth2ConfigurationSection>(configurationSectionName);
         }
-
+        
         /// <summary>
         /// Returns collection of clients which were configured 
         /// using application configuration file and are enabled.
@@ -51,16 +51,25 @@ namespace OAuth2
         {
             get
             {
-                var types = Assembly.GetExecutingAssembly().GetTypes()
-                    .Where(typeof (IClient).IsAssignableFrom).ToList();
+                var types = this.GetClientTypes().ToList();
                 Func<ClientConfiguration, Type> getType = 
-                    configuration => types.First(x => x.Name == configuration.ClientTypeName);
+                    configuration => types.FirstOrDefault(x => x.Name == configuration.ClientTypeName);
 
-                return configurationSection.Services.AsEnumerable()
-                    .Where(configuration => configuration.IsEnabled)
-                    .Select(configuration => (IClient) Activator.CreateInstance(
-                        getType(configuration), requestFactory, configuration));
+                return
+                    configurationSection.Services.AsEnumerable()
+                                        .Where(configuration => configuration.IsEnabled)
+                                        .Select(configuration => new { configuration, type = getType(configuration) })
+                                        .Where(o => o.type != null)
+                                        .Select(o => (IClient)Activator.CreateInstance(o.type, requestFactory, o.configuration));                
             }
+        }
+
+        /// <summary>
+        /// Returns collection of client types to consider
+        /// </summary>        
+        protected virtual IEnumerable<Type> GetClientTypes()
+        {
+            return Assembly.GetExecutingAssembly().GetTypes().Where(typeof (IClient).IsAssignableFrom);
         }
     }
 }
