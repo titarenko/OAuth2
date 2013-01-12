@@ -10,8 +10,8 @@ namespace OAuth2
 {
     public class AuthorizationRoot
     {
-        private readonly IRequestFactory requestFactory;
-        private readonly OAuth2ConfigurationSection configurationSection;
+        private readonly IRequestFactory _requestFactory;
+        private readonly OAuth2ConfigurationSection _configurationSection;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationRoot" /> class.
@@ -38,8 +38,8 @@ namespace OAuth2
             string configurationSectionName, 
             IRequestFactory requestFactory)
         {
-            this.requestFactory = requestFactory;
-            configurationSection = configurationManager
+            _requestFactory = requestFactory;
+            _configurationSection = configurationManager
                 .GetConfigSection<OAuth2ConfigurationSection>(configurationSectionName);
         }
         
@@ -56,11 +56,11 @@ namespace OAuth2
                     configuration => types.FirstOrDefault(x => x.Name == configuration.ClientTypeName);
 
                 return
-                    configurationSection.Services.AsEnumerable()
+                    _configurationSection.Services.AsEnumerable()
                                         .Where(configuration => configuration.IsEnabled)
                                         .Select(configuration => new { configuration, type = getType(configuration) })
                                         .Where(o => o.type != null)
-                                        .Select(o => (IClient)Activator.CreateInstance(o.type, requestFactory, o.configuration));                
+                                        .Select(o => (IClient)Activator.CreateInstance(o.type, _requestFactory, o.configuration));                
             }
         }
 
