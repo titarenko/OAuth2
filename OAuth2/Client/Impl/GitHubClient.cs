@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Specialized;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
@@ -14,6 +15,18 @@ namespace OAuth2.Client.Impl
         public GitHubClient(IRequestFactory factory, IClientConfiguration configuration)
             : base(factory, configuration)
         {
+        }
+
+        protected override dynamic BuildAccessTokenExchangeObject(NameValueCollection parameters, IClientConfiguration configuration)
+        {
+            return new
+            {
+                code = parameters["code"],
+                client_id = configuration.ClientId,
+                client_secret = configuration.ClientSecret,
+                redirect_uri = configuration.RedirectUri,        
+                state = this.State,
+            };
         }
 
         /// <summary>

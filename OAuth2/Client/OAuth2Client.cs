@@ -94,7 +94,7 @@ namespace OAuth2.Client
             return client.BuildUri(request).ToString();
         }
 
-        public void Finalize(NameValueCollection parameters)
+        public virtual void Finalize(NameValueCollection parameters)
         {
             this.AccessToken = null;
             
@@ -120,6 +120,18 @@ namespace OAuth2.Client
             return this.GetUserInfo(this.AccessToken as string);
         }
 
+        protected virtual dynamic BuildAccessTokenExchangeObject(NameValueCollection parameters, IClientConfiguration configuration)
+        {
+            return new
+            {
+                code = parameters["code"],
+                client_id = configuration.ClientId,
+                client_secret = configuration.ClientSecret,
+                redirect_uri = configuration.RedirectUri,
+                grant_type = "authorization_code"
+            };
+        }
+
         /// <summary>
         /// Issues query for access token and parses response.
         /// </summary>
@@ -132,14 +144,7 @@ namespace OAuth2.Client
             var request = _factory.NewRequest();
             request.Resource = AccessTokenServiceEndpoint.Resource;
             request.Method = Method.POST;
-            request.AddObject(new
-            {
-                code = parameters["code"],
-                client_id = _configuration.ClientId,
-                client_secret = _configuration.ClientSecret,
-                redirect_uri = _configuration.RedirectUri,
-                grant_type = "authorization_code"
-            });
+            request.AddObject(this.BuildAccessTokenExchangeObject(parameters, _configuration));
 
             var response = client.Execute(request);
             AfterGetAccessToken(response);
