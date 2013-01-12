@@ -28,12 +28,17 @@ namespace OAuth2.Client
         /// <summary>
         /// Access token returned by provider. Can be used for further calls of provider API.
         /// </summary>
-        public string AccessToken { get; private set; }
+        public object AccessToken { get; private set; }
 
         /// <summary>
         /// State (any additional information that was provided by application and is posted back by service).
         /// </summary>
         public string State { get; private set; }
+
+        /// <summary>
+        /// Error (if any).
+        /// </summary>
+        public string Error { get; private set; }
 
         /// <summary>
         /// Defines URI of service which issues access code.
@@ -89,6 +94,21 @@ namespace OAuth2.Client
             return client.BuildUri(request).ToString();
         }
 
+        public void Finalize(NameValueCollection parameters)
+        {
+            this.AccessToken = null;
+            
+            if (!parameters["error"].IsEmpty())
+                this.Error = parameters["error"];
+            if(!parameters["state"].IsEmpty())
+                this.State = parameters["state"];
+            
+            if (!this.Error.IsEmpty())            
+                throw new ApplicationException(this.Error);
+
+            this.AccessToken = this.GetAccessToken(parameters);
+        }
+
         /// <summary>
         /// Obtains user information using OAuth2 service and
         /// data provided via callback request.
@@ -96,15 +116,8 @@ namespace OAuth2.Client
         /// <param name="parameters">Callback request payload (parameters).</param>
         public UserInfo GetUserInfo(NameValueCollection parameters)
         {
-            State = parameters["state"];
-
-            var error = parameters["error"];
-            if (!error.IsEmpty())
-            {
-                throw new ApplicationException(error);
-            }
-
-            return GetUserInfo(AccessToken = GetAccessToken(parameters));
+            this.Finalize(parameters);
+            return this.GetUserInfo(this.AccessToken as string);
         }
 
         /// <summary>
