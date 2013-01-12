@@ -12,7 +12,7 @@ namespace OAuth2.Client.Impl
     /// </summary>
     public class MailRuClient : OAuth2Client
     {
-        private readonly IClientConfiguration configuration;
+        private readonly IClientConfiguration _configuration;
         /// <summary>
         /// Initializes a new instance of the <see cref="MailRuClient"/> class.
         /// </summary>
@@ -21,7 +21,7 @@ namespace OAuth2.Client.Impl
         public MailRuClient(IRequestFactory factory, IClientConfiguration configuration) 
             : base(factory, configuration)
         {
-            this.configuration = configuration;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -79,18 +79,18 @@ namespace OAuth2.Client.Impl
             // http://api.mail.ru/docs/guides/restapi/
             // http://api.mail.ru/docs/reference/rest/users.getInfo/
 
-            request.AddParameter("app_id", configuration.ClientId);
+            request.AddParameter("app_id", _configuration.ClientId);
             request.AddParameter("method", "users.getInfo");
             request.AddParameter("secure", "1");            
             request.AddParameter("session_key", AccessToken);
 
             // workaround for current design, oauth_token is always present in URL, so we need emulate it for correct request signing 
-            var fakeParam = new Parameter() { Name = "oauth_token", Value = AccessToken };
+            var fakeParam = new Parameter { Name = "oauth_token", Value = AccessToken };
             request.AddParameter(fakeParam);
 
             //sign=hex_md5('app_id={client_id}method=users.getInfosecure=1session_key={access_token}{secret_key}')
             string signature = string.Concat(request.Parameters.OrderBy(x => x.Name).Select(x => string.Format("{0}={1}", x.Name, x.Value)).ToList());            
-            signature = (signature+configuration.ClientSecret).GetMd5Hash();
+            signature = (signature+_configuration.ClientSecret).GetMd5Hash();
             
             request.Parameters.Remove(fakeParam);
 

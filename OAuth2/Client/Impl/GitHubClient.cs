@@ -3,7 +3,6 @@ using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-using RestSharp;
 
 namespace OAuth2.Client.Impl
 {
@@ -67,25 +66,6 @@ namespace OAuth2.Client.Impl
         protected override Endpoint UserInfoServiceEndpoint
         {
             get { return new Endpoint { BaseUri = "https://api.github.com/", Resource = "/user" }; }
-        }
-
-        /// <summary>
-        /// Called just after obtaining response with access token from service.
-        /// Allows to read extra data returned along with access token.
-        /// </summary>
-        /// <param name="response"></param>
-        protected override void AfterGetAccessToken(IRestResponse response)
-        {
-            base.AfterGetAccessToken(response);
-            this.ResponseContent = response.Content;
-        }
-
-        /// <summary>
-        /// Gets or sets the content of the response.
-        /// </summary>
-        /// <value>
-        /// The content of the response.
-        /// </value>
-        private string ResponseContent { get; set; }
+        }        
     }
 }

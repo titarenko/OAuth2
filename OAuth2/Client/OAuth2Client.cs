@@ -17,8 +17,8 @@ namespace OAuth2.Client
     {
         private const string AccessTokenKey = "access_token";
 
-        private readonly IRequestFactory factory;
-        private readonly IClientConfiguration configuration;
+        private readonly IRequestFactory _factory;
+        private readonly IClientConfiguration _configuration;
 
         /// <summary>
         /// Friendly name of provider (OAuth2 service).
@@ -63,8 +63,8 @@ namespace OAuth2.Client
         /// <param name="configuration">The configuration.</param>
         protected OAuth2Client(IRequestFactory factory, IClientConfiguration configuration)
         {
-            this.factory = factory;
-            this.configuration = configuration;
+            _factory = factory;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -76,18 +76,18 @@ namespace OAuth2.Client
         /// </remarks>
         public string GetLoginLinkUri(string state = null)
         {            
-            var client = factory.NewClient();
+            var client = _factory.NewClient();
             client.BaseUrl = AccessCodeServiceEndpoint.BaseUri;
 
-            var request = factory.NewRequest();
+            var request = _factory.NewRequest();
             request.Resource = AccessCodeServiceEndpoint.Resource;
 
             request.AddObject(new
             {
                 response_type = "code",
-                client_id = configuration.ClientId,
-                redirect_uri = configuration.RedirectUri,
-                scope = configuration.Scope,
+                client_id = _configuration.ClientId,
+                redirect_uri = _configuration.RedirectUri,
+                scope = _configuration.Scope,
                 state
             });
 
@@ -126,18 +126,18 @@ namespace OAuth2.Client
         /// <param name="parameters">Callback request payload (parameters).</param>
         private string GetAccessToken(NameValueCollection parameters)
         {
-            var client = factory.NewClient();
+            var client = _factory.NewClient();
             client.BaseUrl = AccessTokenServiceEndpoint.BaseUri;
 
-            var request = factory.NewRequest();
+            var request = _factory.NewRequest();
             request.Resource = AccessTokenServiceEndpoint.Resource;
             request.Method = Method.POST;
             request.AddObject(new
             {
                 code = parameters["code"],
-                client_id = configuration.ClientId,
-                client_secret = configuration.ClientSecret,
-                redirect_uri = configuration.RedirectUri,
+                client_id = _configuration.ClientId,
+                client_secret = _configuration.ClientSecret,
+                redirect_uri = _configuration.RedirectUri,
                 grant_type = "authorization_code"
             });
 
@@ -163,11 +163,11 @@ namespace OAuth2.Client
         /// <param name="accessToken">The access token.</param>
         private UserInfo GetUserInfo(string accessToken)
         {
-            var client = factory.NewClient();
+            var client = _factory.NewClient();
             client.BaseUrl = UserInfoServiceEndpoint.BaseUri;
             client.Authenticator = new OAuth2UriQueryParameterAuthenticator(accessToken);
 
-            var request = factory.NewRequest();
+            var request = _factory.NewRequest();
             request.Resource = UserInfoServiceEndpoint.Resource;
 
             BeforeGetUserInfo(request);

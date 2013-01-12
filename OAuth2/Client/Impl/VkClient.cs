@@ -11,7 +11,7 @@ namespace OAuth2.Client.Impl
     /// </summary>
     public class VkClient : OAuth2Client
     {
-        private string userId;
+        private string _userId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VkClient"/> class.
@@ -79,7 +79,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override void AfterGetAccessToken(IRestResponse response)
         {
-            userId = JObject.Parse(response.Content)["user_id"].Value<string>();
+            _userId = JObject.Parse(response.Content)["user_id"].Value<string>();
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override void BeforeGetUserInfo(IRestRequest request)
         {
-            request.AddParameter("uids", userId);
+            request.AddParameter("uids", _userId);
             request.AddParameter("fields", "uid,first_name,last_name,photo");
         }
 
