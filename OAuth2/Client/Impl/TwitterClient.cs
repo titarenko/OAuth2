@@ -70,7 +70,7 @@ namespace OAuth2.Client.Impl
                 return new Endpoint
                 {
                     BaseUri = "https://api.twitter.com",
-                    Resource = "/account/verify_credentials.json"
+                    Resource = "/1.1/account/verify_credentials.json"
                 };
             }
         }
