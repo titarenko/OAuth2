@@ -73,7 +73,7 @@ namespace OAuth2.Tests.Client.Impl
 
             // assert
             endpoint.BaseUri.Should().Be("https://api.twitter.com");
-            endpoint.Resource.Should().Be("/account/verify_credentials.json");
+            endpoint.Resource.Should().Be("/1.1/account/verify_credentials.json");
         }
         
         [Test]

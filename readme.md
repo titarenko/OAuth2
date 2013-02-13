@@ -18,13 +18,13 @@ Following are the steps of standard flow:
 
 Several simple steps to plug in the library into your app:
 
-- Install OAuth2 package via NuGet
+Install OAuth2 package via NuGet
 
 ```shell
 Install-Package OAuth2
 ```
 
-- Configure library
+Configure library
 
 ```xml
 <configSections>
@@ -48,7 +48,7 @@ Install-Package OAuth2
 </oauth2>
 ```
 
-- Instantiate AuthorizationRoot (use IoC container or do manual "newing" using default ctor)
+Instantiate AuthorizationRoot (use IoC container or do manual "newing" using default ctor)
 
 ```c#
 public RootController(AuthorizationRoot authorizationRoot)
@@ -60,7 +60,7 @@ public RootController() : this(new AuthorizationRoot())
 }
 ```
 
-- Obtain login URL and render page with it
+Obtain login URL and render page with it
 
 ```c#
 public ActionResult Index()
@@ -70,7 +70,7 @@ public ActionResult Index()
 }
 ```
 
-- Define action for receiving callback from third-party service
+Define action for receiving callback from third-party service
 
 ```c#
 public ActionResult Auth()
@@ -80,7 +80,7 @@ public ActionResult Auth()
 }
 ```
 
-- Use user info as you wish, for example, display user details:
+Use user info as you wish, for example, display user details:
 
 ```html
 @model OAuth2.Models.UserInfo
@@ -103,6 +103,7 @@ public ActionResult Auth()
 
 - Facebook
 - Foursquare
+- GitHub
 - Google
 - Instagram
 - LinkedIn
@@ -138,6 +139,7 @@ This library is dependent on:
 
 - Constantin Titarenko (started development, defined library structure, released initial version)
 - Andrew Semack (helped a lot with improvements on configuration as well as with extending list of supported services by implementing their clients)
+- Sascha Kiefer (simplified extending library with own provider implementations, added GitHub client)
 
 ## Roadmap ##
 
@@ -147,7 +149,7 @@ This library is dependent on:
 ## License ##
 
 The MIT License (MIT)
-Copyright (c) 2012 Constantin Titarenko, Andrew Semack
+Copyright (c) 2012-2013 Constantin Titarenko, Andrew Semack and others
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 

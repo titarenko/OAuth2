@@ -55,6 +55,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Version.cs">
+      <Link>Properties\Version.cs</Link>
+    </Compile>
     <Compile Include="Client\Impl\FacebookClientTests.cs" />
     <Compile Include="Client\Impl\FoursquareClientTests.cs" />
     <Compile Include="Client\Impl\GoogleClientTests.cs" />
