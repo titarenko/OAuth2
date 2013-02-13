@@ -17,6 +17,8 @@ namespace OAuth2.Client
     /// </remarks>
     public interface IClient
     {
+        object AccessToken { get; }
+
         /// <summary>
         /// Friendly name of provider (third-party authentication service). 
         /// Defined by client implementation developer and supposed to be unique.
@@ -30,6 +32,16 @@ namespace OAuth2.Client
         string GetLoginLinkUri(string state = null);
 
         /// <summary>
+        /// Finalizes authentication using third-party authentication service 
+        /// using data provided via callback request.
+        /// </summary>
+        /// <param name="parameters">
+        /// Callback request payload (parameters).
+        /// <example>Request.QueryString</example>
+        /// </param>
+        void Finalize(NameValueCollection parameters);
+
+        /// <summary>
         /// Obtains user information using third-party authentication service 
         /// using data provided via callback request.
         /// </summary>
@@ -37,6 +49,6 @@ namespace OAuth2.Client
         /// Callback request payload (parameters).
         /// <example>Request.QueryString</example>
         /// </param>
-        UserInfo GetUserInfo(NameValueCollection parameters);
+        UserInfo GetUserInfo(NameValueCollection parameters);        
     }
 }

@@ -16,10 +16,12 @@ namespace OAuth2.Client
         private const string OAuthTokenKey = "oauth_token";
         private const string OAuthTokenSecretKey = "oauth_token_secret";
 
-        private readonly IRequestFactory factory;
-        private readonly IClientConfiguration configuration;
+        private readonly IRequestFactory _factory;
+        private readonly IClientConfiguration _configuration;
 
-        private string secret;
+        private string _secret;
+
+        public object AccessToken { get; private set; }
 
         /// <summary>
         /// Friendly name of provider (OAuth service).
@@ -53,8 +55,8 @@ namespace OAuth2.Client
         /// <param name="configuration">The configuration.</param>
         protected OAuthClient(IRequestFactory factory, IClientConfiguration configuration)
         {
-            this.factory = factory;
-            this.configuration = configuration;
+            _factory = factory;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -68,17 +70,25 @@ namespace OAuth2.Client
             return GetLoginRequestUri(GetRequestToken(), state);
         }
 
+        public void Finalize(NameValueCollection parameters)
+        {
+            var token = parameters[OAuthTokenKey];
+            var verifier = parameters["oauth_verifier"];
+
+            this.AccessToken = this.GetAccessToken(token, verifier);            
+        }
+
         /// <summary>
         /// Issues request for request token and returns result.
         /// </summary>
         private NameValueCollection GetRequestToken()
         {
-            var client = factory.NewClient();
+            var client = _factory.NewClient();
             client.BaseUrl = RequestTokenServiceEndpoint.BaseUri;
             client.Authenticator = OAuth1Authenticator.ForRequestToken(
-                configuration.ClientId, configuration.ClientSecret, configuration.RedirectUri);
+                _configuration.ClientId, _configuration.ClientSecret, _configuration.RedirectUri);
 
-            var request = factory.NewRequest();
+            var request = _factory.NewRequest();
             request.Resource = RequestTokenServiceEndpoint.Resource;
             request.Method = Method.POST;
 
@@ -93,17 +103,17 @@ namespace OAuth2.Client
         /// <param name="state">Any additional information needed by application.</param>
         private string GetLoginRequestUri(NameValueCollection response, string state = null)
         {
-            var client = factory.NewClient();
+            var client = _factory.NewClient();
             client.BaseUrl = LoginServiceEndpoint.BaseUri;
 
-            var request = factory.NewRequest();
+            var request = _factory.NewRequest();
             request.Resource = LoginServiceEndpoint.Resource;
             request.AddParameter(OAuthTokenKey, response[OAuthTokenKey]);
             if (!state.IsEmpty())
             {
                 request.AddParameter("state", state);
             }
-            secret = response[OAuthTokenSecretKey];            
+            _secret = response[OAuthTokenSecretKey];            
 
             return client.BuildUri(request).ToString();
         }
@@ -117,10 +127,9 @@ namespace OAuth2.Client
         /// <returns></returns>
         public UserInfo GetUserInfo(NameValueCollection parameters)
         {
-            var token = parameters[OAuthTokenKey];
-            var verifier = parameters["oauth_verifier"];
+            this.Finalize(parameters);
 
-            return QueryUserInfo(GetAccessToken(token, verifier));
+            return QueryUserInfo(this.AccessToken as NameValueCollection);
         }
 
         /// <summary>
@@ -131,12 +140,12 @@ namespace OAuth2.Client
         /// <returns>Access token and other extra info.</returns>
         private NameValueCollection GetAccessToken(string token, string verifier)
         {
-            var client = factory.NewClient();
+            var client = _factory.NewClient();
             client.BaseUrl = AccessTokenServiceEndpoint.BaseUri;
             client.Authenticator = OAuth1Authenticator.ForAccessToken(
-                configuration.ClientId, configuration.ClientSecret, token, secret, verifier);
+                _configuration.ClientId, _configuration.ClientSecret, token, _secret, verifier);
 
-            var request = factory.NewRequest();
+            var request = _factory.NewRequest();
             request.Resource = AccessTokenServiceEndpoint.Resource;
             request.Method = Method.POST;
 
@@ -153,12 +162,12 @@ namespace OAuth2.Client
             var token = parameters[OAuthTokenKey];
             var secret = parameters[OAuthTokenSecretKey];
 
-            var client = factory.NewClient();
+            var client = _factory.NewClient();
             client.BaseUrl = UserInfoServiceEndpoint.BaseUri;
             client.Authenticator = OAuth1Authenticator.ForProtectedResource(
-                configuration.ClientId, configuration.ClientSecret, token, secret);
+                _configuration.ClientId, _configuration.ClientSecret, token, secret);
 
-            var request = factory.NewRequest();
+            var request = _factory.NewRequest();
             request.Resource = UserInfoServiceEndpoint.Resource;
 
             var response = client.Execute(request);

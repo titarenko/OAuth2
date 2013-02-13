@@ -14,7 +14,7 @@ namespace OAuth2.Configuration
         /// </summary>
         public new IClientConfiguration this[string clientTypeName]
         {
-            get { return Services[clientTypeName]; }
+            get { return this.Services[clientTypeName]; }
         }
 
         [ConfigurationProperty(CollectionName), ConfigurationCollection(typeof(ServiceCollection))]

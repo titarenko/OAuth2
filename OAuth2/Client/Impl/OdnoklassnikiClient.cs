@@ -12,7 +12,7 @@ namespace OAuth2.Client.Impl
     /// </summary>
     public class OdnoklassnikiClient : OAuth2Client
     {
-        private readonly IClientConfiguration configuration;
+        private readonly IClientConfiguration _configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OdnoklassnikiClient"/> class.
@@ -22,7 +22,7 @@ namespace OAuth2.Client.Impl
         public OdnoklassnikiClient(IRequestFactory factory, IClientConfiguration configuration)
             : base(factory, configuration)
         {
-            this.configuration = configuration;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace OAuth2.Client.Impl
             // Source document
             // http://dev.odnoklassniki.ru/wiki/pages/viewpage.action?pageId=12878032
 
-            request.AddParameter("application_key", configuration.ClientPublic);
+            request.AddParameter("application_key", _configuration.ClientPublic);
             request.AddParameter("method", "users.getCurrentUser");
 
             // workaround for current design, oauth_token is always present in URL, so we need emulate it for correct request signing 
@@ -93,7 +93,7 @@ namespace OAuth2.Client.Impl
             // sig = md5( request_params_composed_string+ md5(access_token + application_secret_key)  )
             // Don't include access_token into request_params_composed_string
             string signature = string.Concat(request.Parameters.OrderBy(x => x.Name).Select(x => string.Format("{0}={1}", x.Name, x.Value)).ToList());
-            signature = (signature + (AccessToken + configuration.ClientSecret).GetMd5Hash()).GetMd5Hash();
+            signature = (signature + (AccessToken + _configuration.ClientSecret).GetMd5Hash()).GetMd5Hash();
 
             // Removing fake param to prevent dups
             request.Parameters.Remove(fakeParam);
