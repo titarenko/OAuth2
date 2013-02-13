@@ -1,12 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuth2", "OAuth2\OAuth2.csproj", "{C95637CD-25E5-483E-9C74-89FE3ADB999B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuth2.Tests", "OAuth2.Tests\OAuth2.Tests.csproj", "{0DA9F405-2F79-4F37-AB44-4FE54CB661F8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuth2.Example", "OAuth2.Example\OAuth2.Example.csproj", "{A976EB30-6BC2-4625-A894-02C1B743E502}"
-EndProject
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E23DBEA2-1B78-4E8C-AFFD-EF140DA3C64D}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.Config = .nuget\NuGet.Config
@@ -18,6 +12,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		readme.md = readme.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuth2", "OAuth2\OAuth2.csproj", "{C95637CD-25E5-483E-9C74-89FE3ADB999B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuth2.Tests", "OAuth2.Tests\OAuth2.Tests.csproj", "{0DA9F405-2F79-4F37-AB44-4FE54CB661F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuth2.Example", "OAuth2.Example\OAuth2.Example.csproj", "{A976EB30-6BC2-4625-A894-02C1B743E502}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuth2.Example.AcceptanceTests", "OAuth2.Example.AcceptanceTests\OAuth2.Example.AcceptanceTests.csproj", "{61EE9F12-9068-419F-A242-4FAF515585D8}"
 EndProject
