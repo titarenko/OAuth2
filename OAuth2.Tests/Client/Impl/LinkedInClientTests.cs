@@ -13,7 +13,13 @@ namespace OAuth2.Tests.Client.Impl
     [TestFixture]
     public class LinkedInClientTests
     {
-        private const string Content = "todo";
+        private const string Content = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                                        "<person>" +
+                                        "  <id>id</id>" +
+                                        "  <first-name>firstname</first-name>" +
+                                        "  <last-name>lastname</last-name>" +
+                                        "  <picture-url>pictureurl</picture-url>" +
+                                        "</person>";
 
         private LinkedInClientDescendant descendant;
 
@@ -28,25 +34,14 @@ namespace OAuth2.Tests.Client.Impl
         }
 
         [Test]
-        public void Should_ReturnCorrectRequestTokenServiceEndpoint()
+        public void Should_ReturnCorrectAccessCodeServiceEndpoint()
         {
             // act
-            var endpoint = descendant.GetRequestTokenServiceEndpoint();
-
-            // assert
-            endpoint.BaseUri.Should().Be("https://api.linkedin.com");
-            endpoint.Resource.Should().Be("/uas/oauth/requestToken");
-        }
-
-        [Test]
-        public void Should_ReturnCorrectLoginServiceEndpoint()
-        {
-            // act
-            var endpoint = descendant.GetLoginServiceEndpoint();
+            var endpoint = descendant.GetAccessCodeServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://www.linkedin.com");
-            endpoint.Resource.Should().Be("/uas/oauth/authorize");
+            endpoint.Resource.Should().Be("/uas/oauth2/authorization");
         }
 
         [Test]
@@ -56,8 +51,8 @@ namespace OAuth2.Tests.Client.Impl
             var endpoint = descendant.GetAccessTokenServiceEndpoint();
 
             // assert
-            endpoint.BaseUri.Should().Be("https://api.linkedin.com");
-            endpoint.Resource.Should().Be("/uas/oauth/accessToken");
+            endpoint.BaseUri.Should().Be("https://www.linkedin.com");
+            endpoint.Resource.Should().Be("/uas/oauth2/accessToken");
         }
 
         [Test]
@@ -67,23 +62,21 @@ namespace OAuth2.Tests.Client.Impl
             var endpoint = descendant.GetUserInfoServiceEndpoint();
 
             // assert
-            endpoint.BaseUri.Should().Be("http://api.linkedin.com");
+            endpoint.BaseUri.Should().Be("https://api.linkedin.com");
             endpoint.Resource.Should().Be("/v1/people/~:(id,first-name,last-name,picture-url)");
         }
 
         [Test]
         public void Should_ParseAllFieldsOfUserInfo_WhenCorrectContentIsPassed()
         {
-            Assert.Ignore("todo");
-
             // act
             var info = descendant.ParseUserInfo(Content);
 
             // assert
-            info.Id.Should().Be("todo");
-            info.FirstName.Should().Be("todo");
-            info.LastName.Should().Be("todo");
-            info.PhotoUri.Should().Be("todo");
+            info.Id.Should().Be("id");
+            info.FirstName.Should().Be("firstname");
+            info.LastName.Should().Be("lastname");
+            info.PhotoUri.Should().Be("pictureurl");
         }
 
         class LinkedInClientDescendant : LinkedInClient
@@ -93,14 +86,9 @@ namespace OAuth2.Tests.Client.Impl
             {
             }
 
-            public Endpoint GetRequestTokenServiceEndpoint()
+            public Endpoint GetAccessCodeServiceEndpoint()
             {
-                return RequestTokenServiceEndpoint;
-            }
-
-            public Endpoint GetLoginServiceEndpoint()
-            {
-                return LoginServiceEndpoint;
+                return AccessCodeServiceEndpoint;
             }
 
             public Endpoint GetAccessTokenServiceEndpoint()

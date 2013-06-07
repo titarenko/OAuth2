@@ -1,13 +1,16 @@
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using RestSharp;
+using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace OAuth2.Client.Impl
 {
     /// <summary>
     /// LinkedIn authentication client.
     /// </summary>
-    public class LinkedInClient : OAuthClient
+    public class LinkedInClient : OAuth2Client
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LinkedInClient"/> class.
@@ -20,37 +23,22 @@ namespace OAuth2.Client.Impl
         }
 
         /// <summary>
-        /// Gets the request token service endpoint.
+        /// Defines URI of service which issues access code.
         /// </summary>
-        protected override Endpoint RequestTokenServiceEndpoint
-        {
-            get
-            {
-                return new Endpoint
-                {
-                    BaseUri = "https://api.linkedin.com",
-                    Resource = "/uas/oauth/requestToken"
-                };
-            }
-        }
-
-        /// <summary>
-        /// Gets the login service endpoint.
-        /// </summary>
-        protected override Endpoint LoginServiceEndpoint
+        protected override Endpoint AccessCodeServiceEndpoint
         {
             get
             {
                 return new Endpoint
                 {
                     BaseUri = "https://www.linkedin.com",
-                    Resource = "/uas/oauth/authorize"
+                    Resource = "/uas/oauth2/authorization"
                 };
             }
         }
 
         /// <summary>
-        /// Gets the access token service endpoint.
+        /// Defines URI of service which issues access token.
         /// </summary>
         protected override Endpoint AccessTokenServiceEndpoint
         {
@@ -58,14 +46,14 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://api.linkedin.com",
-                    Resource = "/uas/oauth/accessToken"
+                    BaseUri = "https://www.linkedin.com",
+                    Resource = "/uas/oauth2/accessToken"
                 };
             }
         }
 
         /// <summary>
-        /// Gets the user info service endpoint.
+        /// Defines URI of service which allows to obtain information about user which is currently logged in.
         /// </summary>
         protected override Endpoint UserInfoServiceEndpoint
         {
@@ -73,19 +61,58 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "http://api.linkedin.com",
+                    BaseUri = "https://api.linkedin.com",
                     Resource = "/v1/people/~:(id,first-name,last-name,picture-url)"
                 };
             }
         }
+        
+        /// <summary>
+        /// Obtains user information using LinkedIn API.
+        /// </summary>
+        /// <param name="accessToken">The access token</param>
+        /// <returns></returns>
+        protected override UserInfo GetUserInfo(string accessToken)
+        {
+            var client = _factory.NewClient();
+            client.BaseUrl = UserInfoServiceEndpoint.BaseUri;
+            client.Authenticator = null;
+
+            var request = _factory.NewRequest();
+            request.Resource = UserInfoServiceEndpoint.Resource;
+
+            request.Parameters.Add(new Parameter { Name = "oauth2_access_token", Type = ParameterType.GetOrPost, Value = accessToken });
+
+            var result = ParseUserInfo(client.Execute(request).Content);
+            result.ProviderName = ProviderName;
+
+            return result;
+        }
 
         /// <summary>
-        /// Parses the user info.
+        /// Should return parsed <see cref="UserInfo"/> from content received from third-party service.
         /// </summary>
-        /// <param name="content">The content.</param>
+        /// <param name="content">The content which is received from third-party service.</param>
         protected override UserInfo ParseUserInfo(string content)
         {
-            throw new System.NotImplementedException();
+            var document = XDocument.Parse(content);
+
+            return new UserInfo
+            {
+                Id = document.XPathSelectElement("/person/id").Value,
+                FirstName = document.XPathSelectElement("/person/first-name").Value,
+                LastName = document.XPathSelectElement("/person/last-name").Value,
+                PhotoUri = SafeGet(document, "/person/picture-url"),
+            };            
+        }
+
+        private string SafeGet(XDocument document, string path)
+        {
+            var element = document.XPathSelectElement(path);
+            if (element == null)
+                return null;
+
+            return element.Value;
         }
 
         /// <summary>

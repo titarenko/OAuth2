@@ -17,7 +17,7 @@ namespace OAuth2.Client
     {
         private const string AccessTokenKey = "access_token";
 
-        private readonly IRequestFactory _factory;
+        protected readonly IRequestFactory _factory;
         private readonly IClientConfiguration _configuration;
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace OAuth2.Client
         /// Obtains user information using provider API.
         /// </summary>
         /// <param name="accessToken">The access token.</param>
-        private UserInfo GetUserInfo(string accessToken)
+        protected virtual UserInfo GetUserInfo(string accessToken)
         {
             var client = _factory.NewClient();
             client.BaseUrl = UserInfoServiceEndpoint.BaseUri;
