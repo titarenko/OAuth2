@@ -79,10 +79,17 @@ namespace OAuth2.Tests.Client.Impl
         public void Should_AddExtraParameters_WhenOnGetUserInfoIsCalled()
         {
             // arrange
-            requestFactory.CreateClient().Execute(requestFactory.CreateRequest()).Content.Returns(content);
+            requestFactory.CreateClient().Execute(requestFactory.CreateRequest())
+                .Content.Returns(
+                    "any content to pass response verification",
+                    "access_token=token",
+                    content);
 
             // act
-            descendant.GetUserInfo(new NameValueCollection());
+            descendant.GetUserInfo(new NameValueCollection
+            {
+                {"code", "code"}
+            });
 
             // assert
             requestFactory.CreateRequest()
