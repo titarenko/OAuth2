@@ -129,7 +129,6 @@ namespace OAuth2.Client
             });
 
             AccessToken = ParseAccessTokenResponse(response.Content);
-            
         }
 
         protected virtual string ParseAccessTokenResponse(string content)
@@ -137,7 +136,12 @@ namespace OAuth2.Client
             try
             {
                 // response can be sent in JSON format
-                return (string)JObject.Parse(content)[AccessTokenKey].SelectToken(AccessTokenKey);
+                var token = (string)JObject.Parse(content).SelectToken(AccessTokenKey);
+                if (token.IsEmpty())
+                {
+                    throw new UnexpectedResponseException(AccessTokenKey);
+                }
+                return token;
             }
             catch (JsonReaderException)
             {

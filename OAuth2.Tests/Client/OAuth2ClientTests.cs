@@ -111,8 +111,8 @@ namespace OAuth2.Tests.Client
             // act & assert
             descendant
                 .Invoking(x => x.GetUserInfo(parameters))
-                .ShouldThrow<ApplicationException>()
-                .WithMessage("error2");
+                .ShouldThrow<UnexpectedResponseException>()
+                .And.FieldName.Should().Be("error");
         }
 
         [Test]
@@ -120,15 +120,25 @@ namespace OAuth2.Tests.Client
         [TestCase(null)]
         public void ShouldNot_ThrowException_When_ParametersForGetUserInfoContainEmptyError(string error)
         {
+            // arrange
+            restResponse.Content.Returns("access_token=token");
+
             // act & assert
             descendant
-                .Invoking(x => x.GetUserInfo(new NameValueCollection {{"error", error}}))
+                .Invoking(x => x.GetUserInfo(new NameValueCollection
+                {
+                    {"error", error},
+                    {"code", "code"}
+                }))
                 .ShouldNotThrow();
         }
 
         [Test]
         public void Should_IssueCorrectRequestForAccessToken_When_GetUserInfoIsCalled()
         {
+            // arrange
+            restResponse.Content = "access_token=token";
+
             // act
             descendant.GetUserInfo(new NameValueCollection {{"code", "code"}});
 
@@ -149,7 +159,7 @@ namespace OAuth2.Tests.Client
 
         [Test]
         [TestCase("access_token=token")]
-        [TestCase("{\"access_token\": \"token\"")]
+        [TestCase("{\"access_token\": \"token\"}")]
         public void Should_IssueCorrectRequestForUserInfo_When_GetUserInfoIsCalled(string response)
         {
             // arrange
