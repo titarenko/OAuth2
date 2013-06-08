@@ -79,8 +79,11 @@
     <Compile Include="Configuration\ServiceCollection.cs" />
     <Compile Include="Infrastructure\EnumerableExtensions.cs" />
     <Compile Include="Infrastructure\IRequestFactory.cs" />
+    <Compile Include="Infrastructure\NameValueCollectionExtensions.cs" />
     <Compile Include="Infrastructure\ObjectExtensions.cs" />
     <Compile Include="Infrastructure\RequestFactory.cs" />
+    <Compile Include="Infrastructure\RequestFactoryExtensions.cs" />
+    <Compile Include="Infrastructure\RestClientExtensions.cs" />
     <Compile Include="Infrastructure\SafeExtensions.cs" />
     <Compile Include="Infrastructure\StringExtensions.cs" />
     <Compile Include="Infrastructure\UriUtility.cs" />

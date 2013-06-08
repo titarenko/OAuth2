@@ -1,5 +1,4 @@
 ﻿using System.Collections.Specialized;
-using System.Net;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
@@ -20,8 +19,6 @@ namespace OAuth2.Client
         private readonly IRequestFactory _factory;
         private readonly IClientConfiguration _configuration;
 
-        private string _secret;
-
         /// <summary>
         /// Friendly name of provider (OAuth service).
         /// </summary>
@@ -36,7 +33,12 @@ namespace OAuth2.Client
         /// <summary>
         /// Access token received from service. Can be used for further service API calls.
         /// </summary>
-        public NameValueCollection AccessToken { get; private set; }
+        public string AccessToken { get; private set; }
+
+        /// <summary>
+        /// Access token secret received from service. Can be used for further service API calls.
+        /// </summary>
+        public string AccessTokenSecret { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OAuthClient" /> class.
@@ -57,7 +59,8 @@ namespace OAuth2.Client
         /// <returns>Login link URI.</returns>
         public string GetLoginLinkUri(string state = null)
         {
-            return GetLoginRequestUri(GetRequestToken(), state);
+            QueryRequestToken();
+            return GetLoginRequestUri(state);
         }
 
         /// <summary>
@@ -69,12 +72,13 @@ namespace OAuth2.Client
         /// <returns></returns>
         public UserInfo GetUserInfo(NameValueCollection parameters)
         {
-            var token = parameters[OAuthTokenKey];
-            var verifier = parameters["oauth_verifier"];
+            AccessToken = parameters.GetOrThrowUnexpectedResponse(OAuthTokenKey);
+            QueryAccessToken(parameters.GetOrThrowUnexpectedResponse("oauth_verifier"));
 
-            AccessToken = GetAccessToken(token, verifier);
+            var result = ParseUserInfo(QueryUserInfo());
+            result.ProviderName = Name;
 
-            return QueryUserInfo();
+            return result;
         }
 
         /// <summary>
@@ -105,55 +109,34 @@ namespace OAuth2.Client
         /// <summary>
         /// Issues request for request token and returns result.
         /// </summary>
-        private NameValueCollection GetRequestToken()
+        private void QueryRequestToken()
         {
-            var client = _factory.CreateClient();
-            client.BaseUrl = RequestTokenServiceEndpoint.BaseUri;
+            var client = _factory.CreateClient(RequestTokenServiceEndpoint);
             client.Authenticator = OAuth1Authenticator.ForRequestToken(
                 _configuration.ClientId, _configuration.ClientSecret, _configuration.RedirectUri);
+            
+            var request = _factory.CreateRequest(RequestTokenServiceEndpoint, Method.POST);
+            
+            var response = client.ExecuteAndVerify(request);
+            var collection = HttpUtility.ParseQueryString(response.Content);
 
-            var request = _factory.CreateRequest();
-            request.Resource = RequestTokenServiceEndpoint.Resource;
-            request.Method = Method.POST;
-
-            var response = client.Execute(request);
-            if (response.StatusCode != HttpStatusCode.OK || string.IsNullOrWhiteSpace(response.Content))
-            {
-                throw new UnexpectedResponseException(response);
-            }
-
-            return HttpUtility.ParseQueryString(response.Content);
+            AccessToken = collection.GetOrThrowUnexpectedResponse(OAuthTokenKey);
+            AccessTokenSecret = collection.GetOrThrowUnexpectedResponse(OAuthTokenSecretKey);
         }
 
         /// <summary>
         /// Composes login link URI.
         /// </summary>
-        /// <param name="response">Content of response for request token request.</param>
         /// <param name="state">Any additional information needed by application.</param>
-        private string GetLoginRequestUri(NameValueCollection response, string state = null)
+        private string GetLoginRequestUri(string state = null)
         {
-            var client = _factory.CreateClient();
-            client.BaseUrl = LoginServiceEndpoint.BaseUri;
+            var client = _factory.CreateClient(LoginServiceEndpoint);
+            var request = _factory.CreateRequest(LoginServiceEndpoint);
 
-            var request = _factory.CreateRequest();
-            request.Resource = LoginServiceEndpoint.Resource;
-            var tokenKey = response[OAuthTokenKey];
-
-            if (string.IsNullOrWhiteSpace(tokenKey))
-            {
-                throw new UnexpectedResponseException(OAuthTokenKey);
-            }
-
-            request.AddParameter(OAuthTokenKey, tokenKey);
+            request.AddParameter(OAuthTokenKey, AccessToken);
             if (!state.IsEmpty())
             {
                 request.AddParameter("state", state);
-            }
-            
-            _secret = response[OAuthTokenSecretKey];            
-            if (string.IsNullOrWhiteSpace(_secret))
-            {
-                throw new UnexpectedResponseException(OAuthTokenSecretKey);
             }
 
             return client.BuildUri(request).ToString();
@@ -162,46 +145,35 @@ namespace OAuth2.Client
         /// <summary>
         /// Obtains access token by calling corresponding service.
         /// </summary>
-        /// <param name="token">Token posted with callback issued by provider.</param>
         /// <param name="verifier">Verifier posted with callback issued by provider.</param>
         /// <returns>Access token and other extra info.</returns>
-        private NameValueCollection GetAccessToken(string token, string verifier)
+        private void QueryAccessToken(string verifier)
         {
-            var client = _factory.CreateClient();
-            client.BaseUrl = AccessTokenServiceEndpoint.BaseUri;
+            var client = _factory.CreateClient(AccessTokenServiceEndpoint);
             client.Authenticator = OAuth1Authenticator.ForAccessToken(
-                _configuration.ClientId, _configuration.ClientSecret, token, _secret, verifier);
+                _configuration.ClientId, _configuration.ClientSecret, AccessToken, AccessTokenSecret, verifier);
 
-            var request = _factory.CreateRequest();
-            request.Resource = AccessTokenServiceEndpoint.Resource;
-            request.Method = Method.POST;
+            var request = _factory.CreateRequest(AccessTokenServiceEndpoint, Method.POST);
 
-            var response = client.Execute(request);
-            return HttpUtility.ParseQueryString(response.Content);
+            var content = client.ExecuteAndVerify(request).Content;
+            var collection = HttpUtility.ParseQueryString(content);
+
+            AccessToken = collection.GetOrThrowUnexpectedResponse(OAuthTokenKey);
+            AccessTokenSecret = collection.GetOrThrowUnexpectedResponse(OAuthTokenSecretKey);
         }
 
         /// <summary>
         /// Queries user info using corresponding service and data received by access token request.
         /// </summary>
-        private UserInfo QueryUserInfo()
+        private string QueryUserInfo()
         {
-            var token = AccessToken[OAuthTokenKey];
-            var secret = AccessToken[OAuthTokenSecretKey];
-
-            var client = _factory.CreateClient();
-            client.BaseUrl = UserInfoServiceEndpoint.BaseUri;
+            var client = _factory.CreateClient(UserInfoServiceEndpoint);
             client.Authenticator = OAuth1Authenticator.ForProtectedResource(
-                _configuration.ClientId, _configuration.ClientSecret, token, secret);
+                _configuration.ClientId, _configuration.ClientSecret, AccessToken, AccessTokenSecret);
 
-            var request = _factory.CreateRequest();
-            request.Resource = UserInfoServiceEndpoint.Resource;
-
-            var response = client.Execute(request);
-
-            var result = ParseUserInfo(response.Content);
-            result.ProviderName = Name;
-
-            return result;
+            var request = _factory.CreateRequest(UserInfoServiceEndpoint);
+            
+            return client.ExecuteAndVerify(request).Content;
         }
     }
 }

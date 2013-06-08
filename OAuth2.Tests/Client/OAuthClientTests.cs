@@ -116,12 +116,13 @@ namespace OAuth2.Tests.Client
             // arrange
             var restClient = factory.CreateClient();
             var restRequest = factory.CreateRequest();
+            restClient.Execute(restRequest).Content = "oauth_token=token&oauth_token_secret=secret";
             
             // act
             descendant.GetUserInfo(new NameValueCollection
             {
                 {"oauth_token", "token1"},
-                {"verifier", "verifier100"}
+                {"oauth_verifier", "verifier100"}
             });
 
             // assert
@@ -133,7 +134,7 @@ namespace OAuth2.Tests.Client
             restRequest.Received().Method = Method.POST;
             
             restClient.Authenticator.Should().NotBeNull();
-            restClient.Authenticator.Should().BeAssignableTo<OAuth1Authenticator>();
+            restClient.Authenticator.Should().BeOfType<OAuth1Authenticator>();
         }
 
         [Test]
@@ -142,10 +143,17 @@ namespace OAuth2.Tests.Client
             // arrange
             var restClient = factory.CreateClient();
             var restRequest = factory.CreateRequest();
-            restClient.Execute(restRequest).Content.Returns("abba");
+            restClient.Execute(restRequest).Content.Returns(
+                "something to pass response verification", 
+                "oauth_token=token&oauth_token_secret=secret", 
+                "abba");
 
             // act
-            var info = descendant.GetUserInfo(new NameValueCollection());
+            var info = descendant.GetUserInfo(new NameValueCollection
+            {
+                {"oauth_token", "token1"},
+                {"oauth_verifier", "verifier100"}
+            });
 
             // assert
             factory.Received().CreateClient();
