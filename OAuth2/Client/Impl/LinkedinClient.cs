@@ -66,29 +66,18 @@ namespace OAuth2.Client.Impl
                 };
             }
         }
-        
-        /// <summary>
-        /// Obtains user information using LinkedIn API.
-        /// </summary>
-        /// <param name="accessToken">The access token</param>
-        /// <returns></returns>
-        protected override UserInfo GetUserInfo(string accessToken)
+
+        protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            var client = _factory.CreateClient();
-            client.BaseUrl = UserInfoServiceEndpoint.BaseUri;
-            client.Authenticator = null;
-
-            var request = _factory.CreateRequest();
-            request.Resource = UserInfoServiceEndpoint.Resource;
-
-            request.Parameters.Add(new Parameter { Name = "oauth2_access_token", Type = ParameterType.GetOrPost, Value = accessToken });
-
-            var result = ParseUserInfo(client.Execute(request).Content);
-            result.ProviderName = Name;
-
-            return result;
+            args.Client.Authenticator = null;
+            args.Request.Parameters.Add(new Parameter
+            {
+                Name = "oauth2_access_token",
+                Type = ParameterType.GetOrPost,
+                Value = AccessToken
+            });
         }
-
+        
         /// <summary>
         /// Should return parsed <see cref="UserInfo"/> from content received from third-party service.
         /// </summary>

@@ -17,16 +17,16 @@ namespace OAuth2.Client.Impl
         {
         }
 
-        protected override dynamic BuildAccessTokenExchangeObject(NameValueCollection parameters, IClientConfiguration configuration)
+        protected override void BeforeGetAccessToken(BeforeAfterRequestArgs args)
         {
-            return new
+            args.Request.AddObject(new
             {
-                code = parameters["code"],
-                client_id = configuration.ClientId,
-                client_secret = configuration.ClientSecret,
-                redirect_uri = configuration.RedirectUri,        
-                state = this.State,
-            };
+                code = args.Parameters.GetOrThrowUnexpectedResponse("code"),
+                client_id = args.Configuration.ClientId,
+                client_secret = args.Configuration.ClientSecret,
+                redirect_uri = args.Configuration.RedirectUri,
+                state = State,
+            });
         }
 
         /// <summary>

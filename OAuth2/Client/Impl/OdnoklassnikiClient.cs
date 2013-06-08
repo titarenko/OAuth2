@@ -74,17 +74,17 @@ namespace OAuth2.Client.Impl
         /// Called just before issuing request to third-party service when everything is ready.
         /// Allows to add extra parameters to request or do any other needed preparations.
         /// </summary>
-        protected override void BeforeGetUserInfo(IRestRequest request)
+        protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
             // Source document
             // http://dev.odnoklassniki.ru/wiki/pages/viewpage.action?pageId=12878032
 
-            request.AddParameter("application_key", _configuration.ClientPublic);
-            request.AddParameter("method", "users.getCurrentUser");
+            args.Request.AddParameter("application_key", _configuration.ClientPublic);
+            args.Request.AddParameter("method", "users.getCurrentUser");
 
             // workaround for current design, oauth_token is always present in URL, so we need emulate it for correct request signing 
             var fakeParam = new Parameter() { Name = "oauth_token", Value = AccessToken };
-            request.AddParameter(fakeParam);
+            args.Request.AddParameter(fakeParam);
 
             // Signing.
             // Call API methods using access_token instead of session_key parameter
@@ -92,14 +92,14 @@ namespace OAuth2.Client.Impl
             // http://dev.odnoklassniki.ru/wiki/display/ok/Authentication+and+Authorization
             // sig = md5( request_params_composed_string+ md5(access_token + application_secret_key)  )
             // Don't include access_token into request_params_composed_string
-            string signature = string.Concat(request.Parameters.OrderBy(x => x.Name).Select(x => string.Format("{0}={1}", x.Name, x.Value)).ToList());
+            string signature = string.Concat(args.Request.Parameters.OrderBy(x => x.Name).Select(x => string.Format("{0}={1}", x.Name, x.Value)).ToList());
             signature = (signature + (AccessToken + _configuration.ClientSecret).GetMd5Hash()).GetMd5Hash();
 
             // Removing fake param to prevent dups
-            request.Parameters.Remove(fakeParam);
+            args.Request.Parameters.Remove(fakeParam);
 
-            request.AddParameter("access_token", AccessToken);
-            request.AddParameter("sig", signature);
+            args.Request.AddParameter("access_token", AccessToken);
+            args.Request.AddParameter("sig", signature);
         }
 
         /// <summary>

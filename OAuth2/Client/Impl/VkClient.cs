@@ -77,19 +77,19 @@ namespace OAuth2.Client.Impl
         /// Called just after obtaining response with access token from third-party service.
         /// Allows to read extra data returned along with access token.
         /// </summary>
-        protected override void AfterGetAccessToken(IRestResponse response)
+        protected override void AfterGetAccessToken(BeforeAfterRequestArgs args)
         {
-            _userId = JObject.Parse(response.Content)["user_id"].Value<string>();
+            _userId = JObject.Parse(args.Response.Content)["user_id"].Value<string>();
         }
 
         /// <summary>
         /// Called just before issuing request to third-party service when everything is ready.
         /// Allows to add extra parameters to request or do any other needed preparations.
         /// </summary>
-        protected override void BeforeGetUserInfo(IRestRequest request)
+        protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            request.AddParameter("uids", _userId);
-            request.AddParameter("fields", "uid,first_name,last_name,photo");
+            args.Request.AddParameter("uids", _userId);
+            args.Request.AddParameter("fields", "uid,first_name,last_name,photo");
         }
 
         /// <summary>

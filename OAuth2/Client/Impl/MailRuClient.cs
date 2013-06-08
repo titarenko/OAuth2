@@ -73,28 +73,28 @@ namespace OAuth2.Client.Impl
         /// Called just before issuing request to third-party service when everything is ready.
         /// Allows to add extra parameters to request or do any other needed preparations.
         /// </summary>
-        protected override void BeforeGetUserInfo(IRestRequest request)
+        protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
             // Source documents
             // http://api.mail.ru/docs/guides/restapi/
             // http://api.mail.ru/docs/reference/rest/users.getInfo/
 
-            request.AddParameter("app_id", _configuration.ClientId);
-            request.AddParameter("method", "users.getInfo");
-            request.AddParameter("secure", "1");            
-            request.AddParameter("session_key", AccessToken);
+            args.Request.AddParameter("app_id", _configuration.ClientId);
+            args.Request.AddParameter("method", "users.getInfo");
+            args.Request.AddParameter("secure", "1");            
+            args.Request.AddParameter("session_key", AccessToken);
 
             // workaround for current design, oauth_token is always present in URL, so we need emulate it for correct request signing 
             var fakeParam = new Parameter { Name = "oauth_token", Value = AccessToken };
-            request.AddParameter(fakeParam);
+            args.Request.AddParameter(fakeParam);
 
             //sign=hex_md5('app_id={client_id}method=users.getInfosecure=1session_key={access_token}{secret_key}')
-            string signature = string.Concat(request.Parameters.OrderBy(x => x.Name).Select(x => string.Format("{0}={1}", x.Name, x.Value)).ToList());            
+            string signature = string.Concat(args.Request.Parameters.OrderBy(x => x.Name).Select(x => string.Format("{0}={1}", x.Name, x.Value)).ToList());            
             signature = (signature+_configuration.ClientSecret).GetMd5Hash();
-            
-            request.Parameters.Remove(fakeParam);
 
-            request.AddParameter("sig", signature);            
+            args.Request.Parameters.Remove(fakeParam);
+
+            args.Request.AddParameter("sig", signature);            
         }
 
         /// <summary>

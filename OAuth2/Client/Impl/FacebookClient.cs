@@ -2,7 +2,6 @@ using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-using RestSharp;
 
 namespace OAuth2.Client.Impl
 {
@@ -70,9 +69,9 @@ namespace OAuth2.Client.Impl
         /// Called just before issuing request to third-party service when everything is ready.
         /// Allows to add extra parameters to request or do any other needed preparations.
         /// </summary>
-        protected override void BeforeGetUserInfo(IRestRequest request)
+        protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            request.AddParameter("fields", "id,first_name,last_name,email,picture");
+            args.Request.AddParameter("fields", "id,first_name,last_name,email,picture");
         }
 
         /// <summary>

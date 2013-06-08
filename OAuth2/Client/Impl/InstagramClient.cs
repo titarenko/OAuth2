@@ -3,7 +3,6 @@ using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-using RestSharp;
 
 namespace OAuth2.Client.Impl
 {
@@ -12,7 +11,7 @@ namespace OAuth2.Client.Impl
     /// </summary>
     public class InstagramClient : OAuth2Client
     {
-        private string _responseContent;
+        private string _accessTokenResponseContent;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InstagramClient"/> class.
@@ -69,13 +68,12 @@ namespace OAuth2.Client.Impl
             }
         }
         
-        protected override void AfterGetAccessToken(IRestResponse response)
+        protected override void AfterGetAccessToken(BeforeAfterRequestArgs args)
         {
-            base.AfterGetAccessToken(response);
             // Instagram returns userinfo on access_token request
             // Source document 
             // http://instagram.com/developer/authentication/
-            _responseContent = response.Content;
+            _accessTokenResponseContent = args.Response.Content;
         }
         
         /// <summary>
@@ -84,7 +82,7 @@ namespace OAuth2.Client.Impl
         /// <param name="content">The content which is received from third-party service.</param>
         protected override UserInfo ParseUserInfo(string content)
         {
-            var response = JObject.Parse(_responseContent);
+            var response = JObject.Parse(_accessTokenResponseContent);
             var names = response["user"]["full_name"].Value<string>().Split(' ');
             return new UserInfo
             {

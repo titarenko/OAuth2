@@ -70,9 +70,9 @@ namespace OAuth2.Client.Impl
         /// Called just before issuing request to third-party service when everything is ready.
         /// Allows to add extra parameters to request or do any other needed preparations.
         /// </summary>
-        protected override void BeforeGetUserInfo(IRestRequest request)
+        protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-           request.AddParameter("access_token", AccessToken);
+           args.Request.AddParameter("access_token", AccessToken);
         }
 
         /// <summary>
