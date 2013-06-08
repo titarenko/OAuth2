@@ -1,4 +1,4 @@
-# OAuth2 #
+﻿# OAuth2 #
 
 OAuth2 is a library for user authentication using third-party services (OAuth/OAuth2 protocol) such as Google, Facebook and so on.
 
@@ -30,6 +30,7 @@ Configure library
 <configSections>
     <section name="oauth2" type="OAuth2.Configuration.OAuth2ConfigurationSection, OAuth2, Version=0.8.*, Culture=neutral"/>
 </configSections>
+
 <oauth2>
     <services>
         <add clientType="GoogleClient"
@@ -55,6 +56,7 @@ public RootController(AuthorizationRoot authorizationRoot)
 {
     this.authorizationRoot = authorizationRoot;
 }
+
 public RootController() : this(new AuthorizationRoot())
 {
 }
@@ -140,6 +142,7 @@ This library is dependent on:
 - Constantin Titarenko (started development, defined library structure, released initial version)
 - Andrew Semack (helped a lot with improvements on configuration as well as with extending list of supported services by implementing their clients)
 - Sascha Kiefer (simplified extending library with own provider implementations, added GitHub client)
+- Krisztián Pócza (added LinkedIn (OAuth 2) client)
 
 ## Roadmap ##
 
