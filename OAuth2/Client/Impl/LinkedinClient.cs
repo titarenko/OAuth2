@@ -1,3 +1,4 @@
+using System;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
@@ -65,6 +66,11 @@ namespace OAuth2.Client.Impl
                     Resource = "/v1/people/~:(id,first-name,last-name,picture-url)"
                 };
             }
+        }
+
+        public override string GetLoginLinkUri(string state = null)
+        {
+            return base.GetLoginLinkUri(state ?? Guid.NewGuid().ToString("N"));
         }
 
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)

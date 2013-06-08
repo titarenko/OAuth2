@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
@@ -28,7 +29,7 @@ namespace OAuth2.Client
         /// State which was posted as additional parameter
         /// to service and then received along with main answer.
         /// </summary>
-        public string State { get; private set; }
+        public string State { get { return null; } }
 
         /// <summary>
         /// Access token received from service. Can be used for further service API calls.
@@ -59,6 +60,10 @@ namespace OAuth2.Client
         /// <returns>Login link URI.</returns>
         public string GetLoginLinkUri(string state = null)
         {
+            if (!state.IsEmpty())
+            {
+                throw new NotSupportedException("State transmission is not supported by current implementation.");
+            }
             QueryRequestToken();
             return GetLoginRequestUri(state);
         }
@@ -157,7 +162,7 @@ namespace OAuth2.Client
 
             var content = client.ExecuteAndVerify(request).Content;
             var collection = HttpUtility.ParseQueryString(content);
-
+            
             AccessToken = collection.GetOrThrowUnexpectedResponse(OAuthTokenKey);
             AccessTokenSecret = collection.GetOrThrowUnexpectedResponse(OAuthTokenSecretKey);
         }

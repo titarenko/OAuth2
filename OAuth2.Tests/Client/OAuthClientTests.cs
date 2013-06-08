@@ -30,6 +30,12 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
+        public void Should_ThrowNotSupported_When_UserWantsToTransmitState()
+        {
+            descendant.Invoking(x => x.GetLoginLinkUri("any state")).ShouldThrow<NotSupportedException>();
+        }
+
+        [Test]
         public void Should_ThrowUnexpectedResponse_When_StatusIsNotOk()
         {
             factory.CreateClient().Execute(factory.CreateRequest()).StatusCode = HttpStatusCode.InternalServerError;

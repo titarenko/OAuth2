@@ -52,8 +52,8 @@ namespace OAuth2.Client
         /// <remarks>
         /// Any additional information that will be posted back by service.
         /// </remarks>
-        public string GetLoginLinkUri(string state = null)
-        {            
+        public virtual string GetLoginLinkUri(string state = null)
+        {
             var client = _factory.CreateClient(AccessCodeServiceEndpoint);
             var request = _factory.CreateRequest(AccessCodeServiceEndpoint);
             request.AddObject(new
@@ -157,22 +157,6 @@ namespace OAuth2.Client
         /// <param name="content">The content which is received from provider.</param>
         protected abstract UserInfo ParseUserInfo(string content);
 
-        /// <summary>
-        /// Called just before issuing request to service when everything is ready.
-        /// Allows to add extra parameters to request or do any other needed preparations.
-        /// </summary>
-        protected virtual void BeforeGetUserInfo(BeforeAfterRequestArgs args)
-        {
-        }
-
-        /// <summary>
-        /// Called just after obtaining response with access token from service.
-        /// Allows to read extra data returned along with access token.
-        /// </summary>
-        protected virtual void AfterGetAccessToken(BeforeAfterRequestArgs args)
-        {
-        }
-
         protected virtual void BeforeGetAccessToken(BeforeAfterRequestArgs args)
         {
             args.Request.AddObject(new
@@ -183,6 +167,22 @@ namespace OAuth2.Client
                 redirect_uri = _configuration.RedirectUri,
                 grant_type = "authorization_code"
             });
+        }
+
+        /// <summary>
+        /// Called just after obtaining response with access token from service.
+        /// Allows to read extra data returned along with access token.
+        /// </summary>
+        protected virtual void AfterGetAccessToken(BeforeAfterRequestArgs args)
+        {
+        }
+
+        /// <summary>
+        /// Called just before issuing request to service when everything is ready.
+        /// Allows to add extra parameters to request or do any other needed preparations.
+        /// </summary>
+        protected virtual void BeforeGetUserInfo(BeforeAfterRequestArgs args)
+        {
         }
 
         /// <summary>
