@@ -8,7 +8,7 @@ namespace OAuth2.Client
     /// </summary>
     /// <remarks>
     /// Standard flow is:
-    /// - client is used for generation of URI for login link (<see cref="GetLoginLinkUri"/>).
+    /// - client is used for generation of URI for login link (<see cref="GetLoginLinkUri"/>)
     /// - hosting app renders page with login link using aforementioned URI
     /// - user clicks login link - this leads to redirect to third-party service site
     /// - user does authentication and allows app access his/her basic information
@@ -17,13 +17,11 @@ namespace OAuth2.Client
     /// </remarks>
     public interface IClient
     {
-        object AccessToken { get; }
-
         /// <summary>
         /// Friendly name of provider (third-party authentication service). 
         /// Defined by client implementation developer and supposed to be unique.
         /// </summary>
-        string ProviderName { get; }
+        string Name { get; }
 
         /// <summary>
         /// Returns URI of service which should be called in order to start authentication process. 
@@ -32,14 +30,10 @@ namespace OAuth2.Client
         string GetLoginLinkUri(string state = null);
 
         /// <summary>
-        /// Finalizes authentication using third-party authentication service 
-        /// using data provided via callback request.
+        /// State which was posted as additional parameter 
+        /// to service and then received along with main answer.
         /// </summary>
-        /// <param name="parameters">
-        /// Callback request payload (parameters).
-        /// <example>Request.QueryString</example>
-        /// </param>
-        void Finalize(NameValueCollection parameters);
+        string State { get; }
 
         /// <summary>
         /// Obtains user information using third-party authentication service 
@@ -49,6 +43,6 @@ namespace OAuth2.Client
         /// Callback request payload (parameters).
         /// <example>Request.QueryString</example>
         /// </param>
-        UserInfo GetUserInfo(NameValueCollection parameters);        
+        UserInfo GetUserInfo(NameValueCollection parameters);
     }
 }

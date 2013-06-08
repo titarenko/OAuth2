@@ -28,7 +28,7 @@ namespace OAuth2.Client
         /// <summary>
         /// Friendly name of provider (OAuth service).
         /// </summary>
-        public abstract string ProviderName { get; }
+        public abstract string Name { get; }
 
         /// <summary>
         /// Defines URI of service which is called for obtaining request token.
@@ -194,7 +194,7 @@ namespace OAuth2.Client
             var response = client.Execute(request);
 
             var result = ParseUserInfo(response.Content);
-            result.ProviderName = ProviderName;
+            result.ProviderName = Name;
 
             return result;
         }

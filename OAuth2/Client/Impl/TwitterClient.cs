@@ -78,7 +78,7 @@ namespace OAuth2.Client.Impl
         /// <summary>
         /// Friendly name of provider (OAuth service).
         /// </summary>
-        public override string ProviderName
+        public override string Name
         {
             get { return "Twitter"; }
         }

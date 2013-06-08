@@ -25,7 +25,7 @@ namespace OAuth2.Client
         /// <summary>
         /// Friendly name of provider (OAuth2 service).
         /// </summary>
-        public abstract string ProviderName { get; }
+        public abstract string Name { get; }
         
         /// <summary>
         /// Access token returned by provider. Can be used for further calls of provider API.
@@ -187,7 +187,7 @@ namespace OAuth2.Client
             }
 
             var result = ParseUserInfo(content);
-            result.ProviderName = ProviderName;
+            result.ProviderName = Name;
 
             return result;
         }

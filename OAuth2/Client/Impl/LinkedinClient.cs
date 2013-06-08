@@ -84,7 +84,7 @@ namespace OAuth2.Client.Impl
             request.Parameters.Add(new Parameter { Name = "oauth2_access_token", Type = ParameterType.GetOrPost, Value = accessToken });
 
             var result = ParseUserInfo(client.Execute(request).Content);
-            result.ProviderName = ProviderName;
+            result.ProviderName = Name;
 
             return result;
         }
@@ -118,7 +118,7 @@ namespace OAuth2.Client.Impl
         /// <summary>
         /// Friendly name of provider (OAuth service).
         /// </summary>
-        public override string ProviderName
+        public override string Name
         {
             get { return "LinkedIn"; }
         }

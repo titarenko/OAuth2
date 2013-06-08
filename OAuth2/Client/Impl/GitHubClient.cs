@@ -41,7 +41,7 @@ namespace OAuth2.Client.Impl
             return new UserInfo
             {
                 Email = cnt["email"].Value<string>(),
-                ProviderName = this.ProviderName,
+                ProviderName = this.Name,
                 PhotoUri = cnt["avatar_url"].Value<string>(),
                 Id = cnt["id"].Value<string>(),
                 FirstName = names.Count > 0 ? names.First() : cnt["login"].Value<string>(),
@@ -52,7 +52,7 @@ namespace OAuth2.Client.Impl
         /// <summary>
         /// Friendly name of provider (OAuth2 service).
         /// </summary>
-        public override string ProviderName
+        public override string Name
         {
             get { return "GitHub"; }
         }

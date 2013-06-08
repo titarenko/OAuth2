@@ -207,7 +207,7 @@ namespace OAuth2.Tests.Client
                 }
             }
 
-            public override string ProviderName
+            public override string Name
             {
                 get { return "OAuth2ClientTest"; }
             }

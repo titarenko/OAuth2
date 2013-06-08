@@ -93,7 +93,7 @@ namespace OAuth2.Client.Impl
             };
         }
 
-        public override string ProviderName
+        public override string Name
         {
             get { return "Foursquare"; }
         }
