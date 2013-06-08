@@ -1,4 +1,5 @@
 ﻿using System.Collections.Specialized;
+using System.Net;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
@@ -22,8 +23,8 @@ namespace OAuth2.Tests.Client.Impl
         public void SetUp()
         {
             factory = Substitute.For<IRequestFactory>();
-            descendant = new VkClientDescendant(factory, 
-                Substitute.For<IClientConfiguration>());
+            factory.NewClient().Execute(factory.NewRequest()).StatusCode = HttpStatusCode.OK;
+            descendant = new VkClientDescendant(factory, Substitute.For<IClientConfiguration>());
         }
 
         [Test]

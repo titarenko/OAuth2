@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Specialized;
+using System.IO;
+using System.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
@@ -177,7 +179,14 @@ namespace OAuth2.Client
 
             BeforeGetUserInfo(request);
 
-            var result = ParseUserInfo(client.Execute(request).Content);
+            var response = client.Execute(request);
+            var content = response.Content;
+            if (response.StatusCode != HttpStatusCode.OK || string.IsNullOrWhiteSpace(content))
+            {
+                throw new UnexpectedResponseException(response);
+            }
+
+            var result = ParseUserInfo(content);
             result.ProviderName = ProviderName;
 
             return result;

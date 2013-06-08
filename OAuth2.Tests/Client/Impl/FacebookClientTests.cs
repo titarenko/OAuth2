@@ -1,4 +1,5 @@
 using System.Collections.Specialized;
+using System.Net;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
@@ -22,6 +23,7 @@ namespace OAuth2.Tests.Client.Impl
         public void SetUp()
         {
             requestFactory = Substitute.For<IRequestFactory>();
+            requestFactory.NewClient().Execute(requestFactory.NewRequest()).StatusCode = HttpStatusCode.OK;
             descendant = new FacebookClientDescendant(
                 requestFactory, Substitute.For<IClientConfiguration>());
         }

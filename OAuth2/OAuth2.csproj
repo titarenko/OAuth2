@@ -69,6 +69,7 @@
     <Compile Include="Client\Endpoint.cs" />
     <Compile Include="Client\IClient.cs" />
     <Compile Include="Client\OAuthClient.cs" />
+    <Compile Include="Client\UnexpectedResponseException.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Configuration\IConfigurationManager.cs" />
     <Compile Include="Configuration\IOAuth2Configuration.cs" />

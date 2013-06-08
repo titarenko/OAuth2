@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Net;
 using FizzWare.NBuilder;
 using NSubstitute;
 using NUnit.Framework;
@@ -28,6 +29,9 @@ namespace OAuth2.Tests.Client
             restRequest = Substitute.For<IRestRequest>();
             restResponse = Substitute.For<IRestResponse>();
 
+            restResponse.StatusCode.Returns(HttpStatusCode.OK);
+            restResponse.Content.Returns("response");
+
             restClient = Substitute.For<IRestClient>();
             restClient.Execute(restRequest).Returns(restResponse);
 
@@ -43,6 +47,27 @@ namespace OAuth2.Tests.Client
             configuration.Scope.Returns("scope");
 
             descendant = new OAuth2ClientDescendant(factory, configuration);
+        }
+
+        [Test]
+        public void Should_ThrowUnexpectedResponse_When_CodeIsNotOk()
+        {
+            restResponse.StatusCode = HttpStatusCode.InternalServerError;
+
+            descendant
+                .Invoking(x => x.GetUserInfo(new NameValueCollection()))
+                .ShouldThrow<UnexpectedResponseException>();
+        }
+
+        [Test]
+        public void Should_ThrowUnexpectedResponse_When_ResponseIsEmpty()
+        {
+            restResponse.StatusCode = HttpStatusCode.OK;
+            restResponse.Content.Returns("");
+            
+            descendant
+                .Invoking(x => x.GetUserInfo(new NameValueCollection()))
+                .ShouldThrow<UnexpectedResponseException>();
         }
 
         [Test]
