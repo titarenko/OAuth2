@@ -2,7 +2,6 @@ using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-using RestSharp;
 
 namespace OAuth2.Client.Impl
 {
@@ -79,7 +78,8 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override void AfterGetAccessToken(BeforeAfterRequestArgs args)
         {
-            _userId = JObject.Parse(args.Response.Content)["user_id"].Value<string>();
+            var instance = JObject.Parse(args.Response.Content);
+            _userId = instance["user_id"].Value<string>();
         }
 
         /// <summary>

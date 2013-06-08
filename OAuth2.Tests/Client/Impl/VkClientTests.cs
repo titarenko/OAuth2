@@ -79,10 +79,17 @@ namespace OAuth2.Tests.Client.Impl
         {
             // arrange
             var response = factory.CreateClient().Execute(factory.CreateRequest());
-            response.Content.Returns("{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}", content);
+            response.Content.Returns(
+                "any content to pass response verification",
+                "{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}",
+                "{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}",
+                content);
 
             // act
-            descendant.GetUserInfo(new NameValueCollection());
+            descendant.GetUserInfo(new NameValueCollection
+            {
+                {"code", "code"}
+            });
 
             // assert
             var notUsed = response.Received().Content;
@@ -95,11 +102,16 @@ namespace OAuth2.Tests.Client.Impl
             var restClient = factory.CreateClient();
             var restRequest = factory.CreateRequest();
             restClient.Execute(restRequest).Content.Returns(
+                "any content to pass response verification",
+                "{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}", 
                 "{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}", 
                 content);
 
             // act
-            descendant.GetUserInfo(new NameValueCollection());
+            descendant.GetUserInfo(new NameValueCollection
+            {
+                {"code", "code"}
+            });
 
             // assert
             restRequest.Received().AddParameter("fields", "uid,first_name,last_name,photo");
