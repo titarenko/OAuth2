@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Net;
 using FizzWare.NBuilder;
 using NSubstitute;
 using NUnit.Framework;
@@ -23,8 +24,43 @@ namespace OAuth2.Tests.Client
         public void SetUp()
         {
             factory = Substitute.For<IRequestFactory>();
+            factory.NewClient().Execute(factory.NewRequest()).StatusCode = HttpStatusCode.OK;
             descendant = new OAuthClientDescendant(
                 factory, Substitute.For<IClientConfiguration>());
+        }
+
+        [Test]
+        public void Should_ThrowUnexpectedResponse_When_StatusIsNotOk()
+        {
+            factory.NewClient().Execute(factory.NewRequest()).StatusCode = HttpStatusCode.InternalServerError;
+            descendant.Invoking(x => x.GetLoginLinkUri()).ShouldThrow<UnexpectedResponseException>();
+        }
+
+        [Test]
+        public void Should_ThrowUnexpectedResponse_When_ContentIsEmpty()
+        {
+            factory.NewClient().Execute(factory.NewRequest()).Content = "";
+            descendant.Invoking(x => x.GetLoginLinkUri()).ShouldThrow<UnexpectedResponseException>();
+        }
+
+        [Test]
+        public void Should_ThrowUnexpectedResponse_When_OAuthTokenIsEmpty()
+        {
+            factory.NewClient().Execute(factory.NewRequest()).Content = "something=something_other";
+            descendant
+                .Invoking(x => x.GetLoginLinkUri())
+                .ShouldThrow<UnexpectedResponseException>()
+                .And.FieldName.Should().Be("oauth_token");
+        }
+
+        [Test]
+        public void Should_ThrowUnexpectedResponse_When_OAuthSecretIsEmpty()
+        {
+            factory.NewClient().Execute(factory.NewRequest()).Content = "oauth_token=token";
+            descendant
+                .Invoking(x => x.GetLoginLinkUri())
+                .ShouldThrow<UnexpectedResponseException>()
+                .And.FieldName.Should().Be("oauth_token_secret");
         }
 
         [Test]
@@ -34,6 +70,7 @@ namespace OAuth2.Tests.Client
             var restClient = factory.NewClient();
             var restRequest = factory.NewRequest();
             restClient.BuildUri(restRequest).Returns(new Uri("http://login"));
+            restClient.Execute(restRequest).Content = "oauth_token=token&oauth_token_secret=secret";
 
             // act
             descendant.GetLoginLinkUri();
@@ -47,7 +84,7 @@ namespace OAuth2.Tests.Client
             restRequest.Received().Method = Method.POST;
 
             restClient.Authenticator.Should().NotBeNull();
-            restClient.Authenticator.Should().BeAssignableTo<OAuth1Authenticator>();
+            restClient.Authenticator.Should().BeOfType<OAuth1Authenticator>();
         }
 
         [Test]
@@ -57,7 +94,7 @@ namespace OAuth2.Tests.Client
             var restClient = factory.NewClient();
             var restRequest = factory.NewRequest();
             restClient.BuildUri(restRequest).Returns(new Uri("https://login/"));
-            restClient.Execute(restRequest).Content.Returns("oauth_token=token5");
+            restClient.Execute(restRequest).Content.Returns("oauth_token=token5&oauth_token_secret=secret");
 
             // act
             var uri = descendant.GetLoginLinkUri();

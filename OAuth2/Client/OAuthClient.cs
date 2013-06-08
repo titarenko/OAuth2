@@ -1,4 +1,6 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
+using System.Net;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
@@ -70,6 +72,8 @@ namespace OAuth2.Client
             return GetLoginRequestUri(GetRequestToken(), state);
         }
 
+        public string State { get; private set; }
+
         public void Finalize(NameValueCollection parameters)
         {
             var token = parameters[OAuthTokenKey];
@@ -93,6 +97,11 @@ namespace OAuth2.Client
             request.Method = Method.POST;
 
             var response = client.Execute(request);
+            if (response.StatusCode != HttpStatusCode.OK || string.IsNullOrWhiteSpace(response.Content))
+            {
+                throw new UnexpectedResponseException(response);
+            }
+
             return HttpUtility.ParseQueryString(response.Content);
         }
 
@@ -108,12 +117,24 @@ namespace OAuth2.Client
 
             var request = _factory.NewRequest();
             request.Resource = LoginServiceEndpoint.Resource;
-            request.AddParameter(OAuthTokenKey, response[OAuthTokenKey]);
+            var tokenKey = response[OAuthTokenKey];
+
+            if (string.IsNullOrWhiteSpace(tokenKey))
+            {
+                throw new UnexpectedResponseException(OAuthTokenKey);
+            }
+
+            request.AddParameter(OAuthTokenKey, tokenKey);
             if (!state.IsEmpty())
             {
                 request.AddParameter("state", state);
             }
+            
             _secret = response[OAuthTokenSecretKey];            
+            if (string.IsNullOrWhiteSpace(_secret))
+            {
+                throw new UnexpectedResponseException(OAuthTokenSecretKey);
+            }
 
             return client.BuildUri(request).ToString();
         }
