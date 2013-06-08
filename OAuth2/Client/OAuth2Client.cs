@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Specialized;
-using System.IO;
 using System.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -78,10 +77,10 @@ namespace OAuth2.Client
         /// </remarks>
         public string GetLoginLinkUri(string state = null)
         {            
-            var client = _factory.NewClient();
+            var client = _factory.CreateClient();
             client.BaseUrl = AccessCodeServiceEndpoint.BaseUri;
 
-            var request = _factory.NewRequest();
+            var request = _factory.CreateRequest();
             request.Resource = AccessCodeServiceEndpoint.Resource;
 
             request.AddObject(new
@@ -140,10 +139,10 @@ namespace OAuth2.Client
         /// <param name="parameters">Callback request payload (parameters).</param>
         private string GetAccessToken(NameValueCollection parameters)
         {
-            var client = _factory.NewClient();
+            var client = _factory.CreateClient();
             client.BaseUrl = AccessTokenServiceEndpoint.BaseUri;
 
-            var request = _factory.NewRequest();
+            var request = _factory.CreateRequest();
             request.Resource = AccessTokenServiceEndpoint.Resource;
             request.Method = Method.POST;
             request.AddObject(this.BuildAccessTokenExchangeObject(parameters, _configuration));
@@ -170,11 +169,11 @@ namespace OAuth2.Client
         /// <param name="accessToken">The access token.</param>
         protected virtual UserInfo GetUserInfo(string accessToken)
         {
-            var client = _factory.NewClient();
+            var client = _factory.CreateClient();
             client.BaseUrl = UserInfoServiceEndpoint.BaseUri;
             client.Authenticator = new OAuth2UriQueryParameterAuthenticator(accessToken);
 
-            var request = _factory.NewRequest();
+            var request = _factory.CreateRequest();
             request.Resource = UserInfoServiceEndpoint.Resource;
 
             BeforeGetUserInfo(request);

@@ -23,7 +23,7 @@ namespace OAuth2.Tests.Client.Impl
         public void SetUp()
         {
             factory = Substitute.For<IRequestFactory>();
-            factory.NewClient().Execute(factory.NewRequest()).StatusCode = HttpStatusCode.OK;
+            factory.CreateClient().Execute(factory.CreateRequest()).StatusCode = HttpStatusCode.OK;
             descendant = new VkClientDescendant(factory, Substitute.For<IClientConfiguration>());
         }
 
@@ -78,7 +78,7 @@ namespace OAuth2.Tests.Client.Impl
         public void Should_ReceiveUserId_WhenAccessTokenResponseReceived()
         {
             // arrange
-            var response = factory.NewClient().Execute(factory.NewRequest());
+            var response = factory.CreateClient().Execute(factory.CreateRequest());
             response.Content.Returns("{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}", content);
 
             // act
@@ -92,8 +92,8 @@ namespace OAuth2.Tests.Client.Impl
         public void Should_AddExtraParameters_WhenOnGetUserInfoIsCalled()
         {
             // arrange
-            var restClient = factory.NewClient();
-            var restRequest = factory.NewRequest();
+            var restClient = factory.CreateClient();
+            var restRequest = factory.CreateRequest();
             restClient.Execute(restRequest).Content.Returns(
                 "{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}", 
                 content);

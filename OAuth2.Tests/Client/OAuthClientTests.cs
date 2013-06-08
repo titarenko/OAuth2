@@ -24,7 +24,7 @@ namespace OAuth2.Tests.Client
         public void SetUp()
         {
             factory = Substitute.For<IRequestFactory>();
-            factory.NewClient().Execute(factory.NewRequest()).StatusCode = HttpStatusCode.OK;
+            factory.CreateClient().Execute(factory.CreateRequest()).StatusCode = HttpStatusCode.OK;
             descendant = new OAuthClientDescendant(
                 factory, Substitute.For<IClientConfiguration>());
         }
@@ -32,21 +32,21 @@ namespace OAuth2.Tests.Client
         [Test]
         public void Should_ThrowUnexpectedResponse_When_StatusIsNotOk()
         {
-            factory.NewClient().Execute(factory.NewRequest()).StatusCode = HttpStatusCode.InternalServerError;
+            factory.CreateClient().Execute(factory.CreateRequest()).StatusCode = HttpStatusCode.InternalServerError;
             descendant.Invoking(x => x.GetLoginLinkUri()).ShouldThrow<UnexpectedResponseException>();
         }
 
         [Test]
         public void Should_ThrowUnexpectedResponse_When_ContentIsEmpty()
         {
-            factory.NewClient().Execute(factory.NewRequest()).Content = "";
+            factory.CreateClient().Execute(factory.CreateRequest()).Content = "";
             descendant.Invoking(x => x.GetLoginLinkUri()).ShouldThrow<UnexpectedResponseException>();
         }
 
         [Test]
         public void Should_ThrowUnexpectedResponse_When_OAuthTokenIsEmpty()
         {
-            factory.NewClient().Execute(factory.NewRequest()).Content = "something=something_other";
+            factory.CreateClient().Execute(factory.CreateRequest()).Content = "something=something_other";
             descendant
                 .Invoking(x => x.GetLoginLinkUri())
                 .ShouldThrow<UnexpectedResponseException>()
@@ -56,7 +56,7 @@ namespace OAuth2.Tests.Client
         [Test]
         public void Should_ThrowUnexpectedResponse_When_OAuthSecretIsEmpty()
         {
-            factory.NewClient().Execute(factory.NewRequest()).Content = "oauth_token=token";
+            factory.CreateClient().Execute(factory.CreateRequest()).Content = "oauth_token=token";
             descendant
                 .Invoking(x => x.GetLoginLinkUri())
                 .ShouldThrow<UnexpectedResponseException>()
@@ -67,8 +67,8 @@ namespace OAuth2.Tests.Client
         public void Should_IssueCorrectRequestForRequestToken_When_GetLoginLinkUriIsCalled()
         {
             // arrange
-            var restClient = factory.NewClient();
-            var restRequest = factory.NewRequest();
+            var restClient = factory.CreateClient();
+            var restRequest = factory.CreateRequest();
             restClient.BuildUri(restRequest).Returns(new Uri("http://login"));
             restClient.Execute(restRequest).Content = "oauth_token=token&oauth_token_secret=secret";
 
@@ -76,8 +76,8 @@ namespace OAuth2.Tests.Client
             descendant.GetLoginLinkUri();
 
             // assert
-            factory.Received().NewClient();
-            factory.Received().NewRequest();
+            factory.Received().CreateClient();
+            factory.Received().CreateRequest();
 
             restClient.Received().BaseUrl = "https://RequestTokenServiceEndpoint";
             restRequest.Received().Resource = "/RequestTokenServiceEndpoint";
@@ -91,8 +91,8 @@ namespace OAuth2.Tests.Client
         public void Should_ComposeCorrectLoginUri_When_GetLoginLinkIsCalled()
         {
             // arrange
-            var restClient = factory.NewClient();
-            var restRequest = factory.NewRequest();
+            var restClient = factory.CreateClient();
+            var restRequest = factory.CreateRequest();
             restClient.BuildUri(restRequest).Returns(new Uri("https://login/"));
             restClient.Execute(restRequest).Content.Returns("oauth_token=token5&oauth_token_secret=secret");
 
@@ -102,8 +102,8 @@ namespace OAuth2.Tests.Client
             // assert
             uri.Should().Be("https://login/");
 
-            factory.Received().NewClient();
-            factory.Received().NewRequest();
+            factory.Received().CreateClient();
+            factory.Received().CreateRequest();
             
             restClient.Received().BaseUrl = "https://LoginServiceEndpoint";
             restRequest.Received().Resource = "/LoginServiceEndpoint";
@@ -114,8 +114,8 @@ namespace OAuth2.Tests.Client
         public void Should_IssueCorrectRequestForAccessToken_When_GetUserInfoIsCalled()
         {
             // arrange
-            var restClient = factory.NewClient();
-            var restRequest = factory.NewRequest();
+            var restClient = factory.CreateClient();
+            var restRequest = factory.CreateRequest();
             
             // act
             descendant.GetUserInfo(new NameValueCollection
@@ -125,8 +125,8 @@ namespace OAuth2.Tests.Client
             });
 
             // assert
-            factory.Received().NewClient();
-            factory.Received().NewRequest();
+            factory.Received().CreateClient();
+            factory.Received().CreateRequest();
 
             restClient.Received().BaseUrl = "https://AccessTokenServiceEndpoint";
             restRequest.Received().Resource = "/AccessTokenServiceEndpoint";
@@ -140,16 +140,16 @@ namespace OAuth2.Tests.Client
         public void Should_IssueCorrectRequestForUserInfo_When_GetUserInfoIsCalled()
         {
             // arrange
-            var restClient = factory.NewClient();
-            var restRequest = factory.NewRequest();
+            var restClient = factory.CreateClient();
+            var restRequest = factory.CreateRequest();
             restClient.Execute(restRequest).Content.Returns("abba");
 
             // act
             var info = descendant.GetUserInfo(new NameValueCollection());
 
             // assert
-            factory.Received().NewClient();
-            factory.Received().NewRequest();
+            factory.Received().CreateClient();
+            factory.Received().CreateRequest();
 
             restClient.Received().BaseUrl = "https://UserInfoServiceEndpoint";
             restRequest.Received().Resource = "/UserInfoServiceEndpoint";

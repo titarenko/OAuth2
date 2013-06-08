@@ -74,11 +74,11 @@ namespace OAuth2.Client.Impl
         /// <returns></returns>
         protected override UserInfo GetUserInfo(string accessToken)
         {
-            var client = _factory.NewClient();
+            var client = _factory.CreateClient();
             client.BaseUrl = UserInfoServiceEndpoint.BaseUri;
             client.Authenticator = null;
 
-            var request = _factory.NewRequest();
+            var request = _factory.CreateRequest();
             request.Resource = UserInfoServiceEndpoint.Resource;
 
             request.Parameters.Add(new Parameter { Name = "oauth2_access_token", Type = ParameterType.GetOrPost, Value = accessToken });

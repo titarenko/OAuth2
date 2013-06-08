@@ -20,8 +20,8 @@ namespace OAuth2.Tests.Infrastructure
         public void Should_ReturnNewClientInstance_WhenNewClientIsCalled()
         {
             // act
-            var client1 = factory.NewClient();
-            var client2 = factory.NewClient();
+            var client1 = factory.CreateClient();
+            var client2 = factory.CreateClient();
 
             // assert
             client1.Should().NotBeNull();
@@ -33,8 +33,8 @@ namespace OAuth2.Tests.Infrastructure
         public void Should_ReturnNewRequestInstance_WhenNewRequestIsCalled()
         {
             // act
-            var request1 = factory.NewRequest();
-            var request2 = factory.NewRequest();
+            var request1 = factory.CreateRequest();
+            var request2 = factory.CreateRequest();
 
             // assert
             request1.Should().NotBeNull();

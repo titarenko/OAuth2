@@ -10,11 +10,11 @@ namespace OAuth2.Infrastructure
         /// <summary>
         /// Returns new REST client instance.
         /// </summary>
-        IRestClient NewClient();
+        IRestClient CreateClient();
         
         /// <summary>
         /// Returns new REST request instance.
         /// </summary>
-        IRestRequest NewRequest();
+        IRestRequest CreateRequest();
     }
 }

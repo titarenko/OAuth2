@@ -23,7 +23,7 @@ namespace OAuth2.Tests.Client.Impl
         public void SetUp()
         {
             requestFactory = Substitute.For<IRequestFactory>();
-            requestFactory.NewClient().Execute(requestFactory.NewRequest()).StatusCode = HttpStatusCode.OK;
+            requestFactory.CreateClient().Execute(requestFactory.CreateRequest()).StatusCode = HttpStatusCode.OK;
             descendant = new FacebookClientDescendant(
                 requestFactory, Substitute.For<IClientConfiguration>());
         }
@@ -79,13 +79,13 @@ namespace OAuth2.Tests.Client.Impl
         public void Should_AddExtraParameters_WhenOnGetUserInfoIsCalled()
         {
             // arrange
-            requestFactory.NewClient().Execute(requestFactory.NewRequest()).Content.Returns(content);
+            requestFactory.CreateClient().Execute(requestFactory.CreateRequest()).Content.Returns(content);
 
             // act
             descendant.GetUserInfo(new NameValueCollection());
 
             // assert
-            requestFactory.NewRequest()
+            requestFactory.CreateRequest()
                 .Received(1)
                 .AddParameter(Arg.Is("fields"), Arg.Is("id,first_name,last_name,email,picture"));
         }

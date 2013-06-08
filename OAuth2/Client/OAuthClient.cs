@@ -107,12 +107,12 @@ namespace OAuth2.Client
         /// </summary>
         private NameValueCollection GetRequestToken()
         {
-            var client = _factory.NewClient();
+            var client = _factory.CreateClient();
             client.BaseUrl = RequestTokenServiceEndpoint.BaseUri;
             client.Authenticator = OAuth1Authenticator.ForRequestToken(
                 _configuration.ClientId, _configuration.ClientSecret, _configuration.RedirectUri);
 
-            var request = _factory.NewRequest();
+            var request = _factory.CreateRequest();
             request.Resource = RequestTokenServiceEndpoint.Resource;
             request.Method = Method.POST;
 
@@ -132,10 +132,10 @@ namespace OAuth2.Client
         /// <param name="state">Any additional information needed by application.</param>
         private string GetLoginRequestUri(NameValueCollection response, string state = null)
         {
-            var client = _factory.NewClient();
+            var client = _factory.CreateClient();
             client.BaseUrl = LoginServiceEndpoint.BaseUri;
 
-            var request = _factory.NewRequest();
+            var request = _factory.CreateRequest();
             request.Resource = LoginServiceEndpoint.Resource;
             var tokenKey = response[OAuthTokenKey];
 
@@ -167,12 +167,12 @@ namespace OAuth2.Client
         /// <returns>Access token and other extra info.</returns>
         private NameValueCollection GetAccessToken(string token, string verifier)
         {
-            var client = _factory.NewClient();
+            var client = _factory.CreateClient();
             client.BaseUrl = AccessTokenServiceEndpoint.BaseUri;
             client.Authenticator = OAuth1Authenticator.ForAccessToken(
                 _configuration.ClientId, _configuration.ClientSecret, token, _secret, verifier);
 
-            var request = _factory.NewRequest();
+            var request = _factory.CreateRequest();
             request.Resource = AccessTokenServiceEndpoint.Resource;
             request.Method = Method.POST;
 
@@ -188,12 +188,12 @@ namespace OAuth2.Client
             var token = AccessToken[OAuthTokenKey];
             var secret = AccessToken[OAuthTokenSecretKey];
 
-            var client = _factory.NewClient();
+            var client = _factory.CreateClient();
             client.BaseUrl = UserInfoServiceEndpoint.BaseUri;
             client.Authenticator = OAuth1Authenticator.ForProtectedResource(
                 _configuration.ClientId, _configuration.ClientSecret, token, secret);
 
-            var request = _factory.NewRequest();
+            var request = _factory.CreateRequest();
             request.Resource = UserInfoServiceEndpoint.Resource;
 
             var response = client.Execute(request);

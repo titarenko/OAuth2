@@ -36,8 +36,8 @@ namespace OAuth2.Tests.Client
             restClient.Execute(restRequest).Returns(restResponse);
 
             factory = Substitute.For<IRequestFactory>();
-            factory.NewClient().Returns(restClient);
-            factory.NewRequest().Returns(restRequest);
+            factory.CreateClient().Returns(restClient);
+            factory.CreateRequest().Returns(restRequest);
 
             var configuration = Substitute.For<IClientConfiguration>();
 
@@ -82,8 +82,8 @@ namespace OAuth2.Tests.Client
             // assert
             uri.Should().Be("https://login-link.net/");
 
-            factory.Received(1).NewClient();
-            factory.Received(1).NewRequest();
+            factory.Received(1).CreateClient();
+            factory.Received(1).CreateRequest();
 
             restClient.Received(1).BaseUrl = "https://AccessCodeServiceEndpoint";
             restRequest.Received(1).Resource = "/AccessCodeServiceEndpoint";
