@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using System.Net;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
@@ -23,12 +22,60 @@ namespace OAuth2.Client
 
         private string _secret;
 
-        public object AccessToken { get; private set; }
-
         /// <summary>
         /// Friendly name of provider (OAuth service).
         /// </summary>
         public abstract string Name { get; }
+
+        /// <summary>
+        /// State which was posted as additional parameter
+        /// to service and then received along with main answer.
+        /// </summary>
+        public string State { get; private set; }
+
+        /// <summary>
+        /// Access token received from service. Can be used for further service API calls.
+        /// </summary>
+        public NameValueCollection AccessToken { get; private set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OAuthClient" /> class.
+        /// </summary>
+        /// <param name="factory">The factory.</param>
+        /// <param name="configuration">The configuration.</param>
+        protected OAuthClient(IRequestFactory factory, IClientConfiguration configuration)
+        {
+            _factory = factory;
+            _configuration = configuration;
+        }
+
+        /// <summary>
+        /// Returns URI of service which should be called in order to start authentication process.
+        /// You should use this URI when rendering login link.
+        /// </summary>
+        /// <param name="state">Any additional information needed by application.</param>
+        /// <returns>Login link URI.</returns>
+        public string GetLoginLinkUri(string state = null)
+        {
+            return GetLoginRequestUri(GetRequestToken(), state);
+        }
+
+        /// <summary>
+        /// Obtains user information using third-party authentication service
+        /// using data provided via callback request.
+        /// </summary>
+        /// <param name="parameters">Callback request payload (parameters).
+        /// <example>Request.QueryString</example></param>
+        /// <returns></returns>
+        public UserInfo GetUserInfo(NameValueCollection parameters)
+        {
+            var token = parameters[OAuthTokenKey];
+            var verifier = parameters["oauth_verifier"];
+
+            AccessToken = GetAccessToken(token, verifier);
+
+            return QueryUserInfo();
+        }
 
         /// <summary>
         /// Defines URI of service which is called for obtaining request token.
@@ -51,36 +98,9 @@ namespace OAuth2.Client
         protected abstract Endpoint UserInfoServiceEndpoint { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OAuthClient" /> class.
+        /// Should return parsed <see cref="UserInfo"/> using content of callback issued by service.
         /// </summary>
-        /// <param name="factory">The factory.</param>
-        /// <param name="configuration">The configuration.</param>
-        protected OAuthClient(IRequestFactory factory, IClientConfiguration configuration)
-        {
-            _factory = factory;
-            _configuration = configuration;
-        }
-
-        /// <summary>
-        /// Returns URI of service which should be called in order to start authentication process.
-        /// You should use this URI when rendering login link.
-        /// </summary>
-        /// <param name="state">Any additional information needed by application.</param>
-        /// <returns></returns>
-        public string GetLoginLinkUri(string state = null)
-        {
-            return GetLoginRequestUri(GetRequestToken(), state);
-        }
-
-        public string State { get; private set; }
-
-        public void Finalize(NameValueCollection parameters)
-        {
-            var token = parameters[OAuthTokenKey];
-            var verifier = parameters["oauth_verifier"];
-
-            this.AccessToken = this.GetAccessToken(token, verifier);            
-        }
+        protected abstract UserInfo ParseUserInfo(string content);
 
         /// <summary>
         /// Issues request for request token and returns result.
@@ -140,20 +160,6 @@ namespace OAuth2.Client
         }
 
         /// <summary>
-        /// Obtains user information using third-party authentication service
-        /// using data provided via callback request.
-        /// </summary>
-        /// <param name="parameters">Callback request payload (parameters).
-        /// <example>Request.QueryString</example></param>
-        /// <returns></returns>
-        public UserInfo GetUserInfo(NameValueCollection parameters)
-        {
-            this.Finalize(parameters);
-
-            return QueryUserInfo(this.AccessToken as NameValueCollection);
-        }
-
-        /// <summary>
         /// Obtains access token by calling corresponding service.
         /// </summary>
         /// <param name="token">Token posted with callback issued by provider.</param>
@@ -177,11 +183,10 @@ namespace OAuth2.Client
         /// <summary>
         /// Queries user info using corresponding service and data received by access token request.
         /// </summary>
-        /// <param name="parameters">Access token request result.</param>
-        private UserInfo QueryUserInfo(NameValueCollection parameters)
+        private UserInfo QueryUserInfo()
         {
-            var token = parameters[OAuthTokenKey];
-            var secret = parameters[OAuthTokenSecretKey];
+            var token = AccessToken[OAuthTokenKey];
+            var secret = AccessToken[OAuthTokenSecretKey];
 
             var client = _factory.NewClient();
             client.BaseUrl = UserInfoServiceEndpoint.BaseUri;
@@ -198,10 +203,5 @@ namespace OAuth2.Client
 
             return result;
         }
-
-        /// <summary>
-        /// Should return parsed <see cref="UserInfo"/> using content of callback issued by service.
-        /// </summary>
-        protected abstract UserInfo ParseUserInfo(string content);
     }
 }
