@@ -49,9 +49,9 @@ namespace OAuth2.Client
         /// Returns URI of service which should be called in order to start authentication process.
         /// This URI should be used for rendering login link.
         /// </summary>
-        /// <remarks>
+        /// <param name="state">
         /// Any additional information that will be posted back by service.
-        /// </remarks>
+        /// </param>
         public virtual string GetLoginLinkUri(string state = null)
         {
             var client = _factory.CreateClient(AccessCodeServiceEndpoint);
@@ -68,8 +68,7 @@ namespace OAuth2.Client
         }
 
         /// <summary>
-        /// Obtains user information using OAuth2 service and
-        /// data provided via callback request.
+        /// Obtains user information using OAuth2 service and data provided via callback request.
         /// </summary>
         /// <param name="parameters">Callback request payload (parameters).</param>
         public UserInfo GetUserInfo(NameValueCollection parameters)
@@ -207,34 +206,6 @@ namespace OAuth2.Client
             result.ProviderName = Name;
 
             return result;
-        }
-
-        public class BeforeAfterRequestArgs
-        {
-            /// <summary>
-            /// Client instance.
-            /// </summary>
-            public IRestClient Client { get; set; }
-
-            /// <summary>
-            /// Request instance.
-            /// </summary>
-            public IRestRequest Request { get; set; }
-
-            /// <summary>
-            /// Response instance.
-            /// </summary>
-            public IRestResponse Response { get; set; }
-
-            /// <summary>
-            /// Values received from service.
-            /// </summary>
-            public NameValueCollection Parameters { get; set; }
-
-            /// <summary>
-            /// Client configuration.
-            /// </summary>
-            public IClientConfiguration Configuration { get; set; }
         }
     }
 }

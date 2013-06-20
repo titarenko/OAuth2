@@ -8,12 +8,12 @@ namespace OAuth2.Client
     /// </summary>
     /// <remarks>
     /// Standard flow is:
-    /// - client is used for generation of URI for login link (<see cref="GetLoginLinkUri"/>)
-    /// - hosting app renders page with login link using aforementioned URI
+    /// - client is used to generate login link (<see cref="GetLoginLinkUri"/>)
+    /// - hosting app renders page with generated login link
     /// - user clicks login link - this leads to redirect to third-party service site
-    /// - user does authentication and allows app access his/her basic information
+    /// - user authenticates and allows app access their basic information
     /// - third-party service redirects user to hosting app
-    /// - hosting app reads user information using <see cref="GetUserInfo"/> method on callback
+    /// - hosting app reads user information using <see cref="GetUserInfo"/> method
     /// </remarks>
     public interface IClient
     {
