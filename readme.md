@@ -144,6 +144,18 @@ This library is dependent on:
 - Sascha Kiefer (simplified extending library with own provider implementations, added GitHub client)
 - Krisztián Pócza (added LinkedIn (OAuth 2) client)
 
+## Acknowledgements ##
+
+Many thanks to [JetBrains](http://www.jetbrains.com/) company for providing free OSS licenses 
+for [ReSharper](http://www.jetbrains.com/resharper/) and [dotCover](http://www.jetbrains.com/dotcover/) - 
+these tools allow us to work on this project with pleasure!
+
+Also we glad to have opportunity to use free [Teamcity](http://www.jetbrains.com/teamcity/) CI server 
+provided by [Codebetter.com](http://codebetter.com/) and [JetBrains](http://www.jetbrains.com/) - 
+many thanks for supporting OSS!
+
+![JetBrains](http://www.jetbrains.com/img/banners/Codebetter300x250.png)
+
 ## Roadmap ##
 
 - Implement more acceptance tests
