@@ -6,6 +6,10 @@ OAuth2 is a library for user authentication using third-party services (OAuth/OA
 
 Current version is 0.8. Status is "release candidate" - despite we already have several real life projects built with usage of this library, we will change status to "stable" only after comprehensive set of acceptance tests is ready and runs successfuly.
 
+[Recent Build Status](http://teamcity.codebetter.com/viewType.html?buildTypeId=bt1045&guest=1) 
+
+![Recent Build Status](http://teamcity.codebetter.com/app/rest/builds/buildType:%28id:bt1045%29/statusIcon)
+
 ## Standard Flow ##
 
 Following are the steps of standard flow:
