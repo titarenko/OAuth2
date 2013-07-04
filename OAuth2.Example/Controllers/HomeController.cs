@@ -36,7 +36,7 @@ namespace OAuth2.Example.Controllers
         {
             var model = authorizationRoot.Clients.Select(client => new LoginInfoModel
                 {
-                    ProviderName = client.ProviderName
+                    ProviderName = client.Name
                 });
             return View(model);
         }
@@ -60,7 +60,7 @@ namespace OAuth2.Example.Controllers
 
         private IClient GetClient()
         {
-            return authorizationRoot.Clients.First(c => c.ProviderName == ProviderName);
+            return authorizationRoot.Clients.First(c => c.Name == ProviderName);
         }
     }
 }
