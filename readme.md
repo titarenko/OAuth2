@@ -151,14 +151,19 @@ This library is dependent on:
 ## Acknowledgements ##
 
 Many thanks to [JetBrains](http://www.jetbrains.com/) company for providing free OSS licenses 
-for [ReSharper](http://www.jetbrains.com/resharper/) and [dotCover](http://www.jetbrains.com/dotcover/) - 
+for [**ReSharper**](http://www.jetbrains.com/resharper/) and [**dotCover**](http://www.jetbrains.com/dotcover/) - 
 these tools allow us to work on this project with pleasure!
 
-Also we glad to have opportunity to use free [Teamcity](http://www.jetbrains.com/teamcity/) CI server 
+Also we glad to have opportunity to use free [**Teamcity**](http://www.jetbrains.com/teamcity/) CI server 
 provided by [Codebetter.com](http://codebetter.com/) and [JetBrains](http://www.jetbrains.com/) - 
 many thanks for supporting OSS!
 
 ![JetBrains](http://www.jetbrains.com/img/banners/Codebetter300x250.png)
+
+OAuth2 optimization would never be so simple without YourKit .NET profiler! 
+We appreciate kind support of open source projects by YourKit LLC - 
+the creator of innovative and intelligent tools for profiling .NET [**YourKit .NET Profiler**](http://www.yourkit.com/.net/profiler/index.jsp) 
+and Java applications [YourKit Java Profiler](http://www.yourkit.com/java/profiler/index.jsp).
 
 ## Roadmap ##
 
