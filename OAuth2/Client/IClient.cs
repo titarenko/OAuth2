@@ -1,4 +1,5 @@
 using System.Collections.Specialized;
+using OAuth2.Configuration;
 using OAuth2.Models;
 
 namespace OAuth2.Client
@@ -44,5 +45,10 @@ namespace OAuth2.Client
         /// <example>Request.QueryString</example>
         /// </param>
         UserInfo GetUserInfo(NameValueCollection parameters);
+
+        /// <summary>
+        /// Client configuration object.
+        /// </summary>
+        IClientConfiguration Configuration { get; }
     }
 }

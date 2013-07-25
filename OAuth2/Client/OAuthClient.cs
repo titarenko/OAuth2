@@ -18,7 +18,11 @@ namespace OAuth2.Client
         private const string OAuthTokenSecretKey = "oauth_token_secret";
 
         private readonly IRequestFactory _factory;
-        private readonly IClientConfiguration _configuration;
+
+        /// <summary>
+        /// Client configuration object.
+        /// </summary>
+        public IClientConfiguration Configuration { get; private set; }
 
         /// <summary>
         /// Friendly name of provider (OAuth service).
@@ -49,7 +53,7 @@ namespace OAuth2.Client
         protected OAuthClient(IRequestFactory factory, IClientConfiguration configuration)
         {
             _factory = factory;
-            _configuration = configuration;
+            Configuration = configuration;
         }
 
         /// <summary>
@@ -118,7 +122,7 @@ namespace OAuth2.Client
         {
             var client = _factory.CreateClient(RequestTokenServiceEndpoint);
             client.Authenticator = OAuth1Authenticator.ForRequestToken(
-                _configuration.ClientId, _configuration.ClientSecret, _configuration.RedirectUri);
+                Configuration.ClientId, Configuration.ClientSecret, Configuration.RedirectUri);
             
             var request = _factory.CreateRequest(RequestTokenServiceEndpoint, Method.POST);
             
@@ -156,7 +160,7 @@ namespace OAuth2.Client
         {
             var client = _factory.CreateClient(AccessTokenServiceEndpoint);
             client.Authenticator = OAuth1Authenticator.ForAccessToken(
-                _configuration.ClientId, _configuration.ClientSecret, AccessToken, AccessTokenSecret, verifier);
+                Configuration.ClientId, Configuration.ClientSecret, AccessToken, AccessTokenSecret, verifier);
 
             var request = _factory.CreateRequest(AccessTokenServiceEndpoint, Method.POST);
 
@@ -174,7 +178,7 @@ namespace OAuth2.Client
         {
             var client = _factory.CreateClient(UserInfoServiceEndpoint);
             client.Authenticator = OAuth1Authenticator.ForProtectedResource(
-                _configuration.ClientId, _configuration.ClientSecret, AccessToken, AccessTokenSecret);
+                Configuration.ClientId, Configuration.ClientSecret, AccessToken, AccessTokenSecret);
 
             var request = _factory.CreateRequest(UserInfoServiceEndpoint);
             

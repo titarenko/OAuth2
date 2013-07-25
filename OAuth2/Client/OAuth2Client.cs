@@ -17,7 +17,11 @@ namespace OAuth2.Client
         private const string AccessTokenKey = "access_token";
 
         private readonly IRequestFactory _factory;
-        private readonly IClientConfiguration _configuration;
+
+        /// <summary>
+        /// Client configuration object.
+        /// </summary>
+        public IClientConfiguration Configuration { get; private set; }
 
         /// <summary>
         /// Friendly name of provider (OAuth2 service).
@@ -42,7 +46,7 @@ namespace OAuth2.Client
         protected OAuth2Client(IRequestFactory factory, IClientConfiguration configuration)
         {
             _factory = factory;
-            _configuration = configuration;
+            Configuration = configuration;
         }
 
         /// <summary>
@@ -59,9 +63,9 @@ namespace OAuth2.Client
             request.AddObject(new
             {
                 response_type = "code",
-                client_id = _configuration.ClientId,
-                redirect_uri = _configuration.RedirectUri,
-                scope = _configuration.Scope,
+                client_id = Configuration.ClientId,
+                redirect_uri = Configuration.RedirectUri,
+                scope = Configuration.Scope,
                 state
             });
             return client.BuildUri(request).ToString();
@@ -116,7 +120,7 @@ namespace OAuth2.Client
                 Client = client,
                 Request = request,
                 Parameters = parameters,
-                Configuration = _configuration
+                Configuration = Configuration
             });
 
             var response = client.ExecuteAndVerify(request);
@@ -161,9 +165,9 @@ namespace OAuth2.Client
             args.Request.AddObject(new
             {
                 code = args.Parameters.GetOrThrowUnexpectedResponse("code"),
-                client_id = _configuration.ClientId,
-                client_secret = _configuration.ClientSecret,
-                redirect_uri = _configuration.RedirectUri,
+                client_id = Configuration.ClientId,
+                client_secret = Configuration.ClientSecret,
+                redirect_uri = Configuration.RedirectUri,
                 grant_type = "authorization_code"
             });
         }
@@ -197,7 +201,7 @@ namespace OAuth2.Client
             {
                 Client = client,
                 Request = request,
-                Configuration = _configuration
+                Configuration = Configuration
             });
 
             var response = client.ExecuteAndVerify(request);
