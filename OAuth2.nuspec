@@ -17,6 +17,6 @@
         </dependencies>
     </metadata>
     <files>
-        <file src=".\OAuth2\bin\Release\OAuth2.dll" target="lib\OAuth2.dll" />
+        <file src="OAuth2\bin\Release\OAuth2.dll" target="lib\OAuth2.dll" />
     </files>
 </package>
