@@ -23,6 +23,7 @@ namespace OAuth2.Configuration
         public string ClientTypeName
         {
             get { return (string) this[ClientTypeNameKey]; }
+            set { this[ClientTypeNameKey] = value; }
         }
         
         /// <summary>
@@ -32,6 +33,7 @@ namespace OAuth2.Configuration
         public string ClientId
         {
             get { return (string) this[ClientIdKey]; }
+            set { this[ClientIdKey] = value; }
         }
 
         /// <summary>
@@ -41,6 +43,7 @@ namespace OAuth2.Configuration
         public bool IsEnabled
         {
             get { return (bool)this[EnabledKey]; }
+            set { this[EnabledKey] = value; }
         }
 
         /// <summary>
@@ -50,6 +53,7 @@ namespace OAuth2.Configuration
         public string ClientSecret
         {
             get { return (string) this[ClientSecretKey]; }
+            set { this[ClientSecretKey] = value; }
         }
 
         /// <summary>
@@ -59,6 +63,7 @@ namespace OAuth2.Configuration
         public string ClientPublic
         {
             get { return (string)this[ClientPublicKey]; }
+            set { this[ClientPublicKey] = value; }
         }
 
         /// <summary>
@@ -68,6 +73,7 @@ namespace OAuth2.Configuration
         public string Scope
         {
             get { return (string) this[ScopeKey]; }
+            set { this[ScopeKey] = value; }
         }
 
         /// <summary>
@@ -80,6 +86,10 @@ namespace OAuth2.Configuration
             get
             {
                 return UriUtility.ToAbsolute((string) this[RedirectUriKey]);
+            }
+            set
+            {
+            	this[RedirectUriKey] = value;
             }
         }
     }
