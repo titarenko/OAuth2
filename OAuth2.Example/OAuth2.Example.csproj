@@ -88,9 +88,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Version.cs">
-      <Link>Properties\Version.cs</Link>
-    </Compile>
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Global.asax.cs">

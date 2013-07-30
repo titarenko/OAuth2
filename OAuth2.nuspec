@@ -3,7 +3,7 @@
     <metadata>
         <id>OAuth2</id>
         <version>$version$</version>
-        <authors>Constantin Titarenko, Andrew Semack and others</authors>
+        <authors>Constantin Titarenko,Andrew Semack and others</authors>
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <projectUrl>https://github.com/titarenko/OAuth2</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
