@@ -74,6 +74,7 @@
     <Compile Include="Configuration\IClientConfiguration.cs" />
     <Compile Include="Configuration\OAuth2ConfigurationSection.cs" />
     <Compile Include="Configuration\ClientConfiguration.cs" />
+    <Compile Include="Configuration\RuntimeClientConfiguration.cs" />
     <Compile Include="Configuration\ServiceCollection.cs" />
     <Compile Include="Infrastructure\EnumerableExtensions.cs" />
     <Compile Include="Infrastructure\IRequestFactory.cs" />
