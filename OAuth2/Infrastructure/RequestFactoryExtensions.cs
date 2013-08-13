@@ -1,5 +1,6 @@
-﻿using OAuth2.Client;
+using OAuth2.Client;
 using RestSharp;
+using System.Net;
 
 namespace OAuth2.Infrastructure
 {
@@ -9,6 +10,9 @@ namespace OAuth2.Infrastructure
         {
             var client = factory.CreateClient();
             client.BaseUrl = endpoint.BaseUri;
+            IWebProxy webProxy = WebRequest.DefaultWebProxy;
+            webProxy.Credentials = CredentialCache.DefaultNetworkCredentials;
+            client.Proxy = webProxy;
             return client;
         }
 
