@@ -72,8 +72,10 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            // Source document 
+            // Source documents 
             // https://developer.foursquare.com/overview/auth.html
+            // https://developer.foursquare.com/overview/versioning
+            args.Request.AddParameter("v", System.DateTime.Now.ToString("yyyyMMdd"));
         }
 
         /// <summary>
@@ -89,7 +91,8 @@ namespace OAuth2.Client.Impl
                 FirstName = response["response"]["user"]["firstName"].Value<string>(),
                 LastName = response["response"]["user"]["lastName"].Value<string>(),
                 Email = response["response"]["user"]["contact"]["email"].Value<string>(),
-                PhotoUri = response["response"]["user"]["photo"].Value<string>()
+                PhotoUri = response["response"]["user"]["photo"]["prefix"].Value<string>()
+                         + response["response"]["user"]["photo"]["suffix"].Value<string>()
             };
         }
 
