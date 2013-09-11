@@ -77,17 +77,20 @@ namespace OAuth2.Client
         /// <param name="parameters">Callback request payload (parameters).</param>
         public UserInfo GetUserInfo(NameValueCollection parameters)
         {
-            const string errorFieldName = "error";
-            var error = parameters[errorFieldName];
-            if (!error.IsEmpty())
-            {
-                throw new UnexpectedResponseException(errorFieldName);
-            }
-
-            State = parameters["state"];
-
+            CheckErrorAndSetState(parameters);
             QueryAccessToken(parameters);
             return GetUserInfo();
+        }
+
+        /// <summary>
+        /// Issues query for access token and returns access token.
+        /// </summary>
+        /// <param name="parameters">Callback request payload (parameters).</param>
+        public string GetToken(NameValueCollection parameters)
+        {
+            CheckErrorAndSetState(parameters);
+            QueryAccessToken(parameters);
+            return AccessToken;
         }
 
         /// <summary>
@@ -105,6 +108,18 @@ namespace OAuth2.Client
         /// who is currently logged in.
         /// </summary>
         protected abstract Endpoint UserInfoServiceEndpoint { get; }
+
+        private void CheckErrorAndSetState(NameValueCollection parameters)
+        {
+            const string errorFieldName = "error";
+            var error = parameters[errorFieldName];
+            if (!error.IsEmpty())
+            {
+                throw new UnexpectedResponseException(errorFieldName);
+            }
+
+            State = parameters["state"];
+        }
 
         /// <summary>
         /// Issues query for access token and parses response.
