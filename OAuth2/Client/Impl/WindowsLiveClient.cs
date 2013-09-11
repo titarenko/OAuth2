@@ -16,7 +16,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        public WindowsLiveClient(IRequestFactory factory, IClientConfiguration configuration) 
+        public WindowsLiveClient(IRequestFactory factory, IClientConfiguration configuration)
             : base(factory, configuration)
         {
         }
@@ -72,7 +72,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-           args.Request.AddParameter("access_token", AccessToken);
+            args.Request.AddParameter("access_token", AccessToken);
         }
 
         /// <summary>
@@ -82,13 +82,19 @@ namespace OAuth2.Client.Impl
         protected override UserInfo ParseUserInfo(string content)
         {
             var response = JObject.Parse(content);
+            const string photoUriTemplate = @"https://cid-{0}.users.storage.live.com/users/0x{0}/myprofile/expressionprofile/profilephoto:Win8Static,{1},UserTileStatic/MeControlXXLUserTile?ck=2&ex=24";
             return new UserInfo
             {
                 Id = response["id"].Value<string>(),
                 FirstName = response["first_name"].Value<string>(),
                 LastName = response["last_name"].Value<string>(),
                 Email = response["emails"]["preferred"].Value<string>(),
-                PhotoUri = string.Format("https://cid-{0}.users.storage.live.com/users/0x{0}/myprofile/expressionprofile/profilephoto:Win8Static,UserTileSmall,UserTileStatic/MeControlXXLUserTile?ck=2&ex=24", response["id"].Value<string>())
+                AvatarUri =
+                    {
+                        Small = string.Format(photoUriTemplate, response["id"].Value<string>(), "UserTileSmall"),
+                        Normal = string.Format(photoUriTemplate, response["id"].Value<string>(), "UserTileSmall"),
+                        Large = string.Format(photoUriTemplate, response["id"].Value<string>(), "UserTileLarge")
+                    }
             };
         }
 

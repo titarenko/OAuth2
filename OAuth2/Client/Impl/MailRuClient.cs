@@ -110,7 +110,12 @@ namespace OAuth2.Client.Impl
                 FirstName = response[0]["first_name"].Value<string>(),
                 LastName = response[0]["last_name"].Value<string>(),
                 Email = response[0]["email"].Value<string>(),
-                PhotoUri = response[0]["pic"].Value<string>()
+                AvatarUri =
+                    {
+                        Small = null,
+                        Normal = response[0]["pic"].Value<string>(),
+                        Large = null
+                    }
             };
         }
 

@@ -73,6 +73,7 @@ namespace OAuth2.Client.Impl
             get { return "Google"; }
         }
 
+
         /// <summary>
         /// Should return parsed <see cref="UserInfo"/> from content received from third-party service.
         /// </summary>
@@ -86,7 +87,12 @@ namespace OAuth2.Client.Impl
                 Email = response["email"].Value<string>(),
                 FirstName = response["given_name"].Value<string>(),
                 LastName = response["family_name"].Value<string>(),
-                PhotoUri = response["picture"].SafeGet(x => x.Value<string>())
+                AvatarUri =
+                    {
+                        Small = response["picture"].SafeGet(x => x.Value<string>())+"?sz=30",
+                        Normal = response["picture"].SafeGet(x => x.Value<string>()),
+                        Large = response["picture"].SafeGet(x => x.Value<string>()) + "?sz=200"
+                    }
             };
         }
     }

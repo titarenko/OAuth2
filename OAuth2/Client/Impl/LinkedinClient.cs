@@ -97,9 +97,15 @@ namespace OAuth2.Client.Impl
                 Id = document.XPathSelectElement("/person/id").Value,
                 FirstName = document.XPathSelectElement("/person/first-name").Value,
                 LastName = document.XPathSelectElement("/person/last-name").Value,
-                PhotoUri = SafeGet(document, "/person/picture-url"),
+                AvatarUri =
+                    {
+                        Small = SafeGet(document, "/person/picture-url").Replace("shrink_80_80","shrink_30_30"),
+                        Normal = SafeGet(document, "/person/picture-url"),
+                        Large =  SafeGet(document, "/person/picture-url").Replace("shrink_80_80","shrink_200_200")
+                    }
             };            
         }
+
 
         private string SafeGet(XDocument document, string path)
         {

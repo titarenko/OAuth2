@@ -85,14 +85,23 @@ namespace OAuth2.Client.Impl
         protected override UserInfo ParseUserInfo(string content)
         {
             var response = JObject.Parse(content);
+            string avatarUriTemplate = response["response"]["user"]["photo"]["prefix"].Value<string>()+"{0}"
+                         + response["response"]["user"]["photo"]["suffix"].Value<string>();
+
             return new UserInfo
             {
+
                 Id = response["response"]["user"]["id"].Value<string>(),
                 FirstName = response["response"]["user"]["firstName"].Value<string>(),
                 LastName = response["response"]["user"]["lastName"].Value<string>(),
-                Email = response["response"]["user"]["contact"]["email"].Value<string>(),
-                PhotoUri = response["response"]["user"]["photo"]["prefix"].Value<string>()
-                         + response["response"]["user"]["photo"]["suffix"].Value<string>()
+                Email = response["response"]["user"]["contact"]["email"].Value<string>(),                
+                AvatarUri =
+                {
+                    // Defined photo sizes https://developer.foursquare.com/docs/responses/photo
+                    Small = string.Format(avatarUriTemplate, "36x36"),
+                    Normal = string.Format(avatarUriTemplate, string.Empty),
+                    Large = string.Format(avatarUriTemplate, "300x300")
+                }
             };
         }
 

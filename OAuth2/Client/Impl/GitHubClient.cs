@@ -38,15 +38,21 @@ namespace OAuth2.Client.Impl
             var cnt = JObject.Parse(content);
 
             var names = cnt["name"].Value<string>().Split(' ').ToList();
-            return new UserInfo
-            {
-                Email = cnt["email"].Value<string>(),
-                ProviderName = this.Name,
-                PhotoUri = cnt["avatar_url"].Value<string>(),
-                Id = cnt["id"].Value<string>(),
-                FirstName = names.Count > 0 ? names.First() : cnt["login"].Value<string>(),
-                LastName = names.Count > 1 ? names.Last() : string.Empty,
-            };
+            var result = new UserInfo
+                {
+                    Email = cnt["email"].Value<string>(),
+                    ProviderName = this.Name,
+                    Id = cnt["id"].Value<string>(),
+                    FirstName = names.Count > 0 ? names.First() : cnt["login"].Value<string>(),
+                    LastName = names.Count > 1 ? names.Last() : string.Empty,
+                    AvatarUri =
+                        {
+                            Small = cnt["avatar_url"].Value<string>()+"&s=30",
+                            Normal = cnt["avatar_url"].Value<string>(),
+                            Large = cnt["avatar_url"].Value<string>() + "&s=200"
+                        }
+                };
+            return result;
         }
 
         /// <summary>
@@ -79,6 +85,6 @@ namespace OAuth2.Client.Impl
         protected override Endpoint UserInfoServiceEndpoint
         {
             get { return new Endpoint { BaseUri = "https://api.github.com/", Resource = "/user" }; }
-        }        
+        }
     }
 }

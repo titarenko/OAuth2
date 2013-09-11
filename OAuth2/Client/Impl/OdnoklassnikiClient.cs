@@ -113,11 +113,15 @@ namespace OAuth2.Client.Impl
             {
                 Id = response["uid"].Value<string>(),
                 FirstName = response["first_name"].Value<string>(),
-                LastName = response["last_name"].Value<string>(),
-                PhotoUri = response["pic_1"].Value<string>()
+                LastName = response["last_name"].Value<string>(),                
+                AvatarUri =
+                    {
+                        Small = null,
+                        Normal = response["pic_1"].Value<string>(),
+                        Large = response["pic_1"].Value<string>().Replace("&photoType=4", "&photoType=6")
+                    }                
             };
         }
-
         /// <summary>
         /// Friendly name of provider (OAuth2 service).
         /// </summary>

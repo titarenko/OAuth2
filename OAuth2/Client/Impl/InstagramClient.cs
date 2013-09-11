@@ -87,9 +87,14 @@ namespace OAuth2.Client.Impl
             return new UserInfo
             {
                 Id = response["user"]["id"].Value<string>(),
-                FirstName = names.Count() > 0 ? names.First() : response["user"]["username"].Value<string>(),
+                FirstName = names.Any() ? names.First() : response["user"]["username"].Value<string>(),
                 LastName = names.Count() > 1 ? names.Last() : string.Empty,
-                PhotoUri = response["user"]["profile_picture"].Value<string>()
+                AvatarUri =
+                    {
+                        Small = null,
+                        Normal = response["user"]["profile_picture"].Value<string>(),
+                        Large = null
+                    }
             };
         }
 

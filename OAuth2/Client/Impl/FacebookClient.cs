@@ -15,7 +15,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        public FacebookClient(IRequestFactory factory, IClientConfiguration configuration) 
+        public FacebookClient(IRequestFactory factory, IClientConfiguration configuration)
             : base(factory, configuration)
         {
         }
@@ -87,7 +87,12 @@ namespace OAuth2.Client.Impl
                 FirstName = response["first_name"].Value<string>(),
                 LastName = response["last_name"].Value<string>(),
                 Email = response["email"].Value<string>(),
-                PhotoUri = response["picture"]["data"]["url"].Value<string>()
+                AvatarUri =
+                {
+                    Small = response["picture"]["data"]["url"].Value<string>() + "?type=small",
+                    Normal = response["picture"]["data"]["url"].Value<string>() + "?type=normal",
+                    Large = response["picture"]["data"]["url"].Value<string>() + "?type=large"
+                }
             };
         }
 
