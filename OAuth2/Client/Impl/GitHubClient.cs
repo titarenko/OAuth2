@@ -36,8 +36,9 @@ namespace OAuth2.Client.Impl
         protected override UserInfo ParseUserInfo(string content)
         {
             var cnt = JObject.Parse(content);
-
             var names = cnt["name"].Value<string>().Split(' ').ToList();
+            const string avatarUriTemplate = "{0}&s={1}";
+            var avatarUri = cnt["avatar_url"].Value<string>();
             var result = new UserInfo
                 {
                     Email = cnt["email"].Value<string>(),
@@ -47,9 +48,9 @@ namespace OAuth2.Client.Impl
                     LastName = names.Count > 1 ? names.Last() : string.Empty,
                     AvatarUri =
                         {
-                            Small = cnt["avatar_url"].Value<string>()+"&s=30",
-                            Normal = cnt["avatar_url"].Value<string>(),
-                            Large = cnt["avatar_url"].Value<string>() + "&s=200"
+                            Small = !string.IsNullOrWhiteSpace(avatarUri) ? string.Format(avatarUriTemplate, avatarUri, AvatarInfo.SmallSize) : string.Empty,
+                            Normal = avatarUri,
+                            Large = !string.IsNullOrWhiteSpace(avatarUri) ? string.Format(avatarUriTemplate, avatarUri, AvatarInfo.LargeSize) : string.Empty
                         }
                 };
             return result;

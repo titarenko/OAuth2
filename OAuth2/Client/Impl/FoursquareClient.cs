@@ -85,9 +85,10 @@ namespace OAuth2.Client.Impl
         protected override UserInfo ParseUserInfo(string content)
         {
             var response = JObject.Parse(content);
-            string avatarUriTemplate = response["response"]["user"]["photo"]["prefix"].Value<string>()+"{0}"
-                         + response["response"]["user"]["photo"]["suffix"].Value<string>();
-
+            var prefix = response["response"]["user"]["photo"]["prefix"].Value<string>();
+            var suffix = response["response"]["user"]["photo"]["suffix"].Value<string>();
+            const string avatarUriTemplate = "{0}{1}{2}";
+            const string avatarSizeTemplate = "{0}x{0}";
             return new UserInfo
             {
 
@@ -98,9 +99,9 @@ namespace OAuth2.Client.Impl
                 AvatarUri =
                 {
                     // Defined photo sizes https://developer.foursquare.com/docs/responses/photo
-                    Small = string.Format(avatarUriTemplate, "36x36"),
-                    Normal = string.Format(avatarUriTemplate, string.Empty),
-                    Large = string.Format(avatarUriTemplate, "300x300")
+                    Small = !string.IsNullOrWhiteSpace(prefix) ? string.Format(avatarUriTemplate, prefix, string.Format(avatarSizeTemplate, AvatarInfo.SmallSize), suffix) : string.Empty,
+                    Normal = !string.IsNullOrWhiteSpace(prefix) ? string.Format(avatarUriTemplate, prefix, string.Empty, suffix) : string.Empty,
+                    Large = !string.IsNullOrWhiteSpace(prefix) ? string.Format(avatarUriTemplate, prefix, string.Format(avatarSizeTemplate, AvatarInfo.LargeSize), suffix) : string.Empty
                 }
             };
         }

@@ -84,6 +84,7 @@ namespace OAuth2.Client.Impl
         {
             var response = JObject.Parse(_accessTokenResponseContent);
             var names = response["user"]["full_name"].Value<string>().Split(' ');
+            var avatarUri = response["user"]["profile_picture"].Value<string>();
             return new UserInfo
             {
                 Id = response["user"]["id"].Value<string>(),
@@ -92,7 +93,7 @@ namespace OAuth2.Client.Impl
                 AvatarUri =
                     {
                         Small = null,
-                        Normal = response["user"]["profile_picture"].Value<string>(),
+                        Normal = avatarUri,
                         Large = null
                     }
             };

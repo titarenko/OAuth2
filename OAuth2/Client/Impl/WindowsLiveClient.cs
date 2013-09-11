@@ -82,7 +82,7 @@ namespace OAuth2.Client.Impl
         protected override UserInfo ParseUserInfo(string content)
         {
             var response = JObject.Parse(content);
-            const string photoUriTemplate = @"https://cid-{0}.users.storage.live.com/users/0x{0}/myprofile/expressionprofile/profilephoto:Win8Static,{1},UserTileStatic/MeControlXXLUserTile?ck=2&ex=24";
+            const string avatarUriTemplate = @"https://cid-{0}.users.storage.live.com/users/0x{0}/myprofile/expressionprofile/profilephoto:Win8Static,{1},UserTileStatic/MeControlXXLUserTile?ck=2&ex=24";
             return new UserInfo
             {
                 Id = response["id"].Value<string>(),
@@ -91,9 +91,9 @@ namespace OAuth2.Client.Impl
                 Email = response["emails"]["preferred"].Value<string>(),
                 AvatarUri =
                     {
-                        Small = string.Format(photoUriTemplate, response["id"].Value<string>(), "UserTileSmall"),
-                        Normal = string.Format(photoUriTemplate, response["id"].Value<string>(), "UserTileSmall"),
-                        Large = string.Format(photoUriTemplate, response["id"].Value<string>(), "UserTileLarge")
+                        Small = string.Format(avatarUriTemplate, response["id"].Value<string>(), "UserTileSmall"),
+                        Normal = string.Format(avatarUriTemplate, response["id"].Value<string>(), "UserTileSmall"),
+                        Large = string.Format(avatarUriTemplate, response["id"].Value<string>(), "UserTileLarge")
                     }
             };
         }

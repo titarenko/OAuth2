@@ -109,6 +109,7 @@ namespace OAuth2.Client.Impl
         protected override UserInfo ParseUserInfo(string content)
         {
             var response = JObject.Parse(content);
+            var avatarUri = response["pic_1"].Value<string>();
             return new UserInfo
             {
                 Id = response["uid"].Value<string>(),
@@ -117,8 +118,8 @@ namespace OAuth2.Client.Impl
                 AvatarUri =
                     {
                         Small = null,
-                        Normal = response["pic_1"].Value<string>(),
-                        Large = response["pic_1"].Value<string>().Replace("&photoType=4", "&photoType=6")
+                        Normal = avatarUri,
+                        Large = avatarUri.Replace("&photoType=4", "&photoType=6")
                     }                
             };
         }

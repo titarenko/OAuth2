@@ -81,6 +81,8 @@ namespace OAuth2.Client.Impl
         protected override UserInfo ParseUserInfo(string content)
         {
             var response = JObject.Parse(content);
+            var avatarUri = response["picture"].SafeGet(x => x.Value<string>());
+            const string avatarUriTemplate = "{0}?sz={1}";
             return new UserInfo
             {
                 Id = response["id"].Value<string>(),
@@ -89,9 +91,9 @@ namespace OAuth2.Client.Impl
                 LastName = response["family_name"].Value<string>(),
                 AvatarUri =
                     {
-                        Small = response["picture"].SafeGet(x => x.Value<string>())+"?sz=30",
-                        Normal = response["picture"].SafeGet(x => x.Value<string>()),
-                        Large = response["picture"].SafeGet(x => x.Value<string>()) + "?sz=200"
+                        Small = !string.IsNullOrWhiteSpace(avatarUri) ? string.Format(avatarUriTemplate, avatarUri, AvatarInfo.SmallSize) : string.Empty,
+                        Normal = avatarUri,
+                        Large = !string.IsNullOrWhiteSpace(avatarUri) ? string.Format(avatarUriTemplate, avatarUri, AvatarInfo.LargeSize): string.Empty
                     }
             };
         }

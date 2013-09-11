@@ -3,6 +3,12 @@ namespace OAuth2.Models
     public class AvatarInfo
     {
         /// <summary>
+        /// Image size constants.
+        /// </summary>
+        internal const int SmallSize = 30;
+        internal const int LargeSize = 300;
+
+        /// <summary>
         /// Uri of small photo.
         /// </summary>
         public string Small { get; set; }

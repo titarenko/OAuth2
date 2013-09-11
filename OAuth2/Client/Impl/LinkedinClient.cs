@@ -91,7 +91,10 @@ namespace OAuth2.Client.Impl
         protected override UserInfo ParseUserInfo(string content)
         {
             var document = XDocument.Parse(content);
-
+            var avatarUri = SafeGet(document, "/person/picture-url");            
+            const string avatarSizeTemplate = "shrink_{0}_{0}";
+            var avatarDefaultSize =  string.Format("shrink_{0}_{0}", 80);
+            
             return new UserInfo
             {
                 Id = document.XPathSelectElement("/person/id").Value,
@@ -99,9 +102,9 @@ namespace OAuth2.Client.Impl
                 LastName = document.XPathSelectElement("/person/last-name").Value,
                 AvatarUri =
                     {
-                        Small = SafeGet(document, "/person/picture-url").Replace("shrink_80_80","shrink_30_30"),
-                        Normal = SafeGet(document, "/person/picture-url"),
-                        Large =  SafeGet(document, "/person/picture-url").Replace("shrink_80_80","shrink_200_200")
+                        Small =  avatarUri.Replace(avatarDefaultSize, string.Format(avatarSizeTemplate, AvatarInfo.SmallSize)),
+                        Normal = avatarUri,
+                        Large = avatarUri.Replace(avatarDefaultSize, string.Format(avatarSizeTemplate, AvatarInfo.LargeSize))
                     }
             };            
         }

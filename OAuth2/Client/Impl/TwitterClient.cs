@@ -105,7 +105,7 @@ namespace OAuth2.Client.Impl
                 firstName = name.Substring(0, index);
                 lastName = name.Substring(index + 1);
             }
-
+            var avatarUri = response["profile_image_url"].Value<string>();
             return new UserInfo
             {
                 Id = response["id"].Value<string>(),
@@ -114,9 +114,9 @@ namespace OAuth2.Client.Impl
                 LastName = lastName,
                 AvatarUri =
                     {
-                        Small = response["profile_image_url"].Value<string>().Replace("normal", "mini"),
-                        Normal = response["profile_image_url"].Value<string>(),
-                        Large = response["profile_image_url"].Value<string>().Replace("normal", "bigger")
+                        Small = avatarUri.Replace("normal", "mini"),
+                        Normal = avatarUri,
+                        Large = avatarUri.Replace("normal", "bigger")
                     }
             };
         }
