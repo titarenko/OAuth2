@@ -72,7 +72,7 @@ namespace OAuth2.Tests.Client.Impl
             info.FirstName.Should().Be("name");
             info.LastName.Should().Be("surname");
             info.Email.Should().Be("email");
-            info.PhotoUri.Should().Be("picture");
+            info.PhotoUri.Should().StartWith("picture");
         }
 
         [Test]
