@@ -73,6 +73,7 @@ namespace OAuth2.Client.Impl
             get { return "Google"; }
         }
 
+
         /// <summary>
         /// Should return parsed <see cref="UserInfo"/> from content received from third-party service.
         /// </summary>
@@ -80,13 +81,20 @@ namespace OAuth2.Client.Impl
         protected override UserInfo ParseUserInfo(string content)
         {
             var response = JObject.Parse(content);
+            var avatarUri = response["picture"].SafeGet(x => x.Value<string>());
+            const string avatarUriTemplate = "{0}?sz={1}";
             return new UserInfo
             {
                 Id = response["id"].Value<string>(),
                 Email = response["email"].Value<string>(),
                 FirstName = response["given_name"].Value<string>(),
                 LastName = response["family_name"].Value<string>(),
-                PhotoUri = response["picture"].SafeGet(x => x.Value<string>())
+                AvatarUri =
+                    {
+                        Small = !string.IsNullOrWhiteSpace(avatarUri) ? string.Format(avatarUriTemplate, avatarUri, AvatarInfo.SmallSize) : string.Empty,
+                        Normal = avatarUri,
+                        Large = !string.IsNullOrWhiteSpace(avatarUri) ? string.Format(avatarUriTemplate, avatarUri, AvatarInfo.LargeSize): string.Empty
+                    }
             };
         }
     }

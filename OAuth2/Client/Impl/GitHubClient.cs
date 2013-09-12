@@ -36,17 +36,24 @@ namespace OAuth2.Client.Impl
         protected override UserInfo ParseUserInfo(string content)
         {
             var cnt = JObject.Parse(content);
-
             var names = cnt["name"].Value<string>().Split(' ').ToList();
-            return new UserInfo
-            {
-                Email = cnt["email"].Value<string>(),
-                ProviderName = this.Name,
-                PhotoUri = cnt["avatar_url"].Value<string>(),
-                Id = cnt["id"].Value<string>(),
-                FirstName = names.Count > 0 ? names.First() : cnt["login"].Value<string>(),
-                LastName = names.Count > 1 ? names.Last() : string.Empty,
-            };
+            const string avatarUriTemplate = "{0}&s={1}";
+            var avatarUri = cnt["avatar_url"].Value<string>();
+            var result = new UserInfo
+                {
+                    Email = cnt["email"].Value<string>(),
+                    ProviderName = this.Name,
+                    Id = cnt["id"].Value<string>(),
+                    FirstName = names.Count > 0 ? names.First() : cnt["login"].Value<string>(),
+                    LastName = names.Count > 1 ? names.Last() : string.Empty,
+                    AvatarUri =
+                        {
+                            Small = !string.IsNullOrWhiteSpace(avatarUri) ? string.Format(avatarUriTemplate, avatarUri, AvatarInfo.SmallSize) : string.Empty,
+                            Normal = avatarUri,
+                            Large = !string.IsNullOrWhiteSpace(avatarUri) ? string.Format(avatarUriTemplate, avatarUri, AvatarInfo.LargeSize) : string.Empty
+                        }
+                };
+            return result;
         }
 
         /// <summary>
@@ -79,6 +86,6 @@ namespace OAuth2.Client.Impl
         protected override Endpoint UserInfoServiceEndpoint
         {
             get { return new Endpoint { BaseUri = "https://api.github.com/", Resource = "/user" }; }
-        }        
+        }
     }
 }

@@ -104,13 +104,19 @@ namespace OAuth2.Client.Impl
         protected override UserInfo ParseUserInfo(string content)
         {
             var response = JArray.Parse(content);
+            var avatarUri = response[0]["pic"].Value<string>();
             return new UserInfo
             {
                 Id = response[0]["uid"].Value<string>(),
                 FirstName = response[0]["first_name"].Value<string>(),
                 LastName = response[0]["last_name"].Value<string>(),
                 Email = response[0]["email"].Value<string>(),
-                PhotoUri = response[0]["pic"].Value<string>()
+                AvatarUri =
+                    {
+                        Small = null,
+                        Normal = avatarUri,
+                        Large = null
+                    }
             };
         }
 

@@ -109,15 +109,20 @@ namespace OAuth2.Client.Impl
         protected override UserInfo ParseUserInfo(string content)
         {
             var response = JObject.Parse(content);
+            var avatarUri = response["pic_1"].Value<string>();
             return new UserInfo
             {
                 Id = response["uid"].Value<string>(),
                 FirstName = response["first_name"].Value<string>(),
-                LastName = response["last_name"].Value<string>(),
-                PhotoUri = response["pic_1"].Value<string>()
+                LastName = response["last_name"].Value<string>(),                
+                AvatarUri =
+                    {
+                        Small = null,
+                        Normal = avatarUri,
+                        Large = avatarUri.Replace("&photoType=4", "&photoType=6")
+                    }                
             };
         }
-
         /// <summary>
         /// Friendly name of provider (OAuth2 service).
         /// </summary>
