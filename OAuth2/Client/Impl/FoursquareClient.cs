@@ -85,14 +85,24 @@ namespace OAuth2.Client.Impl
         protected override UserInfo ParseUserInfo(string content)
         {
             var response = JObject.Parse(content);
+            var prefix = response["response"]["user"]["photo"]["prefix"].Value<string>();
+            var suffix = response["response"]["user"]["photo"]["suffix"].Value<string>();
+            const string avatarUriTemplate = "{0}{1}{2}";
+            const string avatarSizeTemplate = "{0}x{0}";
             return new UserInfo
             {
+
                 Id = response["response"]["user"]["id"].Value<string>(),
                 FirstName = response["response"]["user"]["firstName"].Value<string>(),
                 LastName = response["response"]["user"]["lastName"].Value<string>(),
-                Email = response["response"]["user"]["contact"]["email"].Value<string>(),
-                PhotoUri = response["response"]["user"]["photo"]["prefix"].Value<string>()
-                         + response["response"]["user"]["photo"]["suffix"].Value<string>()
+                Email = response["response"]["user"]["contact"]["email"].Value<string>(),                
+                AvatarUri =
+                {
+                    // Defined photo sizes https://developer.foursquare.com/docs/responses/photo
+                    Small = !string.IsNullOrWhiteSpace(prefix) ? string.Format(avatarUriTemplate, prefix, string.Format(avatarSizeTemplate, AvatarInfo.SmallSize), suffix) : string.Empty,
+                    Normal = !string.IsNullOrWhiteSpace(prefix) ? string.Format(avatarUriTemplate, prefix, string.Empty, suffix) : string.Empty,
+                    Large = !string.IsNullOrWhiteSpace(prefix) ? string.Format(avatarUriTemplate, prefix, string.Format(avatarSizeTemplate, AvatarInfo.LargeSize), suffix) : string.Empty
+                }
             };
         }
 

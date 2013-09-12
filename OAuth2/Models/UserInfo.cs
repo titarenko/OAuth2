@@ -1,10 +1,43 @@
 namespace OAuth2.Models
 {
+    public class AvatarInfo
+    {
+        /// <summary>
+        /// Image size constants.
+        /// </summary>
+        internal const int SmallSize = 36;
+        internal const int LargeSize = 300;
+
+        /// <summary>
+        /// Uri of small photo.
+        /// </summary>
+        public string Small { get; set; }
+
+        /// <summary>
+        /// Uri of normal photo.
+        /// </summary>
+        public string Normal { get; set; }
+
+        /// <summary>
+        /// Uri of large photo.
+        /// </summary>
+        public string Large { get; set; }
+    }
+
     /// <summary>
     /// Contains information about user who is being authenticated.
     /// </summary>
     public class UserInfo
     {
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public UserInfo()
+        {
+            AvatarUri = new AvatarInfo();
+        }
+
         /// <summary>
         /// Unique identifier.
         /// </summary>
@@ -36,6 +69,14 @@ namespace OAuth2.Models
         /// <summary>
         /// Photo URI.
         /// </summary>
-        public string PhotoUri { get; set; }
+        public string PhotoUri {
+            get { return AvatarUri.Normal; }
+        }
+
+        /// <summary>
+        /// Contains URIs of different sizes of avatar.
+        /// </summary>
+        public AvatarInfo AvatarUri { get; private set; }
     }
 }
+

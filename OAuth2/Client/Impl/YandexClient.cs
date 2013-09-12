@@ -88,7 +88,7 @@ namespace OAuth2.Client.Impl
             return new UserInfo
             {
                 Id = response["id"].Value<string>(),
-                FirstName = names.Count() > 0 ? names.First() : response["display_name"].Value<string>(),
+                FirstName = names.Any() ? names.First() : response["display_name"].Value<string>(),
                 LastName = names.Count() > 1 ? names.Last() : string.Empty,
                 Email = response["default_email"].Value<string>(),
             };
