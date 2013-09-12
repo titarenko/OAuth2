@@ -5,7 +5,7 @@ namespace OAuth2.Models
         /// <summary>
         /// Image size constants.
         /// </summary>
-        internal const int SmallSize = 30;
+        internal const int SmallSize = 36;
         internal const int LargeSize = 300;
 
         /// <summary>
