@@ -22,7 +22,7 @@ Following are the steps of standard flow:
 
 Several simple steps to plug in the library into your app:
 
-Install OAuth2 package via NuGet
+Install OAuth2 package via [**NuGet**](http://www.nuget.org/packages/OAuth2/)
 
 ```shell
 Install-Package OAuth2
