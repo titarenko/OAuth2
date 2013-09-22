@@ -110,7 +110,7 @@ namespace OAuth2.Client.Impl
                 Id = response[0]["uid"].Value<string>(),
                 FirstName = response[0]["first_name"].Value<string>(),
                 LastName = response[0]["last_name"].Value<string>(),
-                Email = response[0]["email"].Value<string>(),
+                Email = response[0]["email"].SafeGet(x => x.Value<string>()),
                 AvatarUri =
                     {
                         Small = null,
