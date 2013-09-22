@@ -41,7 +41,7 @@ namespace OAuth2.Client.Impl
             var avatarUri = cnt["avatar_url"].Value<string>();
             var result = new UserInfo
                 {
-                    Email = cnt["email"].Value<string>(),
+                    Email = cnt["email"].SafeGet(x => x.Value<string>()),
                     ProviderName = this.Name,
                     Id = cnt["id"].Value<string>(),
                     FirstName = names.Count > 0 ? names.First() : cnt["login"].Value<string>(),
