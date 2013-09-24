@@ -95,7 +95,7 @@ namespace OAuth2.Client.Impl
                 Id = response["response"]["user"]["id"].Value<string>(),
                 FirstName = response["response"]["user"]["firstName"].Value<string>(),
                 LastName = response["response"]["user"]["lastName"].Value<string>(),
-                Email = response["response"]["user"]["contact"]["email"].Value<string>(),                
+                Email = response["response"]["user"]["contact"]["email"].SafeGet(x => x.Value<string>()),                
                 AvatarUri =
                 {
                     // Defined photo sizes https://developer.foursquare.com/docs/responses/photo
