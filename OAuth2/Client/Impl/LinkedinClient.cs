@@ -18,7 +18,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        public LinkedInClient(IRequestFactory factory, IClientConfiguration configuration) 
+        public LinkedInClient(IRequestFactory factory, IClientConfiguration configuration)
             : base(factory, configuration)
         {
         }
@@ -83,18 +83,24 @@ namespace OAuth2.Client.Impl
                 Value = AccessToken
             });
         }
-        
+
         /// <summary>
         /// Should return parsed <see cref="UserInfo"/> from content received from third-party service.
         /// </summary>
         /// <param name="content">The content which is received from third-party service.</param>
         protected override UserInfo ParseUserInfo(string content)
         {
+
             var document = XDocument.Parse(content);
-            var avatarUri = SafeGet(document, "/person/picture-url");            
-            const string avatarSizeTemplate = "shrink_{0}_{0}";
-            var avatarDefaultSize =  string.Format("shrink_{0}_{0}", 80);
-            
+            var avatarUri = SafeGet(document, "/person/picture-url");
+            var avatarSizeTemplate = "{0}_{0}";
+            if (string.IsNullOrEmpty(avatarUri))
+            {
+                avatarUri = "https://www.linkedin.com/scds/common/u/images/themes/katy/ghosts/person/ghost_person_80x80_v1.png";
+                avatarSizeTemplate = "{0}x{0}";
+            }
+            var avatarDefaultSize = string.Format(avatarSizeTemplate, 80);
+
             return new UserInfo
             {
                 Id = document.XPathSelectElement("/person/id").Value,
@@ -102,11 +108,11 @@ namespace OAuth2.Client.Impl
                 LastName = document.XPathSelectElement("/person/last-name").Value,
                 AvatarUri =
                     {
-                        Small =  avatarUri.Replace(avatarDefaultSize, string.Format(avatarSizeTemplate, AvatarInfo.SmallSize)),
+                        Small = avatarUri.Replace(avatarDefaultSize, string.Format(avatarSizeTemplate, AvatarInfo.SmallSize)),
                         Normal = avatarUri,
                         Large = avatarUri.Replace(avatarDefaultSize, string.Format(avatarSizeTemplate, AvatarInfo.LargeSize))
                     }
-            };            
+            };
         }
 
 
