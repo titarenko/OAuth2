@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Specialized;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -15,6 +16,9 @@ namespace OAuth2.Client
     public abstract class OAuth2Client : IClient
     {
         private const string AccessTokenKey = "access_token";
+        private const string RefreshTokenKey = "refresh_token";
+        private const string ExpiresKey = "expires_in";
+        private const string TokenTypeKey = "token_type";
 
         private readonly IRequestFactory _factory;
 
@@ -39,6 +43,23 @@ namespace OAuth2.Client
         public string AccessToken { get; private set; }
 
         /// <summary>
+        /// Refresh token returned by provider. Can be used for further calls of provider API.
+        /// </summary>
+        public string RefreshToken { get; private set; }
+
+        /// <summary>
+        /// Token type returned by provider. Can be used for further calls of provider API.
+        /// </summary>
+        public string TokenType { get; private set; }
+
+        /// <summary>
+        /// Seconds till the token expires returned by provider. Can be used for further calls of provider API.
+        /// </summary>
+        public DateTime ExpiresAt { get; private set; }
+
+        private string GrantType { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="OAuth2Client"/> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
@@ -60,14 +81,27 @@ namespace OAuth2.Client
         {
             var client = _factory.CreateClient(AccessCodeServiceEndpoint);
             var request = _factory.CreateRequest(AccessCodeServiceEndpoint);
-            request.AddObject(new
+            if (String.IsNullOrEmpty(Configuration.Scope))
             {
-                response_type = "code",
-                client_id = Configuration.ClientId,
-                redirect_uri = Configuration.RedirectUri,
-                scope = Configuration.Scope,
-                state
-            });
+                request.AddObject(new
+                {
+                    response_type = "code",
+                    client_id = Configuration.ClientId,
+                    redirect_uri = Configuration.RedirectUri,
+                    state
+                });
+            }
+            else
+            {
+                request.AddObject(new
+                {
+                    response_type = "code",
+                    client_id = Configuration.ClientId,
+                    redirect_uri = Configuration.RedirectUri,
+                    scope = Configuration.Scope,
+                    state
+                });
+            }
             return client.BuildUri(request).ToString();
         }
 
@@ -77,6 +111,7 @@ namespace OAuth2.Client
         /// <param name="parameters">Callback request payload (parameters).</param>
         public UserInfo GetUserInfo(NameValueCollection parameters)
         {
+            GrantType = "authorization_code";
             CheckErrorAndSetState(parameters);
             QueryAccessToken(parameters);
             return GetUserInfo();
@@ -88,9 +123,37 @@ namespace OAuth2.Client
         /// <param name="parameters">Callback request payload (parameters).</param>
         public string GetToken(NameValueCollection parameters)
         {
+            GrantType = "authorization_code";
             CheckErrorAndSetState(parameters);
             QueryAccessToken(parameters);
             return AccessToken;
+        }
+
+        public string GetCurrentToken(string refreshToken = null, bool forceUpdate = false)
+        {
+            if (!forceUpdate && ExpiresAt != default(DateTime) && DateTime.Now < ExpiresAt && !String.IsNullOrEmpty(AccessToken))
+            {
+                return AccessToken;
+            }
+            else
+            {
+                NameValueCollection parameters = new NameValueCollection();
+                if (!String.IsNullOrEmpty(refreshToken))
+                {
+                    parameters.Add("refresh_token", refreshToken);
+                }
+                if (!String.IsNullOrEmpty(RefreshToken))
+                {
+                    parameters.Add("refresh_token", RefreshToken);
+                }
+                if (parameters.Count > 0)
+                {
+                    GrantType = "refresh_token";
+                    QueryAccessToken(parameters);
+                    return AccessToken;
+                }
+            }
+            throw new Exception("Token never fetched and refresh token not provided.");
         }
 
         /// <summary>
@@ -146,18 +209,38 @@ namespace OAuth2.Client
                 Parameters = parameters
             });
 
-            AccessToken = ParseAccessTokenResponse(response.Content);
+            AccessToken = ParseStringResponse(response.Content, AccessTokenKey);
+
+//            try
+//            {
+                if (GrantType != "refresh_token")
+                    RefreshToken = ParseStringResponse(response.Content, RefreshTokenKey);
+
+                TokenType = ParseStringResponse(response.Content, TokenTypeKey);
+            try
+            {
+                var expiresIn = ParseIntResponse(response.Content, ExpiresKey);
+                ExpiresAt = DateTime.Now.AddSeconds(expiresIn);
+            }
+            catch { }
+//                int expiresIn;
+//                if (int.TryParse(ParseStringResponse(response.Content, ExpiresKey), out expiresIn))
+//                    ExpiresAt = DateTime.Now.AddSeconds(expiresIn);
+//            }
+//            catch
+//            {
+//            }
         }
 
-        protected virtual string ParseAccessTokenResponse(string content)
+        protected virtual string ParseStringResponse(string content, string key)
         {
             try
             {
                 // response can be sent in JSON format
-                var token = (string)JObject.Parse(content).SelectToken(AccessTokenKey);
+                var token = (string)JObject.Parse(content).SelectToken(key);
                 if (token.IsEmpty())
                 {
-                    throw new UnexpectedResponseException(AccessTokenKey);
+                    throw new UnexpectedResponseException(key);
                 }
                 return token;
             }
@@ -165,7 +248,26 @@ namespace OAuth2.Client
             {
                 // or it can be in "query string" format (param1=val1&param2=val2)
                 var collection = HttpUtility.ParseQueryString(content);
-                return collection.GetOrThrowUnexpectedResponse(AccessTokenKey);
+                return collection.GetOrThrowUnexpectedResponse(key);
+            }
+        }
+        protected virtual int ParseIntResponse(string content, string key)
+        {
+            try
+            {
+                // response can be sent in JSON format
+                var token = (int)JObject.Parse(content).SelectToken(key);
+                if (token == default(int))
+                {
+                    throw new UnexpectedResponseException(key);
+                }
+                return token;
+            }
+            catch (JsonReaderException)
+            {
+                // or it can be in "query string" format (param1=val1&param2=val2)
+                var collection = HttpUtility.ParseQueryString(content);
+                return int.Parse(collection.GetOrThrowUnexpectedResponse(key));
             }
         }
 
@@ -177,14 +279,27 @@ namespace OAuth2.Client
 
         protected virtual void BeforeGetAccessToken(BeforeAfterRequestArgs args)
         {
-            args.Request.AddObject(new
+            if (GrantType == "refresh_token")
             {
-                code = args.Parameters.GetOrThrowUnexpectedResponse("code"),
-                client_id = Configuration.ClientId,
-                client_secret = Configuration.ClientSecret,
-                redirect_uri = Configuration.RedirectUri,
-                grant_type = "authorization_code"
-            });
+                args.Request.AddObject(new
+                {
+                    refresh_token = args.Parameters.GetOrThrowUnexpectedResponse("refresh_token"),
+                    client_id = Configuration.ClientId,
+                    client_secret = Configuration.ClientSecret,
+                    grant_type = GrantType
+                });
+            }
+            else
+            {
+                args.Request.AddObject(new
+                {
+                    code = args.Parameters.GetOrThrowUnexpectedResponse("code"),
+                    client_id = Configuration.ClientId,
+                    client_secret = Configuration.ClientSecret,
+                    redirect_uri = Configuration.RedirectUri,
+                    grant_type = GrantType
+                });
+            }
         }
 
         /// <summary>
