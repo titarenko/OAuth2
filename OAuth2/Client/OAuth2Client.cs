@@ -142,7 +142,7 @@ namespace OAuth2.Client
                 {
                     parameters.Add("refresh_token", refreshToken);
                 }
-                if (!String.IsNullOrEmpty(RefreshToken))
+                else if (!String.IsNullOrEmpty(RefreshToken))
                 {
                     parameters.Add("refresh_token", RefreshToken);
                 }
@@ -211,25 +211,17 @@ namespace OAuth2.Client
 
             AccessToken = ParseStringResponse(response.Content, AccessTokenKey);
 
-//            try
-//            {
-                if (GrantType != "refresh_token")
-                    RefreshToken = ParseStringResponse(response.Content, RefreshTokenKey);
+            if (GrantType != "refresh_token")
+                RefreshToken = ParseStringResponse(response.Content, RefreshTokenKey);
 
-                TokenType = ParseStringResponse(response.Content, TokenTypeKey);
+            TokenType = ParseStringResponse(response.Content, TokenTypeKey);
+
             try
             {
                 var expiresIn = ParseIntResponse(response.Content, ExpiresKey);
                 ExpiresAt = DateTime.Now.AddSeconds(expiresIn);
             }
             catch { }
-//                int expiresIn;
-//                if (int.TryParse(ParseStringResponse(response.Content, ExpiresKey), out expiresIn))
-//                    ExpiresAt = DateTime.Now.AddSeconds(expiresIn);
-//            }
-//            catch
-//            {
-//            }
         }
 
         protected virtual string ParseStringResponse(string content, string key)
