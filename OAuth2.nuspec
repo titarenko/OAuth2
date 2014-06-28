@@ -7,9 +7,9 @@
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <projectUrl>https://github.com/titarenko/OAuth2</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Allows you to perform user authentication via Facebook, Foursquare, GitHub, Google, Instagram, LinkedIn, MailRu, Odnoklassniki, Twitter, VK (Vkontakte), Windows Live, Yandex just in two method calls.</description>
+        <description>Allows you to perform user authentication via Facebook, Foursquare, GitHub, Google, Instagram, LinkedIn, MailRu, Odnoklassniki, Salesforce, Twitter, VK (Vkontakte), Windows Live, Yandex just in two method calls.</description>
         <summary>Easy to use (just 2 method calls) and well documented OAuth2/OAuth client with comprehensive list of supported providers.</summary>
-        <releaseNotes>Updated Foursquare client.</releaseNotes>
+        <releaseNotes>Added Salesforce client.</releaseNotes>
         <tags>OAuth2, OAuth, Facebook, Foursquare, GitHub, Google, Instagram, LinkedIn, MailRu, Odnoklassniki, Twitter, VK (Vkontakte), Windows Live, Yandex</tags>
         <dependencies>
             <dependency id="RestSharp" version="103.4" />

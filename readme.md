@@ -115,6 +115,7 @@ Use user info as you wish, for example, display user details:
 - LinkedIn
 - MailRu
 - Odnoklassniki
+- Salesforce
 - Twitter
 - VK (Vkontakte)
 - Windows Live
