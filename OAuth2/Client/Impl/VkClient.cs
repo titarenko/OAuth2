@@ -11,6 +11,7 @@ namespace OAuth2.Client.Impl
     public class VkClient : OAuth2Client
     {
         private string _userId;
+	    private string _email;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VkClient"/> class.
@@ -80,6 +81,9 @@ namespace OAuth2.Client.Impl
         {
             var instance = JObject.Parse(args.Response.Content);
             _userId = instance["user_id"].Value<string>();
+	        var email = instance["email"];
+	        if (email != null)
+		        _email = email.Value<string>();
         }
 
         /// <summary>
@@ -102,7 +106,7 @@ namespace OAuth2.Client.Impl
             var avatarUri = response["photo"].Value<string>();
             return new UserInfo
             {
-                Email = null,
+                Email = _email,
                 FirstName = response["first_name"].Value<string>(),
                 LastName = response["last_name"].Value<string>(),
                 Id = response["uid"].Value<string>(),
