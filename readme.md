@@ -107,6 +107,7 @@ Use user info as you wish, for example, display user details:
 
 ## Supported Services ##
 
+- DigitalOcean
 - Facebook
 - Foursquare
 - GitHub
