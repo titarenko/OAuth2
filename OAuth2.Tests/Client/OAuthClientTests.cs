@@ -57,14 +57,14 @@ namespace OAuth2.Tests.Client
         [Test]
         public async Task Should_ThrowUnexpectedResponse_When_ContentIsEmpty()
         {
-            (await factory.CreateClient().Execute(factory.CreateRequest(null))).GetContent().Returns("");
+            (await factory.CreateClient().Execute(factory.CreateRequest(null))).RawBytes.Returns(_encoding.GetBytes(""));
             descendant.Awaiting(x => x.GetLoginLinkUri()).ShouldThrow<UnexpectedResponseException>();
         }
 
         [Test]
         public async Task Should_ThrowUnexpectedResponse_When_OAuthTokenIsEmpty()
         {
-            (await factory.CreateClient().Execute(factory.CreateRequest(null))).GetContent().Returns("something=something_other");
+            (await factory.CreateClient().Execute(factory.CreateRequest(null))).RawBytes.Returns(_encoding.GetBytes("something=something_other"));
             descendant
                 .Awaiting(x => x.GetLoginLinkUri())
                 .ShouldThrow<UnexpectedResponseException>()
@@ -74,7 +74,7 @@ namespace OAuth2.Tests.Client
         [Test]
         public async Task Should_ThrowUnexpectedResponse_When_OAuthSecretIsEmpty()
         {
-            (await factory.CreateClient().Execute(factory.CreateRequest(null))).GetContent().Returns("oauth_token=token");
+            (await factory.CreateClient().Execute(factory.CreateRequest(null))).RawBytes.Returns(_encoding.GetBytes("oauth_token=token"));
             descendant
                 .Awaiting(x => x.GetLoginLinkUri())
                 .ShouldThrow<UnexpectedResponseException>()
@@ -87,8 +87,7 @@ namespace OAuth2.Tests.Client
             // arrange
             var restClient = factory.CreateClient();
             var restRequest = factory.CreateRequest(null);
-            restClient.BaseUrl.Returns(new Uri("http://login"));
-            (await restClient.Execute(restRequest)).GetContent().Returns("oauth_token=token&oauth_token_secret=secret");
+            (await restClient.Execute(restRequest)).RawBytes.Returns(_encoding.GetBytes("oauth_token=token&oauth_token_secret=secret"));
 
             // act
             await descendant.GetLoginLinkUri();
@@ -110,20 +109,19 @@ namespace OAuth2.Tests.Client
             // arrange
             var restClient = factory.CreateClient();
             var restRequest = factory.CreateRequest(null);
-            restClient.BaseUrl.Returns(new Uri("https://login/"));
             (await restClient.Execute(restRequest)).RawBytes.Returns(_encoding.GetBytes("oauth_token=token5&oauth_token_secret=secret"));
 
             // act
             var uri = await descendant.GetLoginLinkUri();
 
             // assert
-            uri.Should().Be("https://login/");
+            uri.Should().Be("https://loginserviceendpoint/");
 
             factory.Received().CreateClient();
             factory.Received().CreateRequest("/LoginServiceEndpoint");
             
             restClient.Received().BaseUrl = new Uri("https://LoginServiceEndpoint");
-            restRequest.Received().AddParameter("oauth_token", "token5");
+            restRequest.Parameters.Received().Add(Arg.Is<Parameter>(x => x.Name == "oauth_token" && (string)x.Value == "token5"));
         }
 
         [Test]
@@ -132,7 +130,7 @@ namespace OAuth2.Tests.Client
             // arrange
             var restClient = factory.CreateClient();
             var restRequest = factory.CreateRequest(null);
-            (await restClient.Execute(restRequest)).GetContent().Returns("oauth_token=token&oauth_token_secret=secret");
+            (await restClient.Execute(restRequest)).RawBytes.Returns(_encoding.GetBytes("oauth_token=token&oauth_token_secret=secret"));
             
             // act
             await descendant.GetUserInfo(new Dictionary<string, string>
@@ -158,10 +156,10 @@ namespace OAuth2.Tests.Client
             // arrange
             var restClient = factory.CreateClient();
             var restRequest = factory.CreateRequest(null);
-            (await restClient.Execute(restRequest)).GetContent().Returns(
-                "something to pass response verification", 
-                "oauth_token=token&oauth_token_secret=secret", 
-                "abba");
+            (await restClient.Execute(restRequest)).RawBytes.Returns(
+                _encoding.GetBytes("something to pass response verification"), 
+                _encoding.GetBytes("oauth_token=token&oauth_token_secret=secret"), 
+                _encoding.GetBytes("abba"));
 
             // act
             var info = await descendant.GetUserInfo(new Dictionary<string, string>

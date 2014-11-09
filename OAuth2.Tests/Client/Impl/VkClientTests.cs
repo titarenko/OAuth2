@@ -91,11 +91,11 @@ namespace OAuth2.Tests.Client.Impl
         {
             // arrange
             var response = await factory.CreateClient().Execute(factory.CreateRequest(null));
-            response.GetContent().Returns(
-                "any content to pass response verification",
-                "{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}",
-                "{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}",
-                content);
+            response.RawBytes.Returns(
+                _encoding.GetBytes("any content to pass response verification"),
+                _encoding.GetBytes("{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}"),
+                _encoding.GetBytes("{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}"),
+                _encoding.GetBytes(content));
 
             // act
             await descendant.GetUserInfo(new Dictionary<string, string>

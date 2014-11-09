@@ -10,6 +10,7 @@ using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 using System.Threading.Tasks;
+using RestSharp.Portable;
 
 namespace OAuth2.Tests.Client.Impl
 {
@@ -19,15 +20,21 @@ namespace OAuth2.Tests.Client.Impl
         private const string content = "{\"access_token\":\"yada\",\"token_type\":\"bearer\",\"expires_in\":2592000,\"refresh_token\":\"yada\",\"scope\":\"read\",\"uid\":123456,\"info\":{\"name\":\"first.last\",\"email\":\"first.last@domain.com\"}}";
 
         private DigitalOceanClientDescendant descendant;
-        private IRequestFactory requestFactory;
+        private IRequestFactory factory;
 
         [SetUp]
-        public async Task SetUp()
+        public void SetUp()
         {
-            requestFactory = Substitute.For<IRequestFactory>();
-            (await requestFactory.CreateClient().Execute(requestFactory.CreateRequest(null))).StatusCode.Returns(HttpStatusCode.OK);
+            factory = Substitute.For<IRequestFactory>();
+            var client = Substitute.For<IRestClient>();
+            var request = Substitute.For<IRestRequest>();
+            var response = Substitute.For<IRestResponse>();
+            factory.CreateClient().Returns(client);
+            factory.CreateRequest(Arg.Any<string>()).ReturnsForAnyArgs(request);
+            client.Execute(request).Returns(Task.FromResult(response));
+            response.StatusCode.Returns(HttpStatusCode.OK);
             descendant = new DigitalOceanClientDescendant(
-                requestFactory, Substitute.For<IClientConfiguration>());
+                factory, Substitute.For<IClientConfiguration>());
         }
 
         [Test]

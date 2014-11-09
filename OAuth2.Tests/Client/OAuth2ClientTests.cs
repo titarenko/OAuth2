@@ -44,7 +44,7 @@ namespace OAuth2.Tests.Client
 
             factory = Substitute.For<IRequestFactory>();
             factory.CreateClient().Returns(restClient);
-            factory.CreateRequest(null).Returns(restRequest);
+            factory.CreateRequest(null).ReturnsForAnyArgs(restRequest);
 
             var configuration = Substitute.For<IClientConfiguration>();
 
@@ -70,7 +70,7 @@ namespace OAuth2.Tests.Client
         public void Should_ThrowUnexpectedResponse_When_ResponseIsEmpty()
         {
             restResponse.StatusCode.Returns(HttpStatusCode.OK);
-            restResponse.GetContent().Returns("");
+            restResponse.RawBytes.Returns(_encoding.GetBytes(""));
             
             descendant
                 .Awaiting(x => x.GetUserInfo(new Dictionary<string, string>().ToLookup(y => y.Key, y => y.Value)))
@@ -78,35 +78,27 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public void Should_ReturnCorrectAccessCodeRequestUri()
+        public async Task Should_ReturnCorrectAccessCodeRequestUri()
         {
             // arrange
-            restClient.BuildUrl(restRequest).Returns(new Uri("https://login-link.net/"));
+            //restClient.BuildUrl(restRequest).Returns(new Uri("https://login-link.net/"));
 
             // act
-            var uri = descendant.GetLoginLinkUri();
+            var uri = await descendant.GetLoginLinkUri();
 
             // assert
-            uri.Should().Be("https://login-link.net/");
+            uri.Should().Be("https://accesscodeserviceendpoint/");
 
             factory.Received(1).CreateClient();
             factory.Received(1).CreateRequest("/AccessCodeServiceEndpoint");
 
             restClient.Received(1).BaseUrl = new Uri("https://AccessCodeServiceEndpoint");
-            restRequest.Received(1).Resource.Should().Be("/AccessCodeServiceEndpoint");
 
-            restRequest.Received(1).AddObject(Arg.Is<object>(
-                x => x.AllPropertiesAreEqualTo(
-                    new
-                    {
-                        response_type = "code",
-                        client_id = "client_id",
-                        redirect_uri = "http://redirect-uri.net",
-                        scope = "scope",
-                        state = (string) null
-                    })));
-
-            restClient.Received(1).BuildUrl(restRequest);
+            restRequest.Parameters.Received(1).Add(Arg.Is<Parameter>(x => x.Name == "response_type" && (string)x.Value == "code"));
+            restRequest.Parameters.Received(1).Add(Arg.Is<Parameter>(x => x.Name == "client_id" && (string)x.Value == "client_id"));
+            restRequest.Parameters.Received(1).Add(Arg.Is<Parameter>(x => x.Name == "scope" && (string)x.Value == "scope"));
+            restRequest.Parameters.Received(1).Add(Arg.Is<Parameter>(x => x.Name == "redirect_uri" && (string)x.Value == "http://redirect-uri.net"));
+            restRequest.Parameters.DidNotReceive().Add(Arg.Is<Parameter>(x => x.Name == "state"));
         }
         
         [Test]
@@ -144,24 +136,20 @@ namespace OAuth2.Tests.Client
         public async Task Should_IssueCorrectRequestForAccessToken_When_GetUserInfoIsCalled()
         {
             // arrange
-            restResponse.GetContent().Returns("access_token=token");
+            restResponse.RawBytes.Returns(_encoding.GetBytes("access_token=token"));
 
             // act
             await descendant.GetUserInfo(new Dictionary<string, string> { { "code", "code" } }.ToLookup(y => y.Key, y => y.Value));
 
             // assert
+            factory.Received(1).CreateRequest("/AccessTokenServiceEndpoint");
             restClient.Received(1).BaseUrl = new Uri("https://AccessTokenServiceEndpoint");
-            restRequest.Received(1).Resource.Should().Be("/AccessTokenServiceEndpoint");
             restRequest.Received(1).Method = HttpMethod.Post;
-            restRequest.Received(1).AddObject(Arg.Is<object>(x => x.AllPropertiesAreEqualTo(
-                new
-                {
-                    code = "code",
-                    client_id = "client_id",
-                    client_secret = "client_secret",
-                    redirect_uri = "http://redirect-uri.net",
-                    grant_type = "authorization_code"
-                })));
+            restRequest.Parameters.Received(1).Add(Arg.Is<Parameter>(x => x.Name == "code" && (string)x.Value == "code"));
+            restRequest.Parameters.Received(1).Add(Arg.Is<Parameter>(x => x.Name == "client_id" && (string)x.Value == "client_id"));
+            restRequest.Parameters.Received(1).Add(Arg.Is<Parameter>(x => x.Name == "client_secret" && (string)x.Value == "client_secret"));
+            restRequest.Parameters.Received(1).Add(Arg.Is<Parameter>(x => x.Name == "redirect_uri" && (string)x.Value == "http://redirect-uri.net"));
+            restRequest.Parameters.Received(1).Add(Arg.Is<Parameter>(x => x.Name == "grant_type" && (string)x.Value == "authorization_code"));
         }
 
         [Test]
@@ -170,14 +158,14 @@ namespace OAuth2.Tests.Client
         public async Task Should_IssueCorrectRequestForUserInfo_When_GetUserInfoIsCalled(string response)
         {
             // arrange
-            restResponse.GetContent().Returns(response);
+            restResponse.RawBytes.Returns(_encoding.GetBytes(response));
 
             // act
             await descendant.GetUserInfo(new Dictionary<string, string> { { "code", "code" } }.ToLookup(y => y.Key, y => y.Value));
 
             // assert
+            factory.Received(1).CreateRequest("/UserInfoServiceEndpoint");
             restClient.Received(1).BaseUrl = new Uri("https://UserInfoServiceEndpoint");
-            restRequest.Received(1).Resource.Should().Be("/UserInfoServiceEndpoint");
             restClient.Authenticator.Should().BeOfType<OAuth2UriQueryParameterAuthenticator>();
         }
 
