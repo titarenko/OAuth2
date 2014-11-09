@@ -12,3 +12,4 @@ log.txt
 *ncrunch*
 *.gpState
 *.DotSettings
+/OAuth2.Example/Properties/PublishProfiles
