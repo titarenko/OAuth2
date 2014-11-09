@@ -55,12 +55,12 @@ namespace OAuth2.Example.Controllers
         /// <summary>
         /// Renders information received from authentication service.
         /// </summary>
-        public ActionResult Auth()
+        public async Task<ActionResult> Auth()
         {
             var kvp = Enumerable.Range(0, Request.QueryString.Count)
                 .SelectMany(x => Request.QueryString.GetValues(x).Select(y => Tuple.Create(Request.QueryString.GetKey(x), y)))
                 .ToLookup(x => x.Item1, x => x.Item2, StringComparer.OrdinalIgnoreCase);
-            return View(GetClient().GetUserInfo(kvp));
+            return View(await GetClient().GetUserInfo(kvp));
         }
 
         private IClient GetClient()
