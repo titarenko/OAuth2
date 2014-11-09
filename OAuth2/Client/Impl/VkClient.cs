@@ -12,7 +12,7 @@ namespace OAuth2.Client.Impl
     public class VkClient : OAuth2Client
     {
         private string _userId;
-	private string _email;
+    private string _email;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VkClient"/> class.
@@ -69,6 +69,9 @@ namespace OAuth2.Client.Impl
             }
         }
 
+        /// <summary>
+        /// Friendly name of provider (OAuth2 service).
+        /// </summary>
         public override string Name
         {
             get { return "Vkontakte"; }

@@ -151,6 +151,11 @@ namespace OAuth2.Client
             AccessToken = ParseAccessTokenResponse(response.GetContent());
         }
 
+        /// <summary>
+        /// Parse the access token response using either JSON or form url encoded parameters
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns></returns>
         protected virtual string ParseAccessTokenResponse(string content)
         {
             try
@@ -177,6 +182,10 @@ namespace OAuth2.Client
         /// <param name="content">The content which is received from provider.</param>
         protected abstract UserInfo ParseUserInfo(string content);
 
+        /// <summary>
+        /// Called before the request to get the access token
+        /// </summary>
+        /// <param name="args"></param>
         protected virtual void BeforeGetAccessToken(BeforeAfterRequestArgs args)
         {
             args.Request.AddObject(new

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
-        <id>OAuth2</id>
+        <id>$id$</id>
         <version>$version$</version>
         <authors>Constantin Titarenko, Andrew Semack and others</authors>
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
@@ -11,12 +11,5 @@
         <summary>Easy to use (just 2 method calls) and well documented OAuth2/OAuth client with comprehensive list of supported providers.</summary>
         <releaseNotes>Support of email retrieval for Vkontakte (Vk) client.</releaseNotes>
         <tags>OAuth2, OAuth, DigitalOcean, Facebook, Foursquare, GitHub, Google, Instagram, LinkedIn, MailRu, Odnoklassniki, Twitter, VK (Vkontakte), Windows Live, Yandex</tags>
-        <dependencies>
-            <dependency id="RestSharp" version="103.4" />
-            <dependency id="Newtonsoft.Json" version="4.5.7" />
-        </dependencies>
     </metadata>
-    <files>
-        <file src="OAuth2\bin\Release\OAuth2.dll" target="lib\OAuth2.dll" />
-    </files>
 </package>

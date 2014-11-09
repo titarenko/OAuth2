@@ -8,6 +8,9 @@ using System.Linq;
 
 namespace OAuth2
 {
+    /// <summary>
+    /// Provides an interface to all supported authentication methods
+    /// </summary>
     public class AuthorizationRoot
     {
         private readonly IRequestFactory _requestFactory;

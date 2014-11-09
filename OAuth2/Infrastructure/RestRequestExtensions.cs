@@ -6,6 +6,9 @@ using System.Text;
 
 namespace OAuth2.Infrastructure
 {
+    /// <summary>
+    /// REST request extensions
+    /// </summary>
     public static class RestRequestExtensions
     {
         /// <summary>

@@ -5,6 +5,9 @@ using System.Linq;
 
 namespace OAuth2.Client
 {
+    /// <summary>
+    /// Event arguments used before and after a request.
+    /// </summary>
     public class BeforeAfterRequestArgs
     {
         /// <summary>

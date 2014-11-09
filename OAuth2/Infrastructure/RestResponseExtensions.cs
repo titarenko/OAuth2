@@ -6,6 +6,9 @@ using System.Text;
 
 namespace OAuth2.Infrastructure
 {
+    /// <summary>
+    /// REST response extensions
+    /// </summary>
     public static class RestResponseExtensions
     {
         private static System.Text.Encoding _defaultContentEncoding = System.Text.Encoding.UTF8;

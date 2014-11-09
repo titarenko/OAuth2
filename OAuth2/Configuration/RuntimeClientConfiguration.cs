@@ -2,8 +2,10 @@
 {
     /// <summary>
     /// Runtime client configuration. 
-    /// Use instead of <see cref="ClientConfiguration"/> when you need manually create client configuration in runtime.
     /// </summary>
+    /// <remarks>
+    /// This is a small in-memory implementation of <see cref="IClientConfiguration"/>
+    /// </remarks>
     public class RuntimeClientConfiguration : IClientConfiguration
     {
         /// <summary>

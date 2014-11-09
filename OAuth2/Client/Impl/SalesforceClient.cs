@@ -51,6 +51,12 @@ namespace OAuth2.Client.Impl
             }
         }
 
+        /// <summary>
+        /// URI for the Salesforce profile
+        /// </summary>
+        /// <remarks>
+        /// Will be set after the retireval of the access token.
+        /// </remarks>
         public string SalesforceProfileUrl { get; set; }
 
         /// <summary>
@@ -77,6 +83,11 @@ namespace OAuth2.Client.Impl
             get { return "Salesforce"; }
         }
 
+        /// <summary>
+        /// Parse the access token response using either JSON or form url encoded parameters
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns></returns>
         protected override string ParseAccessTokenResponse(string content)
         {
             // save the user's identity service url which is included in the response

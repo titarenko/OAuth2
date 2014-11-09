@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace OAuth2.Infrastructure
 {
+    /// <summary>
+    /// REST client extensions
+    /// </summary>
     public static class RestClientExtensions
     {
         /// <summary>

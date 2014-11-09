@@ -1,14 +1,14 @@
 namespace OAuth2.Configuration
 {
     /// <summary>
-    /// Defines API for <see cref="System.Configuration.ConfigurationManager"/> wrapper.
+    /// API to access OAuth2 provider configurations
     /// </summary>
     public interface IConfigurationManager
     {
         /// <summary>
-        /// Returns value obtained from 
-        /// <see cref="System.Configuration.ConfigurationManager.AppSettings"/> using specified key.
+        /// Returns an application setting value
         /// </summary>
+        /// <param name="key">Key of the application setting</param>
         string GetAppSetting(string key);
 
         /// <summary>

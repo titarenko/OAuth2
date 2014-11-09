@@ -69,11 +69,22 @@ namespace OAuth2.Client.Impl
             }
         }
 
+        /// <summary>
+        /// Returns URI of service which should be called in order to start authentication process.
+        /// This URI should be used for rendering login link.
+        /// </summary>
+        /// <param name="state">
+        /// Any additional information that will be posted back by service.
+        /// </param>
         public override async Task<string> GetLoginLinkUri(string state = null)
         {
             return await base.GetLoginLinkUri(state ?? Guid.NewGuid().ToString("N"));
         }
 
+        /// <summary>
+        /// Called just before issuing request to service when everything is ready.
+        /// Allows to add extra parameters to request or do any other needed preparations.
+        /// </summary>
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
             args.Client.Authenticator = null;

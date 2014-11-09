@@ -1,5 +1,8 @@
 namespace OAuth2.Models
 {
+    /// <summary>
+    /// Information about you avatar.
+    /// </summary>
     public class AvatarInfo
     {
         /// <summary>

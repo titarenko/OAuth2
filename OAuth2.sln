@@ -12,7 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E23DBE
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{89535BDA-FEA8-4701-AED7-C29DF7CAE66B}"
 	ProjectSection(SolutionItems) = preProject
-		OAuth2.nuspec = OAuth2.nuspec
 		readme.md = readme.md
 	EndProjectSection
 EndProject
