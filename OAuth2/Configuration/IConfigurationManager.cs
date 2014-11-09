@@ -16,6 +16,6 @@ namespace OAuth2.Configuration
         /// </summary>
         /// <typeparam name="T">Type representing root of configuration section.</typeparam>
         /// <param name="name">Name of configuration section.</param>
-        T GetConfigSection<T>(string name);
+        T GetConfiguration<T>(string name);
     }
 }

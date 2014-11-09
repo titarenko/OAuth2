@@ -1,11 +1,14 @@
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-using RestSharp;
-using RestSharp.Contrib;
+using RestSharp.Portable;
+using System.Net.Http;
+using RestSharp.Portable.Authenticators;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace OAuth2.Client
 {
@@ -56,7 +59,7 @@ namespace OAuth2.Client
         /// <param name="state">
         /// Any additional information that will be posted back by service.
         /// </param>
-        public virtual string GetLoginLinkUri(string state = null)
+        public virtual async Task<string> GetLoginLinkUri(string state = null)
         {
             var client = _factory.CreateClient(AccessCodeServiceEndpoint);
             var request = _factory.CreateRequest(AccessCodeServiceEndpoint);
@@ -68,28 +71,28 @@ namespace OAuth2.Client
                 scope = Configuration.Scope,
                 state
             });
-            return client.BuildUri(request).ToString();
+            return await Task<string>.Factory.StartNew(() => client.BuildUrl(request).ToString());
         }
 
         /// <summary>
         /// Obtains user information using OAuth2 service and data provided via callback request.
         /// </summary>
         /// <param name="parameters">Callback request payload (parameters).</param>
-        public UserInfo GetUserInfo(NameValueCollection parameters)
+        public async Task<UserInfo> GetUserInfo(ILookup<string, string> parameters)
         {
             CheckErrorAndSetState(parameters);
-            QueryAccessToken(parameters);
-            return GetUserInfo();
+            await QueryAccessToken(parameters);
+            return await GetUserInfo();
         }
 
         /// <summary>
         /// Issues query for access token and returns access token.
         /// </summary>
         /// <param name="parameters">Callback request payload (parameters).</param>
-        public string GetToken(NameValueCollection parameters)
+        public async Task<string> GetToken(ILookup<string, string> parameters)
         {
             CheckErrorAndSetState(parameters);
-            QueryAccessToken(parameters);
+            await QueryAccessToken(parameters);
             return AccessToken;
         }
 
@@ -109,26 +112,25 @@ namespace OAuth2.Client
         /// </summary>
         protected abstract Endpoint UserInfoServiceEndpoint { get; }
 
-        private void CheckErrorAndSetState(NameValueCollection parameters)
+        private void CheckErrorAndSetState(ILookup<string, string> parameters)
         {
             const string errorFieldName = "error";
-            var error = parameters[errorFieldName];
-            if (!error.IsEmpty())
-            {
-                throw new UnexpectedResponseException(errorFieldName);
-            }
 
-            State = parameters["state"];
+            var error = parameters[errorFieldName].ToList();
+            if (error.Any(x => !string.IsNullOrEmpty(x)))
+                throw new UnexpectedResponseException(errorFieldName);
+
+            State = string.Join(",", parameters["state"]);
         }
 
         /// <summary>
         /// Issues query for access token and parses response.
         /// </summary>
         /// <param name="parameters">Callback request payload (parameters).</param>
-        private void QueryAccessToken(NameValueCollection parameters)
+        private async Task QueryAccessToken(ILookup<string, string> parameters)
         {
             var client = _factory.CreateClient(AccessTokenServiceEndpoint);
-            var request = _factory.CreateRequest(AccessTokenServiceEndpoint, Method.POST);
+            var request = _factory.CreateRequest(AccessTokenServiceEndpoint, HttpMethod.Post);
 
             BeforeGetAccessToken(new BeforeAfterRequestArgs
             {
@@ -138,7 +140,7 @@ namespace OAuth2.Client
                 Configuration = Configuration
             });
 
-            var response = client.ExecuteAndVerify(request);
+            var response = await client.ExecuteAndVerify(request);
 
             AfterGetAccessToken(new BeforeAfterRequestArgs
             {
@@ -146,7 +148,7 @@ namespace OAuth2.Client
                 Parameters = parameters
             });
 
-            AccessToken = ParseAccessTokenResponse(response.Content);
+            AccessToken = ParseAccessTokenResponse(response.GetContent());
         }
 
         protected virtual string ParseAccessTokenResponse(string content)
@@ -164,7 +166,7 @@ namespace OAuth2.Client
             catch (JsonReaderException)
             {
                 // or it can be in "query string" format (param1=val1&param2=val2)
-                var collection = HttpUtility.ParseQueryString(content);
+                var collection = content.ParseQueryString();
                 return collection.GetOrThrowUnexpectedResponse(AccessTokenKey);
             }
         }
@@ -206,7 +208,7 @@ namespace OAuth2.Client
         /// <summary>
         /// Obtains user information using provider API.
         /// </summary>
-        protected virtual UserInfo GetUserInfo()
+        protected virtual async Task<UserInfo> GetUserInfo()
         {
             var client = _factory.CreateClient(UserInfoServiceEndpoint);
             client.Authenticator = new OAuth2UriQueryParameterAuthenticator(AccessToken);
@@ -219,9 +221,9 @@ namespace OAuth2.Client
                 Configuration = Configuration
             });
 
-            var response = client.ExecuteAndVerify(request);
+            var response = await client.ExecuteAndVerify(request);
 
-            var result = ParseUserInfo(response.Content);
+            var result = ParseUserInfo(response.GetContent());
             result.ProviderName = Name;
 
             return result;

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
+using System.Linq;
 using System.Text;
 
 namespace OAuth2.Infrastructure
@@ -46,10 +46,28 @@ namespace OAuth2.Infrastructure
         /// <param name="input">The line.</param>
         public static string GetMd5Hash(this string input)
         {
-            var provider = new MD5CryptoServiceProvider();
             var bytes = Encoding.UTF8.GetBytes(input);
-            bytes = provider.ComputeHash(bytes);
-            return BitConverter.ToString(bytes).Replace("-", "").ToLowerInvariant();
+            bytes = Org.BouncyCastle.Security.DigestUtilities.CalculateDigest("MD5", bytes);
+            return string.Join(string.Empty, bytes.Select(x => x.ToString("x2")));
+        }
+
+        /// <summary>
+        /// Replacement for HttpUtility.ParseQueryString
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static ILookup<string, string> ParseQueryString(this string input)
+        {
+            var result = new List<KeyValuePair<string, string>>();
+            var entries = input.Split('&');
+            foreach (var entry in entries)
+            {
+                var parts = entry.Split('=');
+                var key = parts[0];
+                var value = string.Join("=", parts.Skip(1));
+                result.Add(new KeyValuePair<string, string>(key, value));
+            }
+            return result.ToLookup(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase);
         }
     }
 }

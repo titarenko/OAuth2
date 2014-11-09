@@ -1,11 +1,13 @@
 ﻿using System;
-using System.Collections.Specialized;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-using RestSharp;
-using RestSharp.Authenticators;
-using RestSharp.Contrib;
+using RestSharp.Portable;
+using RestSharp.Portable.Authenticators;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace OAuth2.Client
 {
@@ -62,13 +64,13 @@ namespace OAuth2.Client
         /// </summary>
         /// <param name="state">Any additional information needed by application.</param>
         /// <returns>Login link URI.</returns>
-        public string GetLoginLinkUri(string state = null)
+        public async Task<string> GetLoginLinkUri(string state = null)
         {
             if (!state.IsEmpty())
             {
                 throw new NotSupportedException("State transmission is not supported by current implementation.");
             }
-            QueryRequestToken();
+            await QueryRequestToken();
             return GetLoginRequestUri(state);
         }
 
@@ -79,12 +81,12 @@ namespace OAuth2.Client
         /// <param name="parameters">Callback request payload (parameters).
         /// <example>Request.QueryString</example></param>
         /// <returns></returns>
-        public UserInfo GetUserInfo(NameValueCollection parameters)
+        public async Task<UserInfo> GetUserInfo(ILookup<string, string> parameters)
         {
             AccessToken = parameters.GetOrThrowUnexpectedResponse(OAuthTokenKey);
-            QueryAccessToken(parameters.GetOrThrowUnexpectedResponse("oauth_verifier"));
+            await QueryAccessToken(parameters.GetOrThrowUnexpectedResponse("oauth_verifier"));
 
-            var result = ParseUserInfo(QueryUserInfo());
+            var result = ParseUserInfo(await QueryUserInfo());
             result.ProviderName = Name;
 
             return result;
@@ -118,16 +120,16 @@ namespace OAuth2.Client
         /// <summary>
         /// Issues request for request token and returns result.
         /// </summary>
-        private void QueryRequestToken()
+        private async Task QueryRequestToken()
         {
             var client = _factory.CreateClient(RequestTokenServiceEndpoint);
             client.Authenticator = OAuth1Authenticator.ForRequestToken(
                 Configuration.ClientId, Configuration.ClientSecret, Configuration.RedirectUri);
             
-            var request = _factory.CreateRequest(RequestTokenServiceEndpoint, Method.POST);
+            var request = _factory.CreateRequest(RequestTokenServiceEndpoint, HttpMethod.Post);
             
-            var response = client.ExecuteAndVerify(request);
-            var collection = HttpUtility.ParseQueryString(response.Content);
+            var response = await client.ExecuteAndVerify(request);
+            var collection = response.GetContent().ParseQueryString();
 
             AccessToken = collection.GetOrThrowUnexpectedResponse(OAuthTokenKey);
             AccessTokenSecret = collection.GetOrThrowUnexpectedResponse(OAuthTokenSecretKey);
@@ -148,7 +150,7 @@ namespace OAuth2.Client
                 request.AddParameter("state", state);
             }
 
-            return client.BuildUri(request).ToString();
+            return client.BuildUrl(request).ToString();
         }
 
         /// <summary>
@@ -156,16 +158,16 @@ namespace OAuth2.Client
         /// </summary>
         /// <param name="verifier">Verifier posted with callback issued by provider.</param>
         /// <returns>Access token and other extra info.</returns>
-        private void QueryAccessToken(string verifier)
+        private async Task QueryAccessToken(string verifier)
         {
             var client = _factory.CreateClient(AccessTokenServiceEndpoint);
             client.Authenticator = OAuth1Authenticator.ForAccessToken(
                 Configuration.ClientId, Configuration.ClientSecret, AccessToken, AccessTokenSecret, verifier);
 
-            var request = _factory.CreateRequest(AccessTokenServiceEndpoint, Method.POST);
+            var request = _factory.CreateRequest(AccessTokenServiceEndpoint, HttpMethod.Post);
 
-            var content = client.ExecuteAndVerify(request).Content;
-            var collection = HttpUtility.ParseQueryString(content);
+            var content = (await client.ExecuteAndVerify(request)).GetContent();
+            var collection = content.ParseQueryString();
             
             AccessToken = collection.GetOrThrowUnexpectedResponse(OAuthTokenKey);
             AccessTokenSecret = collection.GetOrThrowUnexpectedResponse(OAuthTokenSecretKey);
@@ -174,7 +176,7 @@ namespace OAuth2.Client
         /// <summary>
         /// Queries user info using corresponding service and data received by access token request.
         /// </summary>
-        private string QueryUserInfo()
+        private async Task<string> QueryUserInfo()
         {
             var client = _factory.CreateClient(UserInfoServiceEndpoint);
             client.Authenticator = OAuth1Authenticator.ForProtectedResource(
@@ -182,7 +184,7 @@ namespace OAuth2.Client
 
             var request = _factory.CreateRequest(UserInfoServiceEndpoint);
             
-            return client.ExecuteAndVerify(request).Content;
+            return (await client.ExecuteAndVerify(request)).GetContent();
         }
     }
 }

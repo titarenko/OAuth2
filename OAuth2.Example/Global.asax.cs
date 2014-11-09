@@ -6,7 +6,7 @@ using Autofac.Core;
 using Autofac.Integration.Mvc;
 using OAuth2.Client;
 using OAuth2.Configuration;
-using RestSharp;
+using RestSharp.Portable;
 
 namespace OAuth2.Example
 {

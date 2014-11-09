@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using System.Threading.Tasks;
 
 namespace OAuth2.Client.Impl
 {
@@ -34,7 +35,7 @@ namespace OAuth2.Client.Impl
 
         protected override void AfterGetAccessToken(BeforeAfterRequestArgs args)
         {
-             _accessToken = args.Response.Content;
+             _accessToken = args.Response.GetContent();
         }
 
         protected override Endpoint AccessTokenServiceEndpoint
@@ -57,9 +58,9 @@ namespace OAuth2.Client.Impl
             }
         }
 
-        protected override UserInfo GetUserInfo()
+        protected override async Task<UserInfo> GetUserInfo()
         {
-            return ParseUserInfo(_accessToken);
+            return await Task<UserInfo>.Factory.StartNew(() => ParseUserInfo(_accessToken));
         }
 
         protected override UserInfo ParseUserInfo(string content)

@@ -1,5 +1,5 @@
 using System;
-using RestSharp;
+using RestSharp.Portable;
 
 namespace OAuth2.Client
 {

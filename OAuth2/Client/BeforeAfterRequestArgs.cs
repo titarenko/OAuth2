@@ -1,6 +1,7 @@
-using System.Collections.Specialized;
 using OAuth2.Configuration;
-using RestSharp;
+using RestSharp.Portable;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace OAuth2.Client
 {
@@ -24,7 +25,7 @@ namespace OAuth2.Client
         /// <summary>
         /// Values received from service.
         /// </summary>
-        public NameValueCollection Parameters { get; set; }
+        public ILookup<string, string> Parameters { get; set; }
 
         /// <summary>
         /// Client configuration.

@@ -9,6 +9,7 @@ using OAuth2.Client.Impl;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using System.Threading.Tasks;
 
 namespace OAuth2.Tests.Client.Impl
 {
@@ -21,10 +22,10 @@ namespace OAuth2.Tests.Client.Impl
         private IRequestFactory requestFactory;
 
         [SetUp]
-        public void SetUp()
+        public async Task SetUp()
         {
             requestFactory = Substitute.For<IRequestFactory>();
-            requestFactory.CreateClient().Execute(requestFactory.CreateRequest()).StatusCode = HttpStatusCode.OK;
+            (await requestFactory.CreateClient().Execute(requestFactory.CreateRequest(null))).StatusCode.Returns(HttpStatusCode.OK);
             descendant = new DigitalOceanClientDescendant(
                 requestFactory, Substitute.For<IClientConfiguration>());
         }

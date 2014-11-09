@@ -1,5 +1,4 @@
-﻿using System.Collections.Specialized;
-using System.Linq;
+﻿using System.Linq;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;

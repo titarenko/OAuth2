@@ -73,7 +73,7 @@ namespace OAuth2.Client.Impl
             // Instagram returns userinfo on access_token request
             // Source document 
             // http://instagram.com/developer/authentication/
-            _accessTokenResponseContent = args.Response.Content;
+            _accessTokenResponseContent = args.Response.GetContent();
         }
         
         /// <summary>

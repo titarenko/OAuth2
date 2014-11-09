@@ -11,21 +11,7 @@ namespace OAuth2
     public class AuthorizationRoot
     {
         private readonly IRequestFactory _requestFactory;
-        private readonly OAuth2ConfigurationSection _configurationSection;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AuthorizationRoot" /> class.
-        /// </summary>
-        /// <remarks>
-        /// Since this is boundary class, we decided to create 
-        /// parameterless constructor where default implementations of dependencies are used.
-        /// So, despite we encourage you to employ IoC pattern, 
-        /// you are still able to just create instance of manager manually and then use it in your project.
-        /// </remarks>
-        public AuthorizationRoot() : 
-            this(new ConfigurationManager(), "oauth2", new RequestFactory())
-        {
-        }
+        private readonly IOAuth2Configuration _configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationRoot" /> class.
@@ -39,8 +25,8 @@ namespace OAuth2
             IRequestFactory requestFactory)
         {
             _requestFactory = requestFactory;
-            _configurationSection = configurationManager
-                .GetConfigSection<OAuth2ConfigurationSection>(configurationSectionName);
+            _configuration = configurationManager
+                .GetConfiguration<IOAuth2Configuration>(configurationSectionName);
         }
         
         /// <summary>
@@ -52,15 +38,15 @@ namespace OAuth2
             get
             {
                 var types = this.GetClientTypes().ToList();
-                Func<ClientConfiguration, Type> getType = 
+                Func<IClientConfiguration, Type> getType = 
                     configuration => types.FirstOrDefault(x => x.Name == configuration.ClientTypeName);
 
                 return
-                    _configurationSection.Services.AsEnumerable()
-                                        .Where(configuration => configuration.IsEnabled)
-                                        .Select(configuration => new { configuration, type = getType(configuration) })
-                                        .Where(o => o.type != null)
-                                        .Select(o => (IClient)Activator.CreateInstance(o.type, _requestFactory, o.configuration));                
+                    _configuration
+                        .Where(configuration => configuration.IsEnabled)
+                        .Select(configuration => new { configuration, type = getType(configuration) })
+                        .Where(o => o.type != null)
+                        .Select(o => (IClient)Activator.CreateInstance(o.type, _requestFactory, o.configuration));                
             }
         }
 

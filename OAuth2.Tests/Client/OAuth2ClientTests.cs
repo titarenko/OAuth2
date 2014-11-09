@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Specialized;
 using System.Net;
 using FizzWare.NBuilder;
@@ -8,8 +9,12 @@ using OAuth2.Client;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-using RestSharp;
+using RestSharp.Portable;
 using FluentAssertions;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using RestSharp.Portable.Authenticators;
+using System.Net.Http;
 
 namespace OAuth2.Tests.Client
 {
@@ -23,6 +28,8 @@ namespace OAuth2.Tests.Client
         private IRestRequest restRequest;
         private IRestResponse restResponse;
 
+        private static System.Text.Encoding _encoding = System.Text.Encoding.UTF8;
+
         [SetUp]
         public void SetUp()
         {
@@ -30,14 +37,14 @@ namespace OAuth2.Tests.Client
             restResponse = Substitute.For<IRestResponse>();
 
             restResponse.StatusCode.Returns(HttpStatusCode.OK);
-            restResponse.Content.Returns("response");
+            restResponse.RawBytes.Returns(_encoding.GetBytes("response"));
 
             restClient = Substitute.For<IRestClient>();
-            restClient.Execute(restRequest).Returns(restResponse);
+            restClient.Execute(restRequest).Returns(Task.FromResult(restResponse));
 
             factory = Substitute.For<IRequestFactory>();
             factory.CreateClient().Returns(restClient);
-            factory.CreateRequest().Returns(restRequest);
+            factory.CreateRequest(null).Returns(restRequest);
 
             var configuration = Substitute.For<IClientConfiguration>();
 
@@ -52,21 +59,21 @@ namespace OAuth2.Tests.Client
         [Test]
         public void Should_ThrowUnexpectedResponse_When_CodeIsNotOk()
         {
-            restResponse.StatusCode = HttpStatusCode.InternalServerError;
+            restResponse.StatusCode.Returns(HttpStatusCode.InternalServerError);
 
             descendant
-                .Invoking(x => x.GetUserInfo(new NameValueCollection()))
+                .Awaiting(x => x.GetUserInfo(new Dictionary<string, string>().ToLookup(y => y.Key, y => y.Value)))
                 .ShouldThrow<UnexpectedResponseException>();
         }
 
         [Test]
         public void Should_ThrowUnexpectedResponse_When_ResponseIsEmpty()
         {
-            restResponse.StatusCode = HttpStatusCode.OK;
-            restResponse.Content.Returns("");
+            restResponse.StatusCode.Returns(HttpStatusCode.OK);
+            restResponse.GetContent().Returns("");
             
             descendant
-                .Invoking(x => x.GetUserInfo(new NameValueCollection()))
+                .Awaiting(x => x.GetUserInfo(new Dictionary<string, string>().ToLookup(y => y.Key, y => y.Value)))
                 .ShouldThrow<UnexpectedResponseException>();
         }
 
@@ -74,7 +81,7 @@ namespace OAuth2.Tests.Client
         public void Should_ReturnCorrectAccessCodeRequestUri()
         {
             // arrange
-            restClient.BuildUri(restRequest).Returns(new Uri("https://login-link.net/"));
+            restClient.BuildUrl(restRequest).Returns(new Uri("https://login-link.net/"));
 
             // act
             var uri = descendant.GetLoginLinkUri();
@@ -83,10 +90,10 @@ namespace OAuth2.Tests.Client
             uri.Should().Be("https://login-link.net/");
 
             factory.Received(1).CreateClient();
-            factory.Received(1).CreateRequest();
+            factory.Received(1).CreateRequest("/AccessCodeServiceEndpoint");
 
-            restClient.Received(1).BaseUrl = "https://AccessCodeServiceEndpoint";
-            restRequest.Received(1).Resource = "/AccessCodeServiceEndpoint";
+            restClient.Received(1).BaseUrl = new Uri("https://AccessCodeServiceEndpoint");
+            restRequest.Received(1).Resource.Should().Be("/AccessCodeServiceEndpoint");
 
             restRequest.Received(1).AddObject(Arg.Is<object>(
                 x => x.AllPropertiesAreEqualTo(
@@ -99,18 +106,18 @@ namespace OAuth2.Tests.Client
                         state = (string) null
                     })));
 
-            restClient.Received(1).BuildUri(restRequest);
+            restClient.Received(1).BuildUrl(restRequest);
         }
         
         [Test]
         public void Should_ThrowException_WhenParametersForGetUserInfoContainError()
         {
             // arrange
-            var parameters = new NameValueCollection {{"error", "error2"}};
+            var parameters = new Dictionary<string, string> { { "error", "error2" } }.ToLookup(y => y.Key, y => y.Value);
 
             // act & assert
             descendant
-                .Invoking(x => x.GetUserInfo(parameters))
+                .Awaiting(x => x.GetUserInfo(parameters))
                 .ShouldThrow<UnexpectedResponseException>()
                 .And.FieldName.Should().Be("error");
         }
@@ -121,31 +128,31 @@ namespace OAuth2.Tests.Client
         public void ShouldNot_ThrowException_When_ParametersForGetUserInfoContainEmptyError(string error)
         {
             // arrange
-            restResponse.Content.Returns("access_token=token");
+            restResponse.RawBytes.Returns(_encoding.GetBytes("access_token=token"));
 
             // act & assert
             descendant
-                .Invoking(x => x.GetUserInfo(new NameValueCollection
+                .Awaiting(x => x.GetUserInfo(new Dictionary<string, string>
                 {
                     {"error", error},
                     {"code", "code"}
-                }))
+                }.ToLookup(y => y.Key, y => y.Value)))
                 .ShouldNotThrow();
         }
 
         [Test]
-        public void Should_IssueCorrectRequestForAccessToken_When_GetUserInfoIsCalled()
+        public async Task Should_IssueCorrectRequestForAccessToken_When_GetUserInfoIsCalled()
         {
             // arrange
-            restResponse.Content = "access_token=token";
+            restResponse.GetContent().Returns("access_token=token");
 
             // act
-            descendant.GetUserInfo(new NameValueCollection {{"code", "code"}});
+            await descendant.GetUserInfo(new Dictionary<string, string> { { "code", "code" } }.ToLookup(y => y.Key, y => y.Value));
 
             // assert
-            restClient.Received(1).BaseUrl = "https://AccessTokenServiceEndpoint";
-            restRequest.Received(1).Resource = "/AccessTokenServiceEndpoint";
-            restRequest.Received(1).Method = Method.POST;
+            restClient.Received(1).BaseUrl = new Uri("https://AccessTokenServiceEndpoint");
+            restRequest.Received(1).Resource.Should().Be("/AccessTokenServiceEndpoint");
+            restRequest.Received(1).Method = HttpMethod.Post;
             restRequest.Received(1).AddObject(Arg.Is<object>(x => x.AllPropertiesAreEqualTo(
                 new
                 {
@@ -160,17 +167,17 @@ namespace OAuth2.Tests.Client
         [Test]
         [TestCase("access_token=token")]
         [TestCase("{\"access_token\": \"token\"}")]
-        public void Should_IssueCorrectRequestForUserInfo_When_GetUserInfoIsCalled(string response)
+        public async Task Should_IssueCorrectRequestForUserInfo_When_GetUserInfoIsCalled(string response)
         {
             // arrange
-            restResponse.Content.Returns(response);
+            restResponse.GetContent().Returns(response);
 
             // act
-            descendant.GetUserInfo(new NameValueCollection {{"code", "code"}});
+            await descendant.GetUserInfo(new Dictionary<string, string> { { "code", "code" } }.ToLookup(y => y.Key, y => y.Value));
 
             // assert
-            restClient.Received(1).BaseUrl = "https://UserInfoServiceEndpoint";
-            restRequest.Received(1).Resource = "/UserInfoServiceEndpoint";
+            restClient.Received(1).BaseUrl = new Uri("https://UserInfoServiceEndpoint");
+            restRequest.Received(1).Resource.Should().Be("/UserInfoServiceEndpoint");
             restClient.Authenticator.Should().BeOfType<OAuth2UriQueryParameterAuthenticator>();
         }
 

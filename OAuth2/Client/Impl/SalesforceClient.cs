@@ -63,8 +63,8 @@ namespace OAuth2.Client.Impl
                 Uri uri = new Uri(SalesforceProfileUrl);
                 return new Endpoint
                 {
-                    BaseUri = uri.GetLeftPart(UriPartial.Authority),
-                    Resource = uri.PathAndQuery
+                    BaseUri = uri.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped),
+                    Resource = uri.GetComponents(UriComponents.PathAndQuery, UriFormat.UriEscaped),
                 };
             }
         }

@@ -39,7 +39,7 @@ namespace OAuth2.Tests.Infrastructure
         public void Should_ReturnConfigurationSection_WhenItIsInConfig()
         {
             // act
-            var section = manager.GetConfigSection<OAuth2ConfigurationSection>("oauth2");
+            var section = manager.GetConfiguration<OAuth2ConfigurationSection>("oauth2");
 
             // assert
             section.Should().NotBeNull();
@@ -49,7 +49,7 @@ namespace OAuth2.Tests.Infrastructure
         public void Should_ReturnNull_WhenRequestedConfigurationSectionIsNotFound()
         {
             // act
-            var section = manager.GetConfigSection<OAuth2ConfigurationSection>("notfound");
+            var section = manager.GetConfiguration<OAuth2ConfigurationSection>("notfound");
 
             // assert
             section.Should().BeNull();

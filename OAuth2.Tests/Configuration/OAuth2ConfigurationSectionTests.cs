@@ -19,7 +19,7 @@ namespace OAuth2.Tests.Configuration
         public void Should_ContainAllServiceDefinitions()
         {
             // act
-            var section = configurationManager.GetConfigSection<OAuth2ConfigurationSection>("oauth2");
+            var section = configurationManager.GetConfiguration<OAuth2ConfigurationSection>("oauth2");
 
             // assert
             section["SomeClient"].Should().NotBeNull();
@@ -30,7 +30,7 @@ namespace OAuth2.Tests.Configuration
         public void Should_CorrectlyParseServiceDefinition()
         {
             // act
-            var section = configurationManager.GetConfigSection<OAuth2ConfigurationSection>("oauth2");
+            var section = configurationManager.GetConfiguration<OAuth2ConfigurationSection>("oauth2");
             var service = section["SomeAnotherClient"];
 
             // assert
