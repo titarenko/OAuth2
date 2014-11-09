@@ -118,7 +118,7 @@ namespace OAuth2.Client
 
             var error = parameters[errorFieldName].ToList();
             if (error.Any(x => !string.IsNullOrEmpty(x)))
-                throw new UnexpectedResponseException(errorFieldName);
+                throw new UnexpectedResponseException(errorFieldName, string.Join("\n", error));
 
             State = string.Join(",", parameters["state"]);
         }

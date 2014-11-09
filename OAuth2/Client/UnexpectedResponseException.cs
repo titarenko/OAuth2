@@ -35,5 +35,16 @@ namespace OAuth2.Client
         {
             FieldName = fieldName;
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UnexpectedResponseException"/> class.
+        /// </summary>
+        /// <param name="fieldName">Name of the field.</param>
+        /// <param name="message">Error message</param>
+        public UnexpectedResponseException(string fieldName, string message)
+            : base(message)
+        {
+            FieldName = fieldName;
+        }
     }
 }
