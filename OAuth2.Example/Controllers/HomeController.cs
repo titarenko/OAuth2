@@ -26,7 +26,7 @@ namespace OAuth2.Example.Controllers
         /// Initializes a new instance of the <see cref="HomeController"/> class.
         /// </summary>
         /// <param name="authorizationRoot">The authorization manager.</param>
-        public HomeController(AuthorizationRoot authorizationRoot)
+        public HomeController(ExampleAuthorizationRoot authorizationRoot)
         {
             this.authorizationRoot = authorizationRoot;
         }
