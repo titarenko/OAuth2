@@ -24,7 +24,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuth2.Example.AcceptanceTe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuth2", "OAuth2\OAuth2.csproj", "{CE3C83C0-DB8F-477A-A108-06319C349302}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuth2.Net4", "OAuth2.Net4\OAuth2.Net4.csproj", "{C781ADFC-06D5-4C49-8600-8E361288A7D6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuth2.Configuration", "OAuth2.Configuration\OAuth2.Configuration.csproj", "{C781ADFC-06D5-4C49-8600-8E361288A7D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

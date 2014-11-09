@@ -158,9 +158,9 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OAuth2.Net4\OAuth2.Net4.csproj">
+    <ProjectReference Include="..\OAuth2.Configuration\OAuth2.Configuration.csproj">
       <Project>{c781adfc-06d5-4c49-8600-8e361288a7d6}</Project>
-      <Name>OAuth2.Net4</Name>
+      <Name>OAuth2.Configuration</Name>
     </ProjectReference>
     <ProjectReference Include="..\OAuth2\OAuth2.csproj">
       <Project>{ce3c83c0-db8f-477a-a108-06319c349302}</Project>
