@@ -68,6 +68,7 @@
     <Compile Include="Infrastructure\IRequestFactory.cs" />
     <Compile Include="Infrastructure\LookupExtensions.cs" />
     <Compile Include="Infrastructure\ObjectExtensions.cs" />
+    <Compile Include="Infrastructure\PropertyFilterMode.cs" />
     <Compile Include="Infrastructure\RequestFactory.cs" />
     <Compile Include="Infrastructure\RequestFactoryExtensions.cs" />
     <Compile Include="Infrastructure\RestClientExtensions.cs" />
