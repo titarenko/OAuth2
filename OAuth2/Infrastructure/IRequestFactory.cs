@@ -1,4 +1,4 @@
-using RestSharp;
+using RestSharp.Portable;
 
 namespace OAuth2.Infrastructure
 {
@@ -15,6 +15,6 @@ namespace OAuth2.Infrastructure
         /// <summary>
         /// Returns new REST request instance.
         /// </summary>
-        IRestRequest CreateRequest();
+        IRestRequest CreateRequest(string resource);
     }
 }

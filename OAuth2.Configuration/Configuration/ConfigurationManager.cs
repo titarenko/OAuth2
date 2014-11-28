@@ -19,7 +19,7 @@ namespace OAuth2.Configuration
         /// </summary>
         /// <typeparam name="T">Type representing root of configuration section.</typeparam>
         /// <param name="name">Name of configuration section.</param>
-        public T GetConfigSection<T>(string name)
+        public T GetConfiguration<T>(string name)
         {
             return (T) System.Configuration.ConfigurationManager.GetSection(name);
         }

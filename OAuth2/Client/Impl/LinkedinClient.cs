@@ -1,10 +1,11 @@
 using System;
+using System.Linq;
+using System.Xml.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-using RestSharp;
-using System.Xml.Linq;
-using System.Xml.XPath;
+using RestSharp.Portable;
+using System.Threading.Tasks;
 
 namespace OAuth2.Client.Impl
 {
@@ -68,11 +69,22 @@ namespace OAuth2.Client.Impl
             }
         }
 
-        public override string GetLoginLinkUri(string state = null)
+        /// <summary>
+        /// Returns URI of service which should be called in order to start authentication process.
+        /// This URI should be used for rendering login link.
+        /// </summary>
+        /// <param name="state">
+        /// Any additional information that will be posted back by service.
+        /// </param>
+        public override async Task<string> GetLoginLinkUri(string state = null)
         {
-            return base.GetLoginLinkUri(state ?? Guid.NewGuid().ToString("N"));
+            return await base.GetLoginLinkUri(state ?? Guid.NewGuid().ToString("N"));
         }
 
+        /// <summary>
+        /// Called just before issuing request to service when everything is ready.
+        /// Allows to add extra parameters to request or do any other needed preparations.
+        /// </summary>
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
             args.Client.Authenticator = null;
@@ -90,9 +102,8 @@ namespace OAuth2.Client.Impl
         /// <param name="content">The content which is received from third-party service.</param>
         protected override UserInfo ParseUserInfo(string content)
         {
-
             var document  = XDocument.Parse(content);
-            var avatarUri = SafeGet(document, "/person/picture-url");
+            var avatarUri = document.Element("person").Elements("picture-url").Select(x => x.Value).SingleOrDefault();
             var avatarSizeTemplate = "{0}_{0}";
             if (string.IsNullOrEmpty(avatarUri))
             {
@@ -103,10 +114,10 @@ namespace OAuth2.Client.Impl
 
             return new UserInfo
             {
-                Id        = document.XPathSelectElement("/person/id").Value,
-                Email     = SafeGet(document, "/person/email-address"),
-                FirstName = document.XPathSelectElement("/person/first-name").Value,
-                LastName  = document.XPathSelectElement("/person/last-name").Value,
+                Id        = document.Element("person").Element("id").Value,
+                Email     = document.Element("person").Elements("email-address").Select(x => x.Value).SingleOrDefault(),
+                FirstName = document.Element("person").Element("first-name").Value,
+                LastName = document.Element("person").Element("last-name").Value,
                 AvatarUri =
                     {
                         Small  = avatarUri.Replace(avatarDefaultSize, string.Format(avatarSizeTemplate, AvatarInfo.SmallSize)),
@@ -116,15 +127,6 @@ namespace OAuth2.Client.Impl
             };
         }
 
-
-        private string SafeGet(XDocument document, string path)
-        {
-            var element = document.XPathSelectElement(path);
-            if (element == null)
-                return null;
-
-            return element.Value;
-        }
 
         /// <summary>
         /// Friendly name of provider (OAuth service).

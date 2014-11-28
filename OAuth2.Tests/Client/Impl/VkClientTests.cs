@@ -1,4 +1,5 @@
 ﻿using System.Collections.Specialized;
+using System.Linq;
 using System.Net;
 using FluentAssertions;
 using NSubstitute;
@@ -8,6 +9,9 @@ using OAuth2.Client.Impl;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using RestSharp.Portable;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OAuth2.Tests.Client.Impl
 {
@@ -19,11 +23,19 @@ namespace OAuth2.Tests.Client.Impl
         private VkClientDescendant descendant;
         private IRequestFactory factory;
 
+        private static System.Text.Encoding _encoding = System.Text.Encoding.UTF8;
+
         [SetUp]
         public void SetUp()
         {
             factory = Substitute.For<IRequestFactory>();
-            factory.CreateClient().Execute(factory.CreateRequest()).StatusCode = HttpStatusCode.OK;
+            var client = Substitute.For<IRestClient>();
+            var request = Substitute.For<IRestRequest>();
+            var response = Substitute.For<IRestResponse>();
+            factory.CreateClient().Returns(client);
+            factory.CreateRequest(null).ReturnsForAnyArgs(request);
+            client.Execute(request).Returns(Task.FromResult(response));
+            response.StatusCode.Returns(HttpStatusCode.OK);
             descendant = new VkClientDescendant(factory, Substitute.For<IClientConfiguration>());
         }
 
@@ -75,46 +87,46 @@ namespace OAuth2.Tests.Client.Impl
         }
 
         [Test]
-        public void Should_ReceiveUserId_WhenAccessTokenResponseReceived()
+        public async Task Should_ReceiveUserId_WhenAccessTokenResponseReceived()
         {
             // arrange
-            var response = factory.CreateClient().Execute(factory.CreateRequest());
-            response.Content.Returns(
-                "any content to pass response verification",
-                "{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}",
-                "{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}",
-                content);
+            var response = await factory.CreateClient().Execute(factory.CreateRequest(null));
+            response.RawBytes.Returns(
+                _encoding.GetBytes("any content to pass response verification"),
+                _encoding.GetBytes("{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}"),
+                _encoding.GetBytes("{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}"),
+                _encoding.GetBytes(content));
 
             // act
-            descendant.GetUserInfo(new NameValueCollection
+            await descendant.GetUserInfo(new Dictionary<string, string>
             {
                 {"code", "code"}
-            });
+            }.ToLookup(y => y.Key, y => y.Value));
 
             // assert
-            var notUsed = response.Received().Content;
+            var notUsed = response.Received().GetContent();
         }
 
         [Test]
-        public void Should_AddExtraParameters_WhenOnGetUserInfoIsCalled()
+        public async Task Should_AddExtraParameters_WhenOnGetUserInfoIsCalled()
         {
             // arrange
             var restClient = factory.CreateClient();
-            var restRequest = factory.CreateRequest();
-            restClient.Execute(restRequest).Content.Returns(
-                "any content to pass response verification",
-                "{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}", 
-                "{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}", 
-                content);
+            var restRequest = factory.CreateRequest(null);
+            (await restClient.Execute(restRequest)).RawBytes.Returns(
+                _encoding.GetBytes("any content to pass response verification"),
+                _encoding.GetBytes("{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}"), 
+                _encoding.GetBytes("{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}"), 
+                _encoding.GetBytes(content));
 
             // act
-            descendant.GetUserInfo(new NameValueCollection
+            await descendant.GetUserInfo(new Dictionary<string, string>
             {
                 {"code", "code"}
-            });
+            }.ToLookup(y => y.Key, y => y.Value));
 
             // assert
-            restRequest.Received().AddParameter("fields", "uid,first_name,last_name,photo");
+            restRequest.Parameters.Received().Add(Arg.Is<Parameter>(x => x.Name == "fields" && (string)x.Value == "uid,first_name,last_name,photo"));
         }
 
         private class VkClientDescendant : VkClient

@@ -67,13 +67,17 @@ namespace OAuth2.Client.Impl
                 };
             }
         }
-        
+
+        /// <summary>
+        /// Called just after obtaining response with access token from service.
+        /// Allows to read extra data returned along with access token.
+        /// </summary>
         protected override void AfterGetAccessToken(BeforeAfterRequestArgs args)
         {
             // Instagram returns userinfo on access_token request
             // Source document 
             // http://instagram.com/developer/authentication/
-            _accessTokenResponseContent = args.Response.Content;
+            _accessTokenResponseContent = args.Response.GetContent();
         }
         
         /// <summary>

@@ -2,6 +2,8 @@
 using System.Web.Mvc;
 using OAuth2.Client;
 using OAuth2.Example.Models;
+using System.Threading.Tasks;
+using System;
 
 namespace OAuth2.Example.Controllers
 {
@@ -24,7 +26,7 @@ namespace OAuth2.Example.Controllers
         /// Initializes a new instance of the <see cref="HomeController"/> class.
         /// </summary>
         /// <param name="authorizationRoot">The authorization manager.</param>
-        public HomeController(AuthorizationRoot authorizationRoot)
+        public HomeController(ExampleAuthorizationRoot authorizationRoot)
         {
             this.authorizationRoot = authorizationRoot;
         }
@@ -44,18 +46,21 @@ namespace OAuth2.Example.Controllers
         /// <summary>
         /// Redirect to login url of selected provider.
         /// </summary>        
-        public RedirectResult Login(string providerName)
+        public async Task<RedirectResult> Login(string providerName)
         {
             ProviderName = providerName;
-            return new RedirectResult(GetClient().GetLoginLinkUri());
+            return new RedirectResult(await GetClient().GetLoginLinkUri());
         }
 
         /// <summary>
         /// Renders information received from authentication service.
         /// </summary>
-        public ActionResult Auth()
+        public async Task<ActionResult> Auth()
         {
-            return View(GetClient().GetUserInfo(Request.QueryString));
+            var kvp = Enumerable.Range(0, Request.QueryString.Count)
+                .SelectMany(x => Request.QueryString.GetValues(x).Select(y => Tuple.Create(Request.QueryString.GetKey(x), y)))
+                .ToLookup(x => x.Item1, x => x.Item2, StringComparer.OrdinalIgnoreCase);
+            return View(await GetClient().GetUserInfo(kvp));
         }
 
         private IClient GetClient()

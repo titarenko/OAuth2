@@ -1,5 +1,5 @@
 using System;
-using RestSharp;
+using RestSharp.Portable;
 
 namespace OAuth2.Client
 {
@@ -32,6 +32,17 @@ namespace OAuth2.Client
         /// </summary>
         /// <param name="fieldName">Name of the field.</param>
         public UnexpectedResponseException(string fieldName)
+        {
+            FieldName = fieldName;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UnexpectedResponseException"/> class.
+        /// </summary>
+        /// <param name="fieldName">Name of the field.</param>
+        /// <param name="message">Error message</param>
+        public UnexpectedResponseException(string fieldName, string message)
+            : base(message)
         {
             FieldName = fieldName;
         }

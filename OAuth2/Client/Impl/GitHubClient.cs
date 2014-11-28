@@ -1,5 +1,4 @@
-﻿using System.Collections.Specialized;
-using System.Linq;
+﻿using System.Linq;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
@@ -12,11 +11,20 @@ namespace OAuth2.Client.Impl
     /// </summary>
     public class GitHubClient : OAuth2Client
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="factory"></param>
+        /// <param name="configuration"></param>
         public GitHubClient(IRequestFactory factory, IClientConfiguration configuration)
             : base(factory, configuration)
         {
         }
 
+        /// <summary>
+        /// Called before the request to get the access token
+        /// </summary>
+        /// <param name="args"></param>
         protected override void BeforeGetAccessToken(BeforeAfterRequestArgs args)
         {
             args.Request.AddObject(new

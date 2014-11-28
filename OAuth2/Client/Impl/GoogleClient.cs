@@ -2,6 +2,8 @@ using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using RestSharp.Portable;
+using System.Threading.Tasks;
 
 namespace OAuth2.Client.Impl
 {
@@ -18,6 +20,17 @@ namespace OAuth2.Client.Impl
         public GoogleClient(IRequestFactory factory, IClientConfiguration configuration)
             : base(factory, configuration)
         {
+        }
+
+        /// <summary>
+        /// Called just before building the request URI when everything is ready.
+        /// Allows to add extra parameters to request or do any other needed preparations.
+        /// </summary>
+        protected override async Task BeforeGetLoginLinkUri(BeforeAfterRequestArgs args)
+        {
+            await base.BeforeGetLoginLinkUri(args);
+            // This allows us to get a refresh token
+            args.Request.AddParameter("access_type", "offline");
         }
 
         /// <summary>

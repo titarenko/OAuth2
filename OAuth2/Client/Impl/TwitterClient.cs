@@ -10,6 +10,11 @@ namespace OAuth2.Client.Impl
     /// </summary>
     public class TwitterClient : OAuthClient
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="factory"></param>
+        /// <param name="configuration"></param>
         public TwitterClient(IRequestFactory factory, IClientConfiguration configuration)
             : base(factory, configuration)
         {

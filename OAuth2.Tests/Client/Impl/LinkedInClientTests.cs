@@ -6,7 +6,7 @@ using OAuth2.Client.Impl;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-using RestSharp;
+using RestSharp.Portable;
 
 namespace OAuth2.Tests.Client.Impl
 {
@@ -28,7 +28,7 @@ namespace OAuth2.Tests.Client.Impl
         {
             var factory = Substitute.For<IRequestFactory>();
             factory.CreateClient().Returns(Substitute.For<IRestClient>());
-            factory.CreateRequest().Returns(Substitute.For<IRestRequest>());
+            factory.CreateRequest(null).Returns(Substitute.For<IRestRequest>());
 
             descendant = new LinkedInClientDescendant(factory, Substitute.For<IClientConfiguration>());
         }

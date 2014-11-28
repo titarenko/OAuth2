@@ -2,6 +2,7 @@ using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using RestSharp.Portable;
 
 namespace OAuth2.Client.Impl
 {
@@ -11,7 +12,7 @@ namespace OAuth2.Client.Impl
     public class VkClient : OAuth2Client
     {
         private string _userId;
-	private string _email;
+    private string _email;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VkClient"/> class.
@@ -68,6 +69,9 @@ namespace OAuth2.Client.Impl
             }
         }
 
+        /// <summary>
+        /// Friendly name of provider (OAuth2 service).
+        /// </summary>
         public override string Name
         {
             get { return "Vkontakte"; }
@@ -79,11 +83,11 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override void AfterGetAccessToken(BeforeAfterRequestArgs args)
         {
-            var instance = JObject.Parse(args.Response.Content);
+            var instance = JObject.Parse(args.Response.GetContent());
             _userId = instance["user_id"].Value<string>();
-	    var email = instance["email"];
-	    if (email != null)
-	        _email = email.Value<string>();
+            var email = instance["email"];
+            if (email != null)
+                _email = email.Value<string>();
         }
 
         /// <summary>

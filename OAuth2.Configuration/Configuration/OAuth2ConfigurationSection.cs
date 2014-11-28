@@ -1,4 +1,5 @@
 using System.Configuration;
+using System.Linq;
 
 namespace OAuth2.Configuration
 {
@@ -21,6 +22,16 @@ namespace OAuth2.Configuration
         public ServiceCollection Services
         {
             get { return (ServiceCollection) base[CollectionName]; }
+        }
+
+        public System.Collections.Generic.IEnumerator<IClientConfiguration> GetEnumerator()
+        {
+            return Services.AsEnumerable().Cast<IClientConfiguration>().GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return Services.AsEnumerable().GetEnumerator();
         }
     }
 }

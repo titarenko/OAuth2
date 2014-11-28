@@ -1,6 +1,8 @@
-using System.Collections.Specialized;
 using OAuth2.Configuration;
 using OAuth2.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace OAuth2.Client
 {
@@ -28,7 +30,7 @@ namespace OAuth2.Client
         /// Returns URI of service which should be called in order to start authentication process. 
         /// You should use this URI when rendering login link.
         /// </summary>
-        string GetLoginLinkUri(string state = null);
+        Task<string> GetLoginLinkUri(string state = null);
 
         /// <summary>
         /// State which was posted as additional parameter 
@@ -44,7 +46,7 @@ namespace OAuth2.Client
         /// Callback request payload (parameters).
         /// <example>Request.QueryString</example>
         /// </param>
-        UserInfo GetUserInfo(NameValueCollection parameters);
+        Task<UserInfo> GetUserInfo(ILookup<string, string> parameters);
 
         /// <summary>
         /// Client configuration object.

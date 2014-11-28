@@ -33,8 +33,8 @@ namespace OAuth2.Tests.Infrastructure
         public void Should_ReturnNewRequestInstance_WhenNewRequestIsCalled()
         {
             // act
-            var request1 = factory.CreateRequest();
-            var request2 = factory.CreateRequest();
+            var request1 = factory.CreateRequest(null);
+            var request2 = factory.CreateRequest(null);
 
             // assert
             request1.Should().NotBeNull();

@@ -1,4 +1,4 @@
-using RestSharp;
+using RestSharp.Portable;
 
 namespace OAuth2.Infrastructure
 {
@@ -12,15 +12,17 @@ namespace OAuth2.Infrastructure
         /// </summary>
         public IRestClient CreateClient()
         {
-            return new RestClient();
+            var client = new RestClient();
+            client.IgnoreResponseStatusCode = true;
+            return client;
         }
 
         /// <summary>
         /// Returns new REST request instance.
         /// </summary>
-        public IRestRequest CreateRequest()
+        public IRestRequest CreateRequest(string resource)
         {
-            return new RestRequest();
+            return new RestRequest(resource);
         }
     }
 }

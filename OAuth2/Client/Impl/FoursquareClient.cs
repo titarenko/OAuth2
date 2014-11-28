@@ -2,7 +2,7 @@ using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-using RestSharp;
+using RestSharp.Portable;
 
 namespace OAuth2.Client.Impl
 {
@@ -106,6 +106,9 @@ namespace OAuth2.Client.Impl
             };
         }
 
+        /// <summary>
+        /// Friendly name of provider (OAuth2 service).
+        /// </summary>
         public override string Name
         {
             get { return "Foursquare"; }
