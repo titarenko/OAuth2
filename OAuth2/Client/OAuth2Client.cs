@@ -46,12 +46,12 @@ namespace OAuth2.Client
         /// <summary>
         /// Access token returned by provider. Can be used for further calls of provider API.
         /// </summary>
-        public string AccessToken { get; private set; }
+        public string AccessToken { get; protected set; }
 
         /// <summary>
         /// Refresh token returned by provider. Can be used for further calls of provider API.
         /// </summary>
-        public string RefreshToken { get; private set; }
+        public string RefreshToken { get; protected set; }
         
         /// <summary>
         /// Token type returned by provider. Can be used for further calls of provider API.
