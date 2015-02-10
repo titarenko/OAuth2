@@ -10,7 +10,7 @@ namespace OAuth2.Example.Controllers
     /// </summary>
     public class HomeController : Controller
     {
-        private readonly AuthorizationRoot authorizationRoot;
+        private readonly AuthorizationRoot _authorizationRoot;
 
         private const string ProviderNameKey = "providerName";
 
@@ -26,7 +26,7 @@ namespace OAuth2.Example.Controllers
         /// <param name="authorizationRoot">The authorization manager.</param>
         public HomeController(AuthorizationRoot authorizationRoot)
         {
-            this.authorizationRoot = authorizationRoot;
+            _authorizationRoot = authorizationRoot;
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace OAuth2.Example.Controllers
         /// </summary>
         public ActionResult Index()
         {
-            var model = authorizationRoot.Clients.Select(client => new LoginInfoModel
+            var model = _authorizationRoot.Clients.Select(client => new LoginInfoModel
                 {
                     ProviderName = client.Name
                 });
@@ -60,7 +60,7 @@ namespace OAuth2.Example.Controllers
 
         private IClient GetClient()
         {
-            return authorizationRoot.Clients.First(c => c.Name == ProviderName);
+            return _authorizationRoot.Clients.First(c => c.Name == ProviderName);
         }
     }
 }
