@@ -1,0 +1,6 @@
+﻿@model IEnumerable<OAuth2.Example2.Models.LoginInfoModel>
+
+@foreach (var loginInfo in Model)
+{    
+	<a href="/Home/Login?providerName=@loginInfo.ProviderName">@loginInfo.ProviderName</a>
+}
