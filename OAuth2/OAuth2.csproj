@@ -87,6 +87,7 @@
     <Compile Include="Infrastructure\UriUtility.cs" />
     <Compile Include="Models\UserInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Client\Impl\ZuulClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

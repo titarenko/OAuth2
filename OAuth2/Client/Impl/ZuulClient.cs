@@ -30,7 +30,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://zuul.nuvi.com",
+					BaseUri = "https://zuul.is-valid.org/",
                     Resource = "/oauth/authorize"
                 };
             }
@@ -45,7 +45,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-					BaseUri = "https://zuul.nuvi.com",
+					BaseUri = "https://zuul.is-valid.org/",
                     Resource = "/oauth/token"
                 };
             }
