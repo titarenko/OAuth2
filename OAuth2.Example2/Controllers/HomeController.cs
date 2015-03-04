@@ -47,7 +47,7 @@ namespace OAuth2.Example2.Controllers
 		/// </summary>        
 		public RedirectResult Login()
 		{
-			ProviderName = Request ["providerName"];
+			ProviderName = Request ["providerName"]; ;
 			return new RedirectResult(GetClient().GetLoginLinkUri());
 		}
 
@@ -56,12 +56,15 @@ namespace OAuth2.Example2.Controllers
 		/// </summary>
 		public ActionResult Auth()
 		{
-			return View(GetClient().GetUserInfo(Request.QueryString));
+			var client = GetClient ();
+
+
+			return View(client.GetUserInfo(Request.QueryString));
 		}
 
 		private IClient GetClient()
 		{
-			return authorizationRoot.Clients.First(c => c.Name == ProviderName);
+			return authorizationRoot.Clients.First();
 		}
 	}
 }

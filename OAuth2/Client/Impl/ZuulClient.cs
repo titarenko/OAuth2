@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using RestSharp;
 
 namespace OAuth2.Client.Impl
 {
@@ -30,7 +31,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-					BaseUri = "https://zuul.is-valid.org/",
+					BaseUri = "http://zuul.is-valid.org/",
                     Resource = "/oauth/authorize"
                 };
             }
@@ -45,31 +46,28 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-					BaseUri = "https://zuul.is-valid.org/",
+					BaseUri = "http://zuul.is-valid.org/",
                     Resource = "/oauth/token"
                 };
             }
         }
 
-        public string ZuulProfileUrl { get; set; }
+		/// <summary>
+		/// Defines URI of service which allows to obtain information about user which is currently logged in.
+		/// </summary>
+		protected override Endpoint UserInfoServiceEndpoint
+		{
+			get
+			{
+				return new Endpoint
+				{
+					BaseUri = "http://zuul.is-valid.org",
+					Resource = "/oauth/user.json"                    
+				};
+			}
+		}
 
-        /// <summary>
-        /// Defines URI of service which allows to obtain information about user which is currently logged in.
-        /// </summary>
-        protected override Endpoint UserInfoServiceEndpoint
-        {
-            get
-            {
-                Uri uri = new Uri(ZuulProfileUrl);
-                return new Endpoint
-                {
-                    BaseUri = uri.GetLeftPart(UriPartial.Authority),
-                    Resource = uri.PathAndQuery
-                };
-            }
-        }
-
-        /// <summary>
+         /// <summary>
         /// Friendly name of provider (OAuth2 service).
         /// </summary>
         public override string Name
@@ -77,13 +75,17 @@ namespace OAuth2.Client.Impl
             get { return "Zuul"; }
         }
 
-        protected override string ParseAccessTokenResponse(string content)
-        {
-            // save the user's identity service url which is included in the response
-            ZuulProfileUrl = (string)JObject.Parse(content).SelectToken("id");
-                
-            return base.ParseAccessTokenResponse(content);
-        }
+
+		protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
+		{
+			args.Client.Authenticator = null;
+			args.Request.Parameters.Add(new Parameter
+				{
+					Name  = "access_token",
+					Type  = ParameterType.GetOrPost,
+					Value = AccessToken
+				});
+		}                        
 
         /// <summary>
         /// Should return parsed <see cref="UserInfo"/> from content received from third-party service.
@@ -97,14 +99,6 @@ namespace OAuth2.Client.Impl
             {
                 Id = response["id"].Value<string>(),
                 Email = response["email"].SafeGet(x => x.Value<string>()),
-                FirstName = response["first_name"].Value<string>(),
-                LastName = response["last_name"].Value<string>(),
-                AvatarUri =
-                    {
-                        Small = response["photos"]["thumbnail"].Value<string>(),
-                        Normal = response["photos"]["picture"].Value<string>(),
-                        Large = null
-                    }
             };
         }
     }

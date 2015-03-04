@@ -130,7 +130,7 @@ namespace OAuth2.Client
             var client = _factory.CreateClient(AccessTokenServiceEndpoint);
             var request = _factory.CreateRequest(AccessTokenServiceEndpoint, Method.POST);
 
-            BeforeGetAccessToken(new BeforeAfterRequestArgs
+			BeforeGetAccessToken(new BeforeAfterRequestArgs
             {
                 Client = client,
                 Request = request,
