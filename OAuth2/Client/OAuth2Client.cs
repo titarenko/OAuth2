@@ -209,59 +209,43 @@ namespace OAuth2.Client
                 Parameters = parameters
             });
 
-            AccessToken = ParseStringResponse(response.Content, AccessTokenKey);
+            AccessToken = (string) ParseAccessTokenResponse(response.Content, AccessTokenKey);
 
             if (GrantType != "refresh_token")
-                RefreshToken = ParseStringResponse(response.Content, RefreshTokenKey);
+                RefreshToken = (string) ParseAccessTokenResponse(response.Content, RefreshTokenKey);
 
-            TokenType = ParseStringResponse(response.Content, TokenTypeKey);
+            TokenType = (string) ParseAccessTokenResponse(response.Content, TokenTypeKey);
 
             try
             {
-                var expiresIn = ParseIntResponse(response.Content, ExpiresKey);
+                var expiresIn = (int) ParseAccessTokenResponse (response.Content, ExpiresKey);
                 ExpiresAt = DateTime.Now.AddSeconds(expiresIn);
             }
-            catch { }
+            catch
+            {
+	            // it's okay if the server doesn't send a value
+            }
         }
 
-        protected virtual string ParseStringResponse(string content, string key)
-        {
-            try
-            {
-                // response can be sent in JSON format
-                var token = (string)JObject.Parse(content).SelectToken(key);
-                if (token.IsEmpty())
-                {
-                    throw new UnexpectedResponseException(key);
-                }
-                return token;
-            }
-            catch (JsonReaderException)
-            {
-                // or it can be in "query string" format (param1=val1&param2=val2)
-                var collection = HttpUtility.ParseQueryString(content);
-                return collection.GetOrThrowUnexpectedResponse(key);
-            }
-        }
-        protected virtual int ParseIntResponse(string content, string key)
-        {
-            try
-            {
-                // response can be sent in JSON format
-                var token = (int)JObject.Parse(content).SelectToken(key);
-                if (token == default(int))
-                {
-                    throw new UnexpectedResponseException(key);
-                }
-                return token;
-            }
-            catch (JsonReaderException)
-            {
-                // or it can be in "query string" format (param1=val1&param2=val2)
-                var collection = HttpUtility.ParseQueryString(content);
-                return int.Parse(collection.GetOrThrowUnexpectedResponse(key));
-            }
-        }
+		protected virtual object ParseAccessTokenResponse(string content, string key)
+		{
+			try
+			{
+				// response can be sent in JSON format
+				var token = JObject.Parse(content).SelectToken(key);
+				if (token.ToString().IsEmpty())
+				{
+					throw new UnexpectedResponseException(AccessTokenKey);
+				}
+				return token;
+			}
+			catch (JsonReaderException)
+			{
+				// or it can be in "query string" format (param1=val1&param2=val2)
+				var collection = HttpUtility.ParseQueryString(content);
+				return collection.GetOrThrowUnexpectedResponse(key);
+			}
+		}
 
         /// <summary>
         /// Should return parsed <see cref="UserInfo"/> using content received from provider.
