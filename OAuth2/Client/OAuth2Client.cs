@@ -209,16 +209,16 @@ namespace OAuth2.Client
                 Parameters = parameters
             });
 
-            AccessToken = (string) ParseAccessTokenResponse(response.Content, AccessTokenKey);
+            AccessToken = (string) ParseTokenResponse(response.Content, AccessTokenKey);
 
             if (GrantType != "refresh_token")
-                RefreshToken = (string) ParseAccessTokenResponse(response.Content, RefreshTokenKey);
+                RefreshToken = (string) ParseTokenResponse(response.Content, RefreshTokenKey);
 
-            TokenType = (string) ParseAccessTokenResponse(response.Content, TokenTypeKey);
+            TokenType = (string) ParseTokenResponse(response.Content, TokenTypeKey);
 
             try
             {
-                var expiresIn = (int) ParseAccessTokenResponse (response.Content, ExpiresKey);
+                var expiresIn = (int) ParseTokenResponse (response.Content, ExpiresKey);
                 ExpiresAt = DateTime.Now.AddSeconds(expiresIn);
             }
             catch
@@ -227,7 +227,7 @@ namespace OAuth2.Client
             }
         }
 
-		protected virtual object ParseAccessTokenResponse(string content, string key)
+		protected virtual object ParseTokenResponse(string content, string key)
 		{
 			try
 			{
