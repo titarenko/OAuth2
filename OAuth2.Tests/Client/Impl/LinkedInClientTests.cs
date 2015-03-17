@@ -63,7 +63,7 @@ namespace OAuth2.Tests.Client.Impl
 
             // assert
             endpoint.BaseUri.Should().Be("https://api.linkedin.com");
-            endpoint.Resource.Should().Be("/v1/people/~:(id,first-name,last-name,picture-url)");
+            endpoint.Resource.Should().Be("/v1/people/~:(id,email-address,first-name,last-name,picture-url)");
         }
 
         [Test]

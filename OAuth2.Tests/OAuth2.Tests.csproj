@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Client\Impl\DigitalOceanClientTests.cs" />
     <Compile Include="Client\Impl\FacebookClientTests.cs" />
     <Compile Include="Client\Impl\FoursquareClientTests.cs" />
     <Compile Include="Client\Impl\GoogleClientTests.cs" />

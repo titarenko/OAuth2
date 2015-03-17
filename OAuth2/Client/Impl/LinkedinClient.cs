@@ -32,7 +32,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://www.linkedin.com",
+                    BaseUri  = "https://www.linkedin.com",
                     Resource = "/uas/oauth2/authorization"
                 };
             }
@@ -47,7 +47,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://www.linkedin.com",
+                    BaseUri  = "https://www.linkedin.com",
                     Resource = "/uas/oauth2/accessToken"
                 };
             }
@@ -62,8 +62,8 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://api.linkedin.com",
-                    Resource = "/v1/people/~:(id,first-name,last-name,picture-url)"
+                    BaseUri  = "https://api.linkedin.com",
+                    Resource = "/v1/people/~:(id,email-address,first-name,last-name,picture-url)"
                 };
             }
         }
@@ -78,8 +78,8 @@ namespace OAuth2.Client.Impl
             args.Client.Authenticator = null;
             args.Request.Parameters.Add(new Parameter
             {
-                Name = "oauth2_access_token",
-                Type = ParameterType.GetOrPost,
+                Name  = "oauth2_access_token",
+                Type  = ParameterType.GetOrPost,
                 Value = AccessToken
             });
         }
@@ -91,7 +91,7 @@ namespace OAuth2.Client.Impl
         protected override UserInfo ParseUserInfo(string content)
         {
 
-            var document = XDocument.Parse(content);
+            var document  = XDocument.Parse(content);
             var avatarUri = SafeGet(document, "/person/picture-url");
             var avatarSizeTemplate = "{0}_{0}";
             if (string.IsNullOrEmpty(avatarUri))
@@ -103,14 +103,15 @@ namespace OAuth2.Client.Impl
 
             return new UserInfo
             {
-                Id = document.XPathSelectElement("/person/id").Value,
+                Id        = document.XPathSelectElement("/person/id").Value,
+                Email     = SafeGet(document, "/person/email-address"),
                 FirstName = document.XPathSelectElement("/person/first-name").Value,
-                LastName = document.XPathSelectElement("/person/last-name").Value,
+                LastName  = document.XPathSelectElement("/person/last-name").Value,
                 AvatarUri =
                     {
-                        Small = avatarUri.Replace(avatarDefaultSize, string.Format(avatarSizeTemplate, AvatarInfo.SmallSize)),
+                        Small  = avatarUri.Replace(avatarDefaultSize, string.Format(avatarSizeTemplate, AvatarInfo.SmallSize)),
                         Normal = avatarUri,
-                        Large = avatarUri.Replace(avatarDefaultSize, string.Format(avatarSizeTemplate, AvatarInfo.LargeSize))
+                        Large  = avatarUri.Replace(avatarDefaultSize, string.Format(avatarSizeTemplate, AvatarInfo.LargeSize))
                     }
             };
         }

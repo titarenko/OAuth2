@@ -313,7 +313,7 @@ namespace OAuth2.Client
         /// <summary>
         /// Obtains user information using provider API.
         /// </summary>
-        private UserInfo GetUserInfo()
+        protected virtual UserInfo GetUserInfo()
         {
             var client = _factory.CreateClient(UserInfoServiceEndpoint);
             client.Authenticator = new OAuth2UriQueryParameterAuthenticator(AccessToken);
