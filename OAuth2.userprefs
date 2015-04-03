@@ -1,18 +1,22 @@
 ﻿<Properties StartupItem="OAuth2.Example2/OAuth2.Example2.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="OAuth2.Example/Web.config">
+  <MonoDevelop.Ide.Workbench ActiveDocument="OAuth2.Example2/Controllers/HomeController.cs">
     <Files>
-      <File FileName="OAuth2/Client/Impl/ZuulClient.cs" Line="1" Column="1" />
-      <File FileName="OAuth2.Example.AcceptanceTests/Steps/CommonSteps.cs" Line="15" Column="15" />
-      <File FileName="OAuth2.Example/Web.config" Line="14" Column="14" />
-      <File FileName="OAuth2.Example/Global.asax.cs" Line="1" Column="1" />
-      <File FileName="OAuth2.Example/Views/Home/Index.cshtml" Line="1" Column="1" />
-      <File FileName="OAuth2.Example/Views/Home/Auth.cshtml" Line="1" Column="1" />
       <File FileName="OAuth2.Example/Controllers/HomeController.cs" Line="1" Column="1" />
+      <File FileName="OAuth2.Example2/Controllers/HomeController.cs" Line="9" Column="9" />
+      <File FileName="OAuth2/Client/OAuth2Client.cs" Line="1" Column="1" />
+      <File FileName="OAuth2/Client/Impl/ZuulClient.cs" Line="1" Column="1" />
+      <File FileName="OAuth2/Infrastructure/RestClientExtensions.cs" Line="1" Column="1" />
+      <File FileName="OAuth2/packages.config" Line="1" Column="1" />
+      <File FileName="OAuth2/AuthorizationRoot.cs" Line="1" Column="1" />
+      <File FileName="OAuth2.Example2/Web.config" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Breakpoint file="/Users/Brett/nuvi/OAuth2/OAuth2/Client/Impl/ZuulClient.cs" line="96" column="1" />
+      <Breakpoint file="/Users/Brett/nuvi/OAuth2/OAuth2/Infrastructure/RestClientExtensions.cs" line="15" column="1" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>
