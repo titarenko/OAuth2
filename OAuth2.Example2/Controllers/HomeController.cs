@@ -58,8 +58,8 @@ namespace OAuth2.Example2.Controllers
 		{
 			var client = GetClient ();
 
-
-			return View(client.GetUserInfo(Request.QueryString));
+			var userInfo = client.GetUserInfo (Request.QueryString);
+			return View(userInfo);
 		}
 
 		private IClient GetClient()

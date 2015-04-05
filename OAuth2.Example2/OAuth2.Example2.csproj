@@ -83,7 +83,6 @@
     <Content Include="packages.config" />
     <Content Include="Views\Home\Auth.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\_Index.aspx" />
     <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

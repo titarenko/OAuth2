@@ -31,7 +31,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-					BaseUri = "http://zuul.is-valid.org/",
+					BaseUri = "http://authenticate.stage.nuvi.com/",
                     Resource = "/oauth/authorize"
                 };
             }
@@ -46,7 +46,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-					BaseUri = "http://zuul.is-valid.org/",
+					BaseUri = "http://authenticate.stage.nuvi.com/",
                     Resource = "/oauth/token"
                 };
             }
@@ -61,7 +61,7 @@ namespace OAuth2.Client.Impl
 			{
 				return new Endpoint
 				{
-					BaseUri = "http://zuul.is-valid.org",
+					BaseUri = "http://authenticate.stage.nuvi.com/",
 					Resource = "/oauth/user.json"                    
 				};
 			}
