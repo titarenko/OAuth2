@@ -64,6 +64,7 @@
     <Compile Include="Client\Impl\TwitterClient.cs" />
     <Compile Include="Client\Impl\VkClient.cs" />
     <Compile Include="Client\Impl\WindowsLiveClient.cs" />
+    <Compile Include="Client\Impl\XingClient.cs" />
     <Compile Include="Client\Impl\YandexClient.cs" />
     <Compile Include="Client\OAuth2Client.cs" />
     <Compile Include="Client\Endpoint.cs" />
