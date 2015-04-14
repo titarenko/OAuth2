@@ -14,7 +14,6 @@ namespace OAuth2.Example2.Controllers
 		private readonly AuthorizationRoot authorizationRoot;
 
 		private const string ProviderNameKey = "providerName";
-
 		private string ProviderName
 		{
 			get { return (string)Session[ProviderNameKey]; }

@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
-        <id>OAuth2</id>
-        <version>$version$</version>
+        <id>NuviOAuth2</id>
+        <version>1.0</version>
         <authors>Constantin Titarenko, Andrew Semack and others</authors>
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <projectUrl>https://github.com/titarenko/OAuth2</projectUrl>
@@ -17,6 +17,6 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="OAuth2\bin\Release\OAuth2.dll" target="lib\OAuth2.dll" />
+        <file src="OAuth2/bin/Release/OAuth2.dll" target="lib\OAuth2.dll" />
     </files>
 </package>

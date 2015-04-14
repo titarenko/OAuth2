@@ -1,19 +1,15 @@
 ﻿<Properties StartupItem="OAuth2.Example2/OAuth2.Example2.csproj">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="OAuth2.Example2/Controllers/HomeController.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Release" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="OAuth2/Client/Impl/ZuulClient.cs">
     <Files>
-      <File FileName="OAuth2.Example2/Web.config" Line="17" Column="17" />
-      <File FileName="OAuth2.Example2/Controllers/HomeController.cs" Line="1" Column="1" />
-      <File FileName="OAuth2/Client/Impl/ZuulClient.cs" Line="1" Column="1" />
       <File FileName="OAuth2/Client/OAuth2Client.cs" Line="1" Column="1" />
-      <File FileName="OAuth2.Example2/Views/Home/Auth.cshtml" Line="38" Column="38" />
-      <File FileName="OAuth2.Example2/Views/Shared/_Layout.cshtml" Line="1" Column="1" />
+      <File FileName="OAuth2/AuthorizationRoot.cs" Line="34" Column="34" />
+      <File FileName="OAuth2/Client/Impl/ZuulClient.cs" Line="14" Column="14" />
+      <File FileName="OAuth2/Configuration/ClientConfiguration.cs" Line="23" Column="23" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore>
-      <Breakpoint file="/Users/Brett/nuvi/OAuth2/OAuth2.Example2/Controllers/HomeController.cs" line="62" column="1" />
-    </BreakpointStore>
+    <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>
