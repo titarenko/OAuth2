@@ -72,7 +72,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         public override string Name
         {
-            get { return "Zuul"; }
+            get { return "ZuulClient"; }
         }
 
 

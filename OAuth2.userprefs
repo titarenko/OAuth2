@@ -3,9 +3,9 @@
   <MonoDevelop.Ide.Workbench ActiveDocument="OAuth2/Client/Impl/ZuulClient.cs">
     <Files>
       <File FileName="OAuth2/Client/OAuth2Client.cs" Line="1" Column="1" />
-      <File FileName="OAuth2/AuthorizationRoot.cs" Line="34" Column="34" />
-      <File FileName="OAuth2/Client/Impl/ZuulClient.cs" Line="14" Column="14" />
-      <File FileName="OAuth2/Configuration/ClientConfiguration.cs" Line="23" Column="23" />
+      <File FileName="OAuth2/AuthorizationRoot.cs" Line="1" Column="1" />
+      <File FileName="OAuth2/Client/Impl/ZuulClient.cs" Line="2" Column="2" />
+      <File FileName="OAuth2/Configuration/ClientConfiguration.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
