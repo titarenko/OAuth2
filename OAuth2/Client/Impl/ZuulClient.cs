@@ -99,6 +99,7 @@ namespace OAuth2.Client.Impl
             {
                 Id = response["id"].Value<string>(),
                 Email = response["email"].SafeGet(x => x.Value<string>()),
+				Username = response["username"].SafeGet(x => x.Value<string>())
             };
         }
     }

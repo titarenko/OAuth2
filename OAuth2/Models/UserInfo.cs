@@ -77,6 +77,8 @@ namespace OAuth2.Models
         /// Contains URIs of different sizes of avatar.
         /// </summary>
         public AvatarInfo AvatarUri { get; private set; }
+
+		public string Username { get; set; }
     }
 }
 
