@@ -15,6 +15,16 @@ namespace OAuth2.Configuration
         private const string ClientPublicKey = "clientPublic";
         private const string ScopeKey = "scope";
         private const string RedirectUriKey = "redirectUri";
+        private const string BaseUriKey = "baseUri";
+
+        /// <summary>
+        /// Base Uri (BaseUri of your application).
+        /// </summary>
+        [ConfigurationProperty(BaseUriKey, IsRequired = true)]
+        public string BaseUriKey
+        {
+            get { return (string) this[BaseUriKey]; }
+        }
 
         /// <summary>
         /// Name of client type.

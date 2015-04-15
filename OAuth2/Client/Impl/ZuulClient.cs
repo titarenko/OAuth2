@@ -31,7 +31,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-					BaseUri = "http://authenticate.stage.nuvi.com/",
+					BaseUri = configuration.BaseUriKey,
                     Resource = "/oauth/authorize"
                 };
             }
@@ -46,7 +46,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-					BaseUri = "http://authenticate.stage.nuvi.com/",
+					BaseUri = configuration.BaseUriKey,
                     Resource = "/oauth/token"
                 };
             }
@@ -61,7 +61,7 @@ namespace OAuth2.Client.Impl
 			{
 				return new Endpoint
 				{
-					BaseUri = "http://authenticate.stage.nuvi.com/",
+					BaseUri = configuration.BaseUriKey,
 					Resource = "/oauth/user.json"                    
 				};
 			}
