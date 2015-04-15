@@ -20,7 +20,7 @@ namespace OAuth2.Configuration
         /// <summary>
         /// Base Uri (BaseUri of your application).
         /// </summary>
-        [ConfigurationProperty(BaseUriKey, IsRequired = true)]
+        [ConfigurationProperty(BaseUriKey, IsRequired = false)]
         public string BaseUri
         {
             get { return (string) this[BaseUriKey]; }
