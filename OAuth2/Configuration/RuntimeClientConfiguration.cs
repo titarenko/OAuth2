@@ -41,5 +41,11 @@
         /// after authentication using third-party service).
         /// </summary>
         public string RedirectUri { get; set; }
+
+        /// <summary>
+        /// Gets the base URI.
+        /// </summary>
+        /// <value>The base URI.</value>
+        public string BaseUri { get; set; }
     }
 }

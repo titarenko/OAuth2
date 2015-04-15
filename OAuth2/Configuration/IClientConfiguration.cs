@@ -40,5 +40,11 @@ namespace OAuth2.Configuration
         /// after authentication using third-party service).
         /// </summary>
         string RedirectUri { get; }
+
+        /// <summary>
+        /// Gets the base URI.
+        /// </summary>
+        /// <value>The base URI.</value>
+        string BaseUri { get; }
     }
 }

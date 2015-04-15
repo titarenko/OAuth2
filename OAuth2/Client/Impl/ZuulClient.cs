@@ -31,7 +31,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-					BaseUri = configuration.BaseUriKey,
+                    BaseUri = Configuration.BaseUri,
                     Resource = "/oauth/authorize"
                 };
             }
@@ -46,7 +46,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-					BaseUri = configuration.BaseUriKey,
+                    BaseUri = Configuration.BaseUri,
                     Resource = "/oauth/token"
                 };
             }
@@ -61,7 +61,7 @@ namespace OAuth2.Client.Impl
 			{
 				return new Endpoint
 				{
-					BaseUri = configuration.BaseUriKey,
+                    BaseUri = Configuration.BaseUri,
 					Resource = "/oauth/user.json"                    
 				};
 			}
