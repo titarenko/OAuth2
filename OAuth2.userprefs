@@ -2,14 +2,14 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Release" />
   <MonoDevelop.Ide.Workbench ActiveDocument="OAuth2/Client/Impl/ZuulClient.cs">
     <Files>
-      <File FileName="OAuth2/Client/OAuth2Client.cs" Line="9" Column="9" />
+      <File FileName="OAuth2/Client/OAuth2Client.cs" Line="1" Column="1" />
       <File FileName="OAuth2/AuthorizationRoot.cs" Line="1" Column="1" />
-      <File FileName="OAuth2/Client/Impl/ZuulClient.cs" Line="24" Column="24" />
-      <File FileName="OAuth2/Configuration/ClientConfiguration.cs" Line="55" Column="55" />
-      <File FileName="OAuth2/Configuration/IClientConfiguration.cs" Line="32" Column="32" />
-      <File FileName="OAuth2/Configuration/RuntimeClientConfiguration.cs" Line="13" Column="13" />
-      <File FileName="OAuth2.Example2/Controllers/HomeController.cs" Line="49" Column="49" />
-      <File FileName="OAuth2.Example2/Web.config" Line="9" Column="9" />
+      <File FileName="OAuth2/Client/Impl/ZuulClient.cs" Line="1" Column="1" />
+      <File FileName="OAuth2/Configuration/ClientConfiguration.cs" Line="1" Column="1" />
+      <File FileName="OAuth2/Configuration/IClientConfiguration.cs" Line="1" Column="1" />
+      <File FileName="OAuth2/Configuration/RuntimeClientConfiguration.cs" Line="1" Column="1" />
+      <File FileName="OAuth2.Example2/Controllers/HomeController.cs" Line="1" Column="1" />
+      <File FileName="OAuth2.Example2/Web.config" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
