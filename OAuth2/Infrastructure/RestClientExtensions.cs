@@ -9,8 +9,8 @@ namespace OAuth2.Infrastructure
         public static IRestResponse ExecuteAndVerify(this IRestClient client, IRestRequest request)
         {
             var response = client.Execute(request);
-            if (response.StatusCode != HttpStatusCode.OK ||
-                response.Content.IsEmpty())
+            if (response.Content.IsEmpty() ||
+                (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Created))
             {
                 throw new UnexpectedResponseException(response);
             }

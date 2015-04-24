@@ -29,7 +29,6 @@ namespace OAuth2.Models
     /// </summary>
     public class UserInfo
     {
-
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -69,7 +68,8 @@ namespace OAuth2.Models
         /// <summary>
         /// Photo URI.
         /// </summary>
-        public string PhotoUri {
+        public string PhotoUri
+        {
             get { return AvatarUri.Normal; }
         }
 

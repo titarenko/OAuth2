@@ -37,9 +37,8 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.4.5.7\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="RestSharp, Version=103.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RestSharp.103.4\lib\net4\RestSharp.dll</HintPath>
+    <Reference Include="RestSharp">
+      <HintPath>..\packages\RestSharp.104.4.0\lib\net4\RestSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -51,6 +50,7 @@
   <ItemGroup>
     <Compile Include="AuthorizationRoot.cs" />
     <Compile Include="Client\BeforeAfterRequestArgs.cs" />
+    <Compile Include="Client\Impl\AsanaClient.cs" />
     <Compile Include="Client\Impl\DigitalOceanClient.cs" />
     <Compile Include="Client\Impl\SalesforceClient.cs" />
     <Compile Include="Client\Impl\FacebookClient.cs" />
@@ -64,6 +64,7 @@
     <Compile Include="Client\Impl\TwitterClient.cs" />
     <Compile Include="Client\Impl\VkClient.cs" />
     <Compile Include="Client\Impl\WindowsLiveClient.cs" />
+    <Compile Include="Client\Impl\XingClient.cs" />
     <Compile Include="Client\Impl\YandexClient.cs" />
     <Compile Include="Client\OAuth2Client.cs" />
     <Compile Include="Client\Endpoint.cs" />

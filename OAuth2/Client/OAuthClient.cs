@@ -123,10 +123,23 @@ namespace OAuth2.Client
             var client = _factory.CreateClient(RequestTokenServiceEndpoint);
             client.Authenticator = OAuth1Authenticator.ForRequestToken(
                 Configuration.ClientId, Configuration.ClientSecret, Configuration.RedirectUri);
-            
+
             var request = _factory.CreateRequest(RequestTokenServiceEndpoint, Method.POST);
-            
+
+            BeforeGetAccessToken(new BeforeAfterRequestArgs
+            {
+                Client = client,
+                Request = request,
+                Configuration = Configuration
+            });
+
             var response = client.ExecuteAndVerify(request);
+
+            AfterGetAccessToken(new BeforeAfterRequestArgs
+            {
+                Response = response,
+            });
+
             var collection = HttpUtility.ParseQueryString(response.Content);
 
             AccessToken = collection.GetOrThrowUnexpectedResponse(OAuthTokenKey);
@@ -166,9 +179,29 @@ namespace OAuth2.Client
 
             var content = client.ExecuteAndVerify(request).Content;
             var collection = HttpUtility.ParseQueryString(content);
-            
+
             AccessToken = collection.GetOrThrowUnexpectedResponse(OAuthTokenKey);
             AccessTokenSecret = collection.GetOrThrowUnexpectedResponse(OAuthTokenSecretKey);
+        }
+
+        protected virtual void BeforeGetAccessToken(BeforeAfterRequestArgs args)
+        {
+        }
+
+        /// <summary>
+        /// Called just after obtaining response with access token from service.
+        /// Allows to read extra data returned along with access token.
+        /// </summary>
+        protected virtual void AfterGetAccessToken(BeforeAfterRequestArgs args)
+        {
+        }
+
+        /// <summary>
+        /// Called just before issuing request to service when everything is ready.
+        /// Allows to add extra parameters to request or do any other needed preparations.
+        /// </summary>
+        protected virtual void BeforeGetUserInfo(BeforeAfterRequestArgs args)
+        {
         }
 
         /// <summary>
@@ -181,7 +214,14 @@ namespace OAuth2.Client
                 Configuration.ClientId, Configuration.ClientSecret, AccessToken, AccessTokenSecret);
 
             var request = _factory.CreateRequest(UserInfoServiceEndpoint);
-            
+
+            BeforeGetUserInfo(new BeforeAfterRequestArgs
+            {
+                Client = client,
+                Request = request,
+                Configuration = Configuration
+            });
+
             return client.ExecuteAndVerify(request).Content;
         }
     }
