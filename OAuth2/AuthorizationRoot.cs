@@ -69,7 +69,8 @@ namespace OAuth2
         /// </summary>        
         protected virtual IEnumerable<Type> GetClientTypes()
         {
-            return Assembly.GetExecutingAssembly().GetTypes().Where(typeof (IClient).IsAssignableFrom);
+          var clientType = typeof(IClient);
+          return AppDomain.CurrentDomain.GetAssemblies().SelectMany(s => s.GetTypes()).Where(p => clientType.IsAssignableFrom(p));
         }
     }
 }
