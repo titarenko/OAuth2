@@ -42,7 +42,7 @@ namespace OAuth2.Client.Impl
         protected override UserInfo ParseUserInfo(string content)
         {
             var cnt = JObject.Parse(content);
-            var names = cnt["name"].Value<string>().Split(' ').ToList();
+            var names = (cnt["name"].SafeGet(x => x.Value<string>()) ?? string.Empty).Split(new []{ " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
             const string avatarUriTemplate = "{0}&s={1}";
             var avatarUri = cnt["avatar_url"].Value<string>();
             var result = new UserInfo
@@ -122,12 +122,12 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override Endpoint UserInfoServiceEndpoint
         {
-            get { return new Endpoint { BaseUri = "https://api.github.com/", Resource = "/user" }; }
+            get { return new Endpoint { BaseUri = "https://api.github.com", Resource = "/user" }; }
         }
 
         protected virtual Endpoint UserEmailServiceEndpoint
         {
-            get { return new Endpoint { BaseUri = "https://api.github.com/", Resource = "/user/emails" }; }
+            get { return new Endpoint { BaseUri = "https://api.github.com", Resource = "/user/emails" }; }
         }
 
         protected class UserEmails
