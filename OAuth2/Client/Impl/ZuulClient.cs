@@ -97,7 +97,7 @@ namespace OAuth2.Client.Impl
 
             return new UserInfo
             {
-                Id = response["id"].Value<string>(),
+                Id = response["guid"].Value<string>(),
                 Email = response["email"].SafeGet(x => x.Value<string>()),
 				Username = response["username"].SafeGet(x => x.Value<string>())
             };
