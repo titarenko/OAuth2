@@ -209,12 +209,16 @@ namespace OAuth2.Client
                 Parameters = parameters
             });
 
-            AccessToken = (string) ParseTokenResponse(response.Content, AccessTokenKey);
+            AccessToken = ParseTokenResponse(response.Content, AccessTokenKey).ToString();
 
             if (GrantType != "refresh_token")
+            {
+              if (response.Content.Contains(RefreshTokenKey))
                 RefreshToken = (string) ParseTokenResponse(response.Content, RefreshTokenKey);
+            }
 
-            TokenType = (string) ParseTokenResponse(response.Content, TokenTypeKey);
+            if (response.Content.Contains(TokenTypeKey))
+              TokenType = (string) ParseTokenResponse(response.Content, TokenTypeKey);
 
             try
             {
