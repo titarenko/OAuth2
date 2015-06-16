@@ -225,6 +225,9 @@ namespace OAuth2.Client
 
 		protected virtual string ParseTokenResponse(string content, string key)
 		{
+		    if (String.IsNullOrEmpty(content) || String.IsNullOrEmpty(key))
+		        return null;
+
 			try
 			{
 				// response can be sent in JSON format
