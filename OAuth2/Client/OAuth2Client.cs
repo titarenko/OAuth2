@@ -209,41 +209,33 @@ namespace OAuth2.Client
                 Parameters = parameters
             });
 
-            AccessToken = (string) ParseTokenResponse(response.Content, AccessTokenKey);
+            AccessToken = ParseTokenResponse(response.Content, AccessTokenKey);
+            if (String.IsNullOrEmpty(AccessToken))
+                throw new UnexpectedResponseException(AccessTokenKey);
 
             if (GrantType != "refresh_token")
-                RefreshToken = (string) ParseTokenResponse(response.Content, RefreshTokenKey);
+                RefreshToken = ParseTokenResponse(response.Content, RefreshTokenKey);
 
-            TokenType = (string) ParseTokenResponse(response.Content, TokenTypeKey);
-
-            try
-            {
-                var expiresIn = (int) ParseTokenResponse (response.Content, ExpiresKey);
+            TokenType = ParseTokenResponse(response.Content, TokenTypeKey);
+            
+            int expiresIn;
+            if (Int32.TryParse(ParseTokenResponse(response.Content, ExpiresKey), out expiresIn))
                 ExpiresAt = DateTime.Now.AddSeconds(expiresIn);
-            }
-            catch
-            {
-	            // it's okay if the server doesn't send a value
-            }
         }
 
-		protected virtual object ParseTokenResponse(string content, string key)
+		protected virtual string ParseTokenResponse(string content, string key)
 		{
 			try
 			{
 				// response can be sent in JSON format
 				var token = JObject.Parse(content).SelectToken(key);
-				if (token.ToString().IsEmpty())
-				{
-					throw new UnexpectedResponseException(AccessTokenKey);
-				}
-				return token;
+				return token != null ? token.ToString() : null;
 			}
 			catch (JsonReaderException)
 			{
 				// or it can be in "query string" format (param1=val1&param2=val2)
 				var collection = HttpUtility.ParseQueryString(content);
-				return collection.GetOrThrowUnexpectedResponse(key);
+				return collection[key];
 			}
 		}
 

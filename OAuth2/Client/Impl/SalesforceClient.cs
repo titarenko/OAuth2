@@ -77,10 +77,10 @@ namespace OAuth2.Client.Impl
             get { return "Salesforce"; }
         }
 
-        protected override object ParseTokenResponse(string content, string key)
+        protected override string ParseTokenResponse(string content, string key)
         {
             // save the user's identity service url which is included in the response
-            SalesforceProfileUrl = (string)JObject.Parse(content).SelectToken("id");
+            SalesforceProfileUrl = base.ParseTokenResponse(content, "id");
                 
             return base.ParseTokenResponse(content, key);
         }
