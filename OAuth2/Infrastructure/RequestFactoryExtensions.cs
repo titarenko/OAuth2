@@ -1,4 +1,5 @@
-﻿using OAuth2.Client;
+﻿using System;
+using OAuth2.Client;
 using RestSharp;
 
 namespace OAuth2.Infrastructure
@@ -8,7 +9,7 @@ namespace OAuth2.Infrastructure
         public static IRestClient CreateClient(this IRequestFactory factory, Endpoint endpoint)
         {
             var client = factory.CreateClient();
-            client.BaseUrl = endpoint.BaseUri;
+            client.BaseUrl = new Uri(endpoint.BaseUri);
             return client;
         }
 

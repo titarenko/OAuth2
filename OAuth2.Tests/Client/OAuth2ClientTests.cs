@@ -85,7 +85,7 @@ namespace OAuth2.Tests.Client
             factory.Received(1).CreateClient();
             factory.Received(1).CreateRequest();
 
-            restClient.Received(1).BaseUrl = "https://AccessCodeServiceEndpoint";
+            restClient.Received(1).BaseUrl = new Uri("https://AccessCodeServiceEndpoint");
             restRequest.Received(1).Resource = "/AccessCodeServiceEndpoint";
 
             restRequest.Received(1).AddObject(Arg.Is<object>(
@@ -143,7 +143,7 @@ namespace OAuth2.Tests.Client
             descendant.GetUserInfo(new NameValueCollection {{"code", "code"}});
 
             // assert
-            restClient.Received(1).BaseUrl = "https://AccessTokenServiceEndpoint";
+            restClient.Received(1).BaseUrl = new Uri("https://AccessTokenServiceEndpoint");
             restRequest.Received(1).Resource = "/AccessTokenServiceEndpoint";
             restRequest.Received(1).Method = Method.POST;
             restRequest.Received(1).AddObject(Arg.Is<object>(x => x.AllPropertiesAreEqualTo(
@@ -169,7 +169,7 @@ namespace OAuth2.Tests.Client
             descendant.GetUserInfo(new NameValueCollection {{"code", "code"}});
 
             // assert
-            restClient.Received(1).BaseUrl = "https://UserInfoServiceEndpoint";
+            restClient.Received(1).BaseUrl = new Uri("https://UserInfoServiceEndpoint");
             restRequest.Received(1).Resource = "/UserInfoServiceEndpoint";
             restClient.Authenticator.Should().BeOfType<OAuth2UriQueryParameterAuthenticator>();
         }

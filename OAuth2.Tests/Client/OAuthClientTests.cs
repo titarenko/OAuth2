@@ -85,7 +85,7 @@ namespace OAuth2.Tests.Client
             factory.Received().CreateClient();
             factory.Received().CreateRequest();
 
-            restClient.Received().BaseUrl = "https://RequestTokenServiceEndpoint";
+            restClient.Received().BaseUrl = new Uri("https://RequestTokenServiceEndpoint");
             restRequest.Received().Resource = "/RequestTokenServiceEndpoint";
             restRequest.Received().Method = Method.POST;
 
@@ -111,7 +111,7 @@ namespace OAuth2.Tests.Client
             factory.Received().CreateClient();
             factory.Received().CreateRequest();
             
-            restClient.Received().BaseUrl = "https://LoginServiceEndpoint";
+            restClient.Received().BaseUrl = new Uri("https://LoginServiceEndpoint");
             restRequest.Received().Resource = "/LoginServiceEndpoint";
             restRequest.Received().AddParameter("oauth_token", "token5");
         }
@@ -135,7 +135,7 @@ namespace OAuth2.Tests.Client
             factory.Received().CreateClient();
             factory.Received().CreateRequest();
 
-            restClient.Received().BaseUrl = "https://AccessTokenServiceEndpoint";
+            restClient.Received().BaseUrl = new Uri("https://AccessTokenServiceEndpoint");
             restRequest.Received().Resource = "/AccessTokenServiceEndpoint";
             restRequest.Received().Method = Method.POST;
             
@@ -165,7 +165,7 @@ namespace OAuth2.Tests.Client
             factory.Received().CreateClient();
             factory.Received().CreateRequest();
 
-            restClient.Received().BaseUrl = "https://UserInfoServiceEndpoint";
+            restClient.Received().BaseUrl = new Uri("https://UserInfoServiceEndpoint");
             restRequest.Received().Resource = "/UserInfoServiceEndpoint";
 
             restClient.Authenticator.Should().NotBeNull();

@@ -12,8 +12,8 @@
         <releaseNotes>Support of email retrieval for Vkontakte (Vk) client.</releaseNotes>
         <tags>OAuth2, OAuth, DigitalOcean, Facebook, Foursquare, GitHub, Google, Instagram, LinkedIn, MailRu, Odnoklassniki, Twitter, VK (Vkontakte), Windows Live, Yandex</tags>
         <dependencies>
-            <dependency id="RestSharp" version="103.4" />
-            <dependency id="Newtonsoft.Json" version="4.5.7" />
+            <dependency id="RestSharp" version="105.1.0" />
+            <dependency id="Newtonsoft.Json" version="6.0.8" />
         </dependencies>
     </metadata>
     <files>
