@@ -147,6 +147,7 @@ This library is dependent on:
 ## Contributors ##
 
 - Constantin Titarenko (started development, defined library structure, released initial version)
+- Blake Niemyjski (helped a lot to maintain the project, currently (since 2015) - top maintainer)
 - Andrew Semack (helped a lot with improvements on configuration as well as with extending list of supported services by implementing their clients)
 - Sascha Kiefer (simplified extending library with own provider implementations, added GitHub client)
 - Krisztián Pócza (added LinkedIn (OAuth 2) client)
