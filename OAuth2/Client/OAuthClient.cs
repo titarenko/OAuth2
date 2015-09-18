@@ -5,7 +5,7 @@ using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
 using RestSharp.Authenticators;
-using RestSharp.Contrib;
+using RestSharp.Extensions.MonoHttp;
 
 namespace OAuth2.Client
 {

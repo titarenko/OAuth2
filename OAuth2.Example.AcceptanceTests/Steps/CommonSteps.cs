@@ -1,7 +1,7 @@
 ﻿using System.Configuration;
+using FluentAssertions;
 using TechTalk.SpecFlow;
 using WatiN.Core;
-using FluentAssertions;
 
 namespace OAuth2.Example.AcceptanceTests.Steps
 {

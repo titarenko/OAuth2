@@ -10,6 +10,7 @@ using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
 using FluentAssertions;
+using RestSharp.Authenticators;
 
 namespace OAuth2.Tests.Client
 {
