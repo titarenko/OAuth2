@@ -85,11 +85,10 @@ namespace OAuth2.Client.Impl
 
             var response = client.ExecuteAndVerify(request);
             var userEmails = ParseEmailAddresses(response.Content);
-            var primaryEmail = userEmails.FirstOrDefault(u => u.Primary); 
-            if (primaryEmail != null)
-            {
-                userInfo.Email = primaryEmail.Email;
-            }
+            
+            string primaryEmail = userEmails.Where(u => u.Primary && !String.IsNullOrEmpty(u.Email)).Select(u => u.Email).FirstOrDefault();
+            string fallbackEmail = userEmails.Where(u => !String.IsNullOrEmpty(u.Email)).Select(u => u.Email).FirstOrDefault();
+            userInfo.Email = primaryEmail ?? fallbackEmail;
             
             return userInfo;
         }
