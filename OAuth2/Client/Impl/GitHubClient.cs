@@ -84,11 +84,11 @@ namespace OAuth2.Client.Impl
             });
 
             var response = client.ExecuteAndVerify(request);
-            var userEmails = ParseEmailAddresses(response.Content);
+            var userEmails = ParseEmailAddresses(response.Content).Where(u => !String.IsNullOrEmpty(u.Email)).ToList();
             
-            string primaryEmail = userEmails.Where(u => u.Primary && !String.IsNullOrEmpty(u.Email)).Select(u => u.Email).FirstOrDefault();
-            string verifiedEmail = userEmails.Where(u => u.Verified && !String.IsNullOrEmpty(u.Email)).Select(u => u.Email).FirstOrDefault();
-            string fallbackEmail = userEmails.Where(u => !String.IsNullOrEmpty(u.Email)).Select(u => u.Email).FirstOrDefault();
+            string primaryEmail = userEmails.Where(u => u.Primary).Select(u => u.Email).FirstOrDefault();
+            string verifiedEmail = userEmails.Where(u => u.Verified).Select(u => u.Email).FirstOrDefault();
+            string fallbackEmail = userEmails.Select(u => u.Email).FirstOrDefault();
             userInfo.Email = primaryEmail ?? verifiedEmail ?? fallbackEmail;
             
             return userInfo;
