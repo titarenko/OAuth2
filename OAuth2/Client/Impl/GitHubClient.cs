@@ -85,7 +85,12 @@ namespace OAuth2.Client.Impl
 
             var response = client.ExecuteAndVerify(request);
             var userEmails = ParseEmailAddresses(response.Content);
-            userInfo.Email = userEmails.First(u => u.IsPrimary).Email;
+            var primaryEmail = userEmails.FirstOrDefault(u => u.Primary); 
+            if (primaryEmail != null)
+            {
+                userInfo.Email = primaryEmail.Email;
+            }
+            
             return userInfo;
         }
 
@@ -134,8 +139,8 @@ namespace OAuth2.Client.Impl
         protected class UserEmails
         {
             public string Email { get; set; }
-            public bool IsPrimary { get; set; }
-            public bool IsVerified { get; set; }
+            public bool Primary { get; set; }
+            public bool Verified { get; set; }
         }
     }
 }
