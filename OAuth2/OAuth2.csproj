@@ -54,6 +54,7 @@
     <Compile Include="Client\BeforeAfterRequestArgs.cs" />
     <Compile Include="Client\Impl\AsanaClient.cs" />
     <Compile Include="Client\Impl\DigitalOceanClient.cs" />
+    <Compile Include="Client\Impl\FitbitClient.cs" />
     <Compile Include="Client\Impl\SalesforceClient.cs" />
     <Compile Include="Client\Impl\FacebookClient.cs" />
     <Compile Include="Client\Impl\FoursquareClient.cs" />
