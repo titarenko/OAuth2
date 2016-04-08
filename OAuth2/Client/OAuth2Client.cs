@@ -98,8 +98,8 @@ namespace OAuth2.Client
                 {
                     response_type = "code",
                     client_id = Configuration.ClientId,
-                    scope = Configuration.Scope,
                     redirect_uri = Configuration.RedirectUri,
+                    scope = Configuration.Scope,
                     state
                 });
             }
