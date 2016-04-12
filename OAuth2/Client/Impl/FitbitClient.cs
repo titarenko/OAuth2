@@ -66,28 +66,10 @@ namespace OAuth2.Client.Impl
                 };
             }
         }
-
-        /// <summary>
-        /// Adds Fitbit's required Authorization header in format base64Encode(client_id:client secret)
-        /// See here: https://dev.fitbit.com/docs/oauth2/#authorization-header
-        /// </summary>
-        /// <param name="args"></param>
-        private void AddAuthorizationHeader(BeforeAfterRequestArgs args)
-        {
-            args.Request.Parameters.Add(new RestSharp.Parameter
-            {
-                Type = RestSharp.ParameterType.HttpHeader,
-                Name = "Authorization",
-                Value = "Basic " +
-                    System.Convert.ToBase64String(
-                        System.Text.Encoding.UTF8.GetBytes(string.Format("{0}:{1}", Configuration.ClientId, Configuration.ClientSecret)))
-
-            });
-        }
-
+        
         protected override void BeforeGetAccessToken(BeforeAfterRequestArgs args)
         {
-            this.AddAuthorizationHeader(args);
+            args.Client.Authenticator = new HttpBasicAuthenticator(Configuration.ClientId, Configuration.ClientSecret);
             base.BeforeGetAccessToken(args);
         }
 
