@@ -8,7 +8,7 @@ using RestSharp.Authenticators;
 namespace OAuth2.Client.Impl
 {
     /// <summary>
-    /// Instagram authentication client.
+    /// Fitbit authentication client.
     /// </summary>
     public class FitbitClient : OAuth2Client
     {
