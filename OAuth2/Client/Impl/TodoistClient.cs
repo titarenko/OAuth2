@@ -1,7 +1,10 @@
+using System;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using RestSharp;
+using RestSharp.Authenticators;
 
 namespace OAuth2.Client.Impl
 {
@@ -71,6 +74,20 @@ namespace OAuth2.Client.Impl
             get { return "Todoist"; }
         }
 
+
+        protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
+        {
+            args.Client.Authenticator = null;
+            args.Request.Parameters.Add(new Parameter
+            {
+                Name = "token",
+                Type = ParameterType.GetOrPost,
+                Value = AccessToken
+            });
+            args.Request.AddParameter("resource_types", "[\"all\"]");
+            base.BeforeGetUserInfo(args);
+        }
+
         /// <summary>
         /// Should return parsed <see cref="UserInfo"/> from content received from third-party service.
         /// </summary>
@@ -78,17 +95,16 @@ namespace OAuth2.Client.Impl
         protected override UserInfo ParseUserInfo(string content)
         {
             var response = JObject.Parse(content);
-
             return new UserInfo
             {
-                Id = response["user"]["id"].Value<string>(),
-                Email = response["user"]["email"].SafeGet(x => x.Value<string>()),
-                LastName = response["user"]["full_name"].Value<string>(),
+                Id = response["User"]["id"].Value<string>(),
+                Email = response["User"]["email"].SafeGet(x => x.Value<string>()),
+                LastName = response["User"]["full_name"].Value<string>(),
                 AvatarUri =
                 {
-                    Small = response["user"]["avatar_small"].Value<string>(),
-                    Normal = response["user"]["avatar_medium"].Value<string>(),
-                    Large = response["user"]["avatar_big"].Value<string>(),
+                    Small = response["User"]["avatar_small"].Value<string>(),
+                    Normal = response["User"]["avatar_medium"].Value<string>(),
+                    Large = response["User"]["avatar_big"].Value<string>(),
                 }
             };
         }
