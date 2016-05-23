@@ -118,6 +118,7 @@ Use user info as you wish, for example, display user details:
 - MailRu
 - Odnoklassniki
 - Salesforce
+- [Todoist](Client/Impl/TodoistClient.cs)
 - Twitter
 - VK (Vkontakte)
 - Windows Live
@@ -151,6 +152,7 @@ This library is dependent on:
 - Andrew Semack (helped a lot with improvements on configuration as well as with extending list of supported services by implementing their clients)
 - Sascha Kiefer (simplified extending library with own provider implementations, added GitHub client)
 - Krisztián Pócza (added LinkedIn (OAuth 2) client)
+- [Jamie Houston](/JamieHouston) (added a [Todoist client](Client/Impl/TodoistClient.cs))
 
 ## Acknowledgements ##
 

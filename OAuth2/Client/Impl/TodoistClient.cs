@@ -1,26 +1,25 @@
-using System.Linq;
+using System;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using RestSharp;
 using RestSharp.Authenticators;
 
 namespace OAuth2.Client.Impl
 {
     /// <summary>
-    /// Fitbit authentication client.
+    /// Todoist authentication client.
     /// </summary>
-    public class FitbitClient : OAuth2Client
+    public class TodoistClient : OAuth2Client
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FitbitClient"/> class.
+        /// Initializes a new instance of the <see cref="TodoistClient"/> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        public FitbitClient(IRequestFactory factory, IClientConfiguration configuration) 
-            : base(factory, configuration)
-        {
-        }
+        public TodoistClient(IRequestFactory factory, IClientConfiguration configuration)
+            : base(factory, configuration) {}
 
         /// <summary>
         /// Defines URI of service which issues access code.
@@ -31,8 +30,8 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://www.fitbit.com",
-                    Resource = "/oauth2/authorize"
+                    BaseUri = "https://todoist.com/",
+                    Resource = "oauth/authorize"
                 };
             }
         }
@@ -46,8 +45,8 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://api.fitbit.com",
-                    Resource = "/oauth2/token"
+                    BaseUri = "https://todoist.com/",
+                    Resource = "oauth/access_token"
                 };
             }
         }
@@ -61,21 +60,31 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://api.fitbit.com",
-                    Resource = "/1/user/-/profile.json"
+                    BaseUri = "https://todoist.com/",
+                    Resource = "API/v6/sync"
                 };
             }
         }
-        
-        protected override void BeforeGetAccessToken(BeforeAfterRequestArgs args)
+
+        /// <summary>
+        /// Friendly name of provider (OAuth2 service).
+        /// </summary>
+        public override string Name
         {
-            args.Client.Authenticator = new HttpBasicAuthenticator(Configuration.ClientId, Configuration.ClientSecret);
-            base.BeforeGetAccessToken(args);
+            get { return "Todoist"; }
         }
+
 
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            args.Client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
+            args.Client.Authenticator = null;
+            args.Request.Parameters.Add(new Parameter
+            {
+                Name = "token",
+                Type = ParameterType.GetOrPost,
+                Value = AccessToken
+            });
+            args.Request.AddParameter("resource_types", "[\"all\"]");
             base.BeforeGetUserInfo(args);
         }
 
@@ -86,28 +95,18 @@ namespace OAuth2.Client.Impl
         protected override UserInfo ParseUserInfo(string content)
         {
             var response = JObject.Parse(content);
-            var names = response["user"]["fullName"].Value<string>().Split(' ');
-            var avatarUri = response["user"]["avatar"].Value<string>();
             return new UserInfo
             {
-                Id = response["user"]["encodedId"].Value<string>(),
-                FirstName = names.Any() ? names.First() : response["user"]["displayName"].Value<string>(),
-                LastName = names.Count() > 1 ? names.Last() : string.Empty,
+                Id = response["User"]["id"].Value<string>(),
+                Email = response["User"]["email"].SafeGet(x => x.Value<string>()),
+                LastName = response["User"]["full_name"].Value<string>(),
                 AvatarUri =
-                    {
-                        Small = null,
-                        Normal = avatarUri,
-                        Large = null
-                    }
+                {
+                    Small = response["User"]["avatar_small"].Value<string>(),
+                    Normal = response["User"]["avatar_medium"].Value<string>(),
+                    Large = response["User"]["avatar_big"].Value<string>(),
+                }
             };
-        }
-
-        /// <summary>
-        /// Friendly name of provider (OAuth2 service).
-        /// </summary>
-        public override string Name
-        {
-            get { return "Fitbit"; }
         }
     }
 }
