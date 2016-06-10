@@ -12,4 +12,5 @@ log.txt
 *ncrunch*
 *.gpState
 *.DotSettings
-.vs
+*.vs
+*.userprefs
