@@ -1,12 +1,10 @@
-﻿using System.Reflection;
-using System.Web.Mvc;
-using System.Web.Routing;
-using Autofac;
-using Autofac.Core;
+﻿using Autofac;
 using Autofac.Integration.Mvc;
 using OAuth2.Client;
-using OAuth2.Configuration;
 using RestSharp;
+using System.Reflection;
+using System.Web.Mvc;
+using System.Web.Routing;
 
 namespace OAuth2.Example
 {
@@ -68,7 +66,6 @@ namespace OAuth2.Example
         {
             var builder = new ContainerBuilder();
 
-            builder.RegisterModelBinders(Assembly.GetExecutingAssembly());
             builder.RegisterControllers(Assembly.GetExecutingAssembly());
 
             builder
