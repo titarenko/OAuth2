@@ -23,6 +23,9 @@ namespace OAuth2.Client.Impl
         {
         }
 
+        /// <summary>
+        /// The provider name
+        /// </summary>
         public override string Name
         {
             get
@@ -31,6 +34,9 @@ namespace OAuth2.Client.Impl
             }
         }
 
+        /// <summary>
+        /// Defines URI of service which issues access code.
+        /// </summary>
         protected override Endpoint AccessCodeServiceEndpoint
         {
             get
@@ -43,6 +49,9 @@ namespace OAuth2.Client.Impl
             }
         }
 
+        /// <summary>
+        /// Defines URI of service which issues access token.
+        /// </summary>
         protected override Endpoint AccessTokenServiceEndpoint
         {
             get
@@ -63,7 +72,10 @@ namespace OAuth2.Client.Impl
         {
             args.Client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
         }
-        
+
+        /// <summary>
+        /// Defines URI of service which allows to obtain information about user which is currently logged in.
+        /// </summary>
         protected override Endpoint UserInfoServiceEndpoint
         {
             get
@@ -76,6 +88,10 @@ namespace OAuth2.Client.Impl
             }
         }
 
+        /// <summary>
+        /// Should return parsed <see cref="UserInfo"/> from content received from third-party service.
+        /// </summary>
+        /// <param name="content">The content which is received from third-party service.</param>
         protected override UserInfo ParseUserInfo(string content)
         {
             var response = JObject.Parse(content);
