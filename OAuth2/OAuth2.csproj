@@ -73,6 +73,7 @@
     <Compile Include="Client\Impl\MailRuClient.cs" />
     <Compile Include="Client\Impl\OdnoklassnikiClient.cs" />
     <Compile Include="Client\Impl\TwitterClient.cs" />
+    <Compile Include="Client\Impl\UberClient.cs" />
     <Compile Include="Client\Impl\VkClient.cs" />
     <Compile Include="Client\Impl\WindowsLiveClient.cs" />
     <Compile Include="Client\Impl\XingClient.cs" />
