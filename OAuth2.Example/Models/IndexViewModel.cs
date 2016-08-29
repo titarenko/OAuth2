@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace OAuth2.Example.Models
+﻿namespace OAuth2.Example.Models
 {
     /// <summary>
     /// View model for index page (view).
