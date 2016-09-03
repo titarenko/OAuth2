@@ -107,8 +107,8 @@ Use user info as you wish, for example, display user details:
 
 ## Supported Services ##
 
-- DigitalOcean
 - Asana
+- DigitalOcean
 - Facebook
 - Foursquare
 - GitHub
@@ -118,7 +118,8 @@ Use user info as you wish, for example, display user details:
 - MailRu
 - Odnoklassniki
 - Salesforce
-- [Todoist](Client/Impl/TodoistClient.cs)
+- Spotify
+- Todoist
 - Twitter
 - VK (Vkontakte)
 - Windows Live
@@ -154,7 +155,7 @@ This library is dependent on:
 - Sascha Kiefer (simplified extending library with own provider implementations, added GitHub client)
 - Krisztián Pócza (added LinkedIn (OAuth 2) client)
 - [Jamie Houston](/JamieHouston) (added a [Todoist client](/tree/master/OAuth2/Client/Impl/TodoistClient.cs))
-- [Sasidhar Kasturi](https://github.com/skasturi) (added [Uber client](/tree/master/OAuth2/Client/Impl/UberClient.cs))
+- [Sasidhar Kasturi](https://github.com/skasturi) (added Uber, Spotify)
 
 ## Acknowledgements ##
 
