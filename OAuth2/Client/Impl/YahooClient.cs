@@ -15,7 +15,7 @@ namespace OAuth2.Client.Impl
     /// </summary>
     public class YahooClient : OAuth2Client
     {
-        private string userProfileGUID;
+        public string userProfileGUID;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="YahooClient"/> class.
