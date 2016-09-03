@@ -88,7 +88,7 @@ namespace OAuth2.Client.Impl
         protected override void AfterGetAccessToken(BeforeAfterRequestArgs args)
         {
             var responseJObject = JObject.Parse(args.Response.Content);
-            this.userProfileGUID = responseJObject.SelectToken("xoauth_yahoo_guid")?.ToString();
+            this._userProfileGUID = responseJObject.SelectToken("xoauth_yahoo_guid")?.ToString();
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace OAuth2.Client.Impl
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
             args.Client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
-            args.Request.Resource = string.Format(this.UserInfoServiceEndpoint.Resource, this.userProfileGUID);
+            args.Request.Resource = string.Format(this.UserInfoServiceEndpoint.Resource, this._userProfileGUID);
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace OAuth2.Client.Impl
 
             userInfo.FirstName = response.SelectToken("profile.givenName")?.ToString();
             userInfo.LastName = response.SelectToken("profile.familyName")?.ToString();
-            userInfo.Id = this.userProfileGUID;
+            userInfo.Id = this._userProfileGUID;
             userInfo.Email = response.SelectToken("emails")?.ToString();
             userInfo.ProviderName = this.Name;
             return userInfo;
