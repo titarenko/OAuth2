@@ -23,7 +23,7 @@ namespace OAuth2.Client.Impl
             {
                 return _userProfileGUID;
             }
-            set
+            private set
             {
                 _userProfileGUID = value;
             }
