@@ -62,6 +62,7 @@
     <Compile Include="Client\BeforeAfterRequestArgs.cs" />
     <Compile Include="Client\Impl\AsanaClient.cs" />
     <Compile Include="Client\Impl\DigitalOceanClient.cs" />
+    <Compile Include="Client\Impl\SpotifyClient.cs" />
     <Compile Include="Client\Impl\TodoistClient.cs" />
     <Compile Include="Client\Impl\SalesforceClient.cs" />
     <Compile Include="Client\Impl\FacebookClient.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Client\Impl\VkClient.cs" />
     <Compile Include="Client\Impl\WindowsLiveClient.cs" />
     <Compile Include="Client\Impl\XingClient.cs" />
+    <Compile Include="Client\Impl\YahooClient.cs" />
     <Compile Include="Client\Impl\YandexClient.cs" />
     <Compile Include="Client\OAuth2Client.cs" />
     <Compile Include="Client\Endpoint.cs" />
