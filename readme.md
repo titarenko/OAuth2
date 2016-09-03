@@ -123,6 +123,7 @@ Use user info as you wish, for example, display user details:
 - Twitter
 - VK (Vkontakte)
 - Windows Live
+- Yahoo
 - Yandex
 - Uber
 
@@ -155,7 +156,7 @@ This library is dependent on:
 - Sascha Kiefer (simplified extending library with own provider implementations, added GitHub client)
 - Krisztián Pócza (added LinkedIn (OAuth 2) client)
 - [Jamie Houston](/JamieHouston) (added a [Todoist client](/tree/master/OAuth2/Client/Impl/TodoistClient.cs))
-- [Sasidhar Kasturi](https://github.com/skasturi) (added Uber, Spotify)
+- [Sasidhar Kasturi](https://github.com/skasturi) (added Uber, Spotify, Yahoo)
 
 ## Acknowledgements ##
 
