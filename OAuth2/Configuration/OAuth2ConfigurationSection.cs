@@ -5,7 +5,7 @@ namespace OAuth2.Configuration
     /// <summary>
     /// Library configuration section handler.
     /// </summary>
-    public class OAuth2ConfigurationSection : ConfigurationSection, IOAuth2Configuration
+    public class OAuth2ConfigurationSection : ConfigurationSection, IOAuth2ConfigurationSection, IOAuth2Configuration
     {
         private const string CollectionName = "services";
 

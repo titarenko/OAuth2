@@ -89,6 +89,7 @@
     <Compile Include="Configuration\IConfigurationManager.cs" />
     <Compile Include="Configuration\IOAuth2Configuration.cs" />
     <Compile Include="Configuration\IClientConfiguration.cs" />
+    <Compile Include="Configuration\IOAuth2ConfigurationSection.cs" />
     <Compile Include="Configuration\OAuth2ConfigurationSection.cs" />
     <Compile Include="Configuration\ClientConfiguration.cs" />
     <Compile Include="Configuration\RuntimeClientConfiguration.cs" />
