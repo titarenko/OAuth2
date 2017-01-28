@@ -11,7 +11,7 @@ namespace OAuth2
     public class AuthorizationRoot
     {
         private readonly IRequestFactory _requestFactory;
-        private readonly OAuth2ConfigurationSection _configurationSection;
+        private readonly IOAuth2ConfigurationSection _configurationSection;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationRoot" /> class.
@@ -40,7 +40,7 @@ namespace OAuth2
         {
             _requestFactory = requestFactory;
             _configurationSection = configurationManager
-                .GetConfigSection<OAuth2ConfigurationSection>(configurationSectionName);
+                .GetConfigSection<IOAuth2ConfigurationSection>(configurationSectionName);
         }
         
         /// <summary>
