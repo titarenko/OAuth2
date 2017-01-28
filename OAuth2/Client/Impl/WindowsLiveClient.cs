@@ -82,12 +82,11 @@ namespace OAuth2.Client.Impl
         {
             var response = JObject.Parse(content);
             const string avatarUriTemplate = @"https://cid-{0}.users.storage.live.com/users/0x{0}/myprofile/expressionprofile/profilephoto:Win8Static,{1},UserTileStatic/MeControlXXLUserTile?ck=2&ex=24";
-            return new UserInfo
+            var userinfo =  new UserInfo
             {
                 Id = response["id"].Value<string>(),
                 FirstName = response["first_name"].Value<string>(),
                 LastName = response["last_name"].Value<string>(),
-                Email = response["emails"]["preferred"].SafeGet(x => x.Value<string>()),
                 AvatarUri =
                     {
                         Small = string.Format(avatarUriTemplate, response["id"].Value<string>(), "UserTileSmall"),
@@ -95,6 +94,13 @@ namespace OAuth2.Client.Impl
                         Large = string.Format(avatarUriTemplate, response["id"].Value<string>(), "UserTileLarge")
                     }
             };
+
+            if (Configuration.Scope.ToUpperInvariant().Contains("WL.EMAILS"))
+            {
+                userinfo.Email = response["emails"]["preferred"].SafeGet(x => x.Value<string>());
+            } // if
+
+            return userinfo;
         }
 
         public override string Name
