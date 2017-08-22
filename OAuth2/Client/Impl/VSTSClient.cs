@@ -7,12 +7,12 @@ using RestSharp.Authenticators;
 namespace OAuth2.Client.Impl
 {
     /// <summary>
-    /// VSTS Live authentication client.
+    /// Visual Studio Team Services (VSTS) authentication client.
     /// </summary>
     public class VSTSClient : OAuth2Client
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="WindowsLiveClient"/> class.
+        /// Initializes a new instance of the <see cref="VSTSClient"/> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
