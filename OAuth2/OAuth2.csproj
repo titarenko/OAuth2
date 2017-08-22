@@ -77,6 +77,7 @@
     <Compile Include="Client\Impl\TwitterClient.cs" />
     <Compile Include="Client\Impl\UberClient.cs" />
     <Compile Include="Client\Impl\VkClient.cs" />
+    <Compile Include="Client\Impl\VSTSClient.cs" />
     <Compile Include="Client\Impl\WindowsLiveClient.cs" />
     <Compile Include="Client\Impl\XingClient.cs" />
     <Compile Include="Client\Impl\YahooClient.cs" />
