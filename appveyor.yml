@@ -28,10 +28,3 @@ after_test:
 artifacts:
   - path: artifacts\*.nupkg
     name: NuGet
-
-deploy:
-- provider: NuGet
-  api_key:
-    secure: LayopPnEpMIQRBC55GQHHIqi/LvCqDdPva03c8oVzifRz1Pd+NURs1frI4Y788fe
-  on:
-    branch: master
