@@ -31,8 +31,8 @@ artifacts:
 
 deploy:
   - provider: Environment
-    name: MyGet
-  - provider: Environment
     name: NuGet
+    api_key:
+      secure: LayopPnEpMIQRBC55GQHHIqi/LvCqDdPva03c8oVzifRz1Pd+NURs1frI4Y788fe
     on:
       appveyor_repo_tag: true
