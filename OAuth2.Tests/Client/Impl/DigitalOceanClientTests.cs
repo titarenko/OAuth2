@@ -51,14 +51,9 @@ namespace OAuth2.Tests.Client.Impl
         }
 
         [Test]
-        [ExpectedException(typeof(NotImplementedException))]
         public void Should_ReturnCorrectUserInfoServiceEndpoint()
         {
-            // act
-            descendant.GetUserInfoServiceEndpoint();
-
-            // assert
-            Assert.Fail();
+            Assert.Throws<NotImplementedException>(() => descendant.GetUserInfoServiceEndpoint());
         }
         
         [Test]

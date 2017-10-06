@@ -1,4 +1,4 @@
-using RestSharp;
+using RestSharpInternal;
 
 namespace OAuth2.Infrastructure
 {
