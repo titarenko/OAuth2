@@ -1,6 +1,6 @@
 ﻿using System;
 using OAuth2.Client;
-using RestSharp;
+using RestSharpInternal;
 
 namespace OAuth2.Infrastructure
 {

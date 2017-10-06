@@ -5,9 +5,9 @@ using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-using RestSharp;
-using RestSharp.Authenticators;
-using RestSharp.Extensions.MonoHttp;
+using RestSharpInternal;
+using RestSharpInternal.Authenticators;
+using RestSharpInternal.Extensions.MonoHttp;
 
 namespace OAuth2.Client
 {
