@@ -30,7 +30,6 @@ artifacts:
     name: NuGet
 
 deploy:
-  - provider: Environment
-    name: NuGet
-    api_key:
-      secure: LayopPnEpMIQRBC55GQHHIqi/LvCqDdPva03c8oVzifRz1Pd+NURs1frI4Y788fe
+- provider: NuGet
+  api_key:
+    secure: LayopPnEpMIQRBC55GQHHIqi/LvCqDdPva03c8oVzifRz1Pd+NURs1frI4Y788fe
