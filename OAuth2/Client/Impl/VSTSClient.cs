@@ -38,17 +38,16 @@ namespace OAuth2.Client.Impl
 
         protected override void BeforeGetAccessToken(BeforeAfterRequestArgs args)
         {
-            string contentType = "application/x-www-form-urlencoded";
             string grantTypeToken = args.Parameters["refresh_token"] != null ? "refresh_token" : "urn:ietf:params:oauth:grant-type:jwt-bearer";
-            string assertion = args.Parameters["refresh_token"] ?? args.Parameters["code"];
 
-            string postData = $"client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&" +
-                $"client_assertion={args.Configuration.ClientSecret}&" +
-                $"grant_type={grantTypeToken}&" +
-                $"assertion={assertion}&" +
-                $"redirect_uri={args.Configuration.RedirectUri}";
-
-            args.Request.AddParameter(contentType, postData,RestSharp.ParameterType.RequestBody);
+            args.Request.AddObject(new
+            {
+                client_assertion_type = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+                client_assertion = args.Configuration.ClientSecret,
+                grant_type = grantTypeToken,
+                assertion = args.Parameters["refresh_token"] ?? args.Parameters["code"],
+                redirect_uri = args.Configuration.RedirectUri
+            });
         }
 
         /// <summary>
