@@ -1,6 +1,0 @@
-﻿@model IEnumerable<OAuth2.Example.Models.LoginInfoModel>
-
-@foreach (var loginInfo in Model)
-{    
-    <p>@Html.ActionLink(string.Format("Log In ({0})", loginInfo.ProviderName), "Login", "Home", new { providerName = @loginInfo.ProviderName }, null)</p>
-}

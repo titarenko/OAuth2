@@ -1,0 +1,34 @@
+<Project ToolsVersion="15.0">
+  <Import Project="version.props" />
+
+  <PropertyGroup>
+    <ProjectParentDirectory>$([System.IO.Path]::GetDirectoryName('$(MSBuildProjectDirectory)'))</ProjectParentDirectory>
+    <ProjectParentDirectoryName>$([System.IO.Path]::GetFileName('$(ProjectParentDirectory)'))</ProjectParentDirectoryName>
+  </PropertyGroup>
+
+  <Import Project="sourcelink.props" Condition="'$(ProjectParentDirectoryName)' == 'src'" />
+
+  <ItemGroup>
+    <PackageReference Include="AsyncFixer" Version="1.1.5" PrivateAssets="All" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <Product>OAuth2</Product>
+    <Description>Allows you to perform user authentication via DigitalOcean, Facebook, Foursquare, GitHub, Google, Instagram, LinkedIn, MailRu, Odnoklassniki, Salesforce, Twitter, VK (Vkontakte), Windows Live, Yandex just in two method calls.</Description>
+    <Authors>Constantin Titarenko, Andrew Semack, Blake Niemyjski and others</Authors>
+    <PackageTags>OAuth2, OAuth, DigitalOcean, Facebook, Foursquare, GitHub, Google, Instagram, LinkedIn, MailRu, Odnoklassniki, Twitter, VK (Vkontakte), Windows Live, Yandex</PackageTags>
+    <NoWarn>$(NoWarn);CS1591;CS1658;CS1584;</NoWarn>
+    <WarningsAsErrors>true</WarningsAsErrors>
+    <DebugType>portable</DebugType>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageOutputPath>$(SolutionDir)artifacts\</PackageOutputPath>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+    <PackageReleaseNotes>https://github.com/titarenko/OAuth2/releases</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/titarenko/OAuth2</PackageProjectUrl>
+    <PackageLicenseUrl>http://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/titarenko/OAuth2</RepositoryUrl>
+    <VersionSuffix Condition="'$(VersionSuffix)'!='' AND '$(BuildNumber)' != ''">$(VersionSuffix)-$(BuildNumber)</VersionSuffix>
+  </PropertyGroup>
+</Project>

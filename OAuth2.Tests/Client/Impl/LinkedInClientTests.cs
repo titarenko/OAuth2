@@ -6,7 +6,7 @@ using OAuth2.Client.Impl;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-using RestSharp;
+using RestSharpInternal;
 
 namespace OAuth2.Tests.Client.Impl
 {

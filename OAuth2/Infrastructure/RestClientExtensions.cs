@@ -1,6 +1,7 @@
 ﻿using System.Net;
+using System.Threading.Tasks;
 using OAuth2.Client;
-using RestSharp;
+using RestSharpInternal;
 
 namespace OAuth2.Infrastructure
 {

@@ -2,7 +2,7 @@ using System;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-using RestSharp;
+using RestSharpInternal;
 using System.Xml.Linq;
 using System.Xml.XPath;
 

@@ -1,6 +1,6 @@
 using System.Collections.Specialized;
 using OAuth2.Configuration;
-using RestSharp;
+using RestSharpInternal;
 
 namespace OAuth2.Client
 {

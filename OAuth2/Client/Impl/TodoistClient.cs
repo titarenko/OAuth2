@@ -2,7 +2,7 @@ using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-using RestSharp;
+using RestSharpInternal;
 
 namespace OAuth2.Client.Impl
 {
