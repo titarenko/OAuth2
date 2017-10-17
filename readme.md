@@ -43,6 +43,7 @@ Install-Package OAuth2
 - Todoist
 - Twitter
 - VK (Vkontakte)
+- Visual Studio Team Services (VSTS)
 - Windows Live
 - Yahoo
 - Yandex
@@ -78,6 +79,7 @@ This library is dependent on:
 - Krisztián Pócza (added LinkedIn (OAuth 2) client)
 - [Jamie Houston](/JamieHouston) (added a [Todoist client](/tree/master/OAuth2/Client/Impl/TodoistClient.cs))
 - [Sasidhar Kasturi](https://github.com/skasturi) (added Uber, Spotify, Yahoo)
+- [Jamie Dalton] (https://github.com/daltskin) (added Visual Studio Team Services)
 
 ## Acknowledgements ##
 
