@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-using RestSharpInternal.Authenticators;
+using RestSharp.Authenticators;
 
 namespace OAuth2.Client.Impl
 {
@@ -96,23 +96,22 @@ namespace OAuth2.Client.Impl
         {
             var response = JObject.Parse(content);
             var userInfo = new UserInfo();
-            JToken firstName, lastName, email, picture;
-            if (response.TryGetValue("first_name", StringComparison.OrdinalIgnoreCase, out firstName))
+            if (response.TryGetValue("first_name", StringComparison.OrdinalIgnoreCase, out JToken firstName))
             {
                 userInfo.FirstName = firstName.ToString();
             }
 
-            if (response.TryGetValue("last_name", StringComparison.OrdinalIgnoreCase, out lastName))
+            if (response.TryGetValue("last_name", StringComparison.OrdinalIgnoreCase, out JToken lastName))
             {
                 userInfo.LastName = lastName.ToString();
             }
 
-            if (response.TryGetValue("email", StringComparison.OrdinalIgnoreCase, out email))
+            if (response.TryGetValue("email", StringComparison.OrdinalIgnoreCase, out JToken email))
             {
                 userInfo.Email = email.ToString();
             }
 
-            if (response.TryGetValue("picture", StringComparison.OrdinalIgnoreCase, out picture))
+            if (response.TryGetValue("picture", StringComparison.OrdinalIgnoreCase, out JToken picture))
             {
                 var pictureUri = picture.ToString();
                 userInfo.AvatarUri.Small = pictureUri;

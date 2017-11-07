@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Specialized;
+using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-using RestSharpInternal;
-using RestSharpInternal.Authenticators;
-using RestSharpInternal.Extensions.MonoHttp;
+using RestSharp;
+using RestSharp.Authenticators;
 
 namespace OAuth2.Client
 {
@@ -218,9 +218,8 @@ namespace OAuth2.Client
                 RefreshToken = ParseTokenResponse(response.Content, RefreshTokenKey);
 
             TokenType = ParseTokenResponse(response.Content, TokenTypeKey);
-            
-            int expiresIn;
-            if (Int32.TryParse(ParseTokenResponse(response.Content, ExpiresKey), out expiresIn))
+
+            if (Int32.TryParse(ParseTokenResponse(response.Content, ExpiresKey), out int expiresIn))
                 ExpiresAt = DateTime.Now.AddSeconds(expiresIn);
         }
 
@@ -233,7 +232,7 @@ namespace OAuth2.Client
 			{
 				// response can be sent in JSON format
 				var token = JObject.Parse(content).SelectToken(key);
-				return token != null ? token.ToString() : null;
+				return token?.ToString();
 			}
 			catch (JsonReaderException)
 			{

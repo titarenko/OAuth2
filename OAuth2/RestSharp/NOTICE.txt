@@ -1,1 +1,0 @@
-﻿This library was source imported and only the namespace was changed to RestSharpInternal. Once RestSharp supports .net core we'll remove this code.

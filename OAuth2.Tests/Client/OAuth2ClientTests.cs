@@ -8,9 +8,9 @@ using OAuth2.Client;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-using RestSharpInternal;
+using RestSharp;
 using FluentAssertions;
-using RestSharpInternal.Authenticators;
+using RestSharp.Authenticators;
 
 namespace OAuth2.Tests.Client
 {

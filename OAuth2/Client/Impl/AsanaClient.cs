@@ -5,7 +5,7 @@ using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 
-using RestSharpInternal.Authenticators;
+using RestSharp.Authenticators;
 
 namespace OAuth2.Client.Impl
 {
@@ -86,8 +86,7 @@ namespace OAuth2.Client.Impl
         protected override UserInfo ParseUserInfo(string content)
         {
             var response = JObject.Parse(content);
-            JToken dataExists;
-            if (!response.TryGetValue("data", out dataExists))
+            if (!response.TryGetValue("data", out JToken dataExists))
                 return new UserInfo();
 
             //const string avatarUriTemplate = "{0}?type={1}";
