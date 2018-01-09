@@ -95,10 +95,10 @@ namespace OAuth2.Client.Impl
                     }
             };
 
-            if (Configuration.Scope.ToUpperInvariant().Contains("WL.EMAILS"))
+            if (Configuration.Scope != null && Configuration.Scope.ToUpperInvariant().Contains("WL.EMAILS"))
             {
                 userinfo.Email = response["emails"]["preferred"].SafeGet(x => x.Value<string>());
-            } // if
+            }
 
             return userinfo;
         }
