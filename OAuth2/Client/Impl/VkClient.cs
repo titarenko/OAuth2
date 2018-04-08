@@ -94,6 +94,7 @@ namespace OAuth2.Client.Impl
         {
             args.Request.AddParameter("uids", _userId);
             args.Request.AddParameter("fields", "uid,first_name,last_name,photo");
+            args.Request.AddParameter("v", "5.74");
         }
 
         /// <summary>
