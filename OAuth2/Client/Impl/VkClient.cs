@@ -11,7 +11,7 @@ namespace OAuth2.Client.Impl
     public class VkClient : OAuth2Client
     {
         private string _userId;
-	private string _email;
+        private string _email;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VkClient"/> class.
@@ -81,9 +81,9 @@ namespace OAuth2.Client.Impl
         {
             var instance = JObject.Parse(args.Response.Content);
             _userId = instance["user_id"].Value<string>();
-	    var email = instance["email"];
-	    if (email != null)
-	        _email = email.Value<string>();
+            var email = instance["email"];
+            if (email != null)
+                _email = email.Value<string>();
         }
 
         /// <summary>
@@ -92,8 +92,9 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            args.Request.AddParameter("uids", _userId);
-            args.Request.AddParameter("fields", "uid,first_name,last_name,photo");
+            args.Request.AddParameter("v", "5.74");
+            args.Request.AddParameter("user_ids", _userId);
+            args.Request.AddParameter("fields", "first_name,last_name,has_photo,photo_max_orig");
         }
 
         /// <summary>
@@ -103,19 +104,20 @@ namespace OAuth2.Client.Impl
         protected override UserInfo ParseUserInfo(string content)
         {
             var response = JObject.Parse(content)["response"][0];
-            var avatarUri = response["photo"].Value<string>();
+            var hasPhoto = response["has_photo"].Value<bool>();
+            var avatarUri = hasPhoto ? response["photo_max_orig"].Value<string>() : null;
             return new UserInfo
             {
                 Email = _email,
                 FirstName = response["first_name"].Value<string>(),
                 LastName = response["last_name"].Value<string>(),
-                Id = response["uid"].Value<string>(),
+                Id = response["id"].Value<string>(),
                 AvatarUri =
-                    {
-                        Small = null,
-                        Normal = avatarUri,
-                        Large = null
-                    }                
+                {
+                    Small = null,
+                    Normal = avatarUri,
+                    Large = null
+                }
             };
         }
     }

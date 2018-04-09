@@ -14,7 +14,7 @@ namespace OAuth2.Tests.Client.Impl
     [TestFixture]
     public class VkClientTests
     {
-        private const string content = "{\"response\":[{\"uid\":\"1\",\"first_name\":\"Павел\",\"last_name\":\"Дуров\",\"photo\":\"http:\\/\\/cs109.vkontakte.ru\\/u00001\\/c_df2abf56.jpg\"}]}";
+        private const string content = "{\"response\":[{\"id\":\"1\",\"first_name\":\"Павел\",\"last_name\":\"Дуров\",\"has_photo\":1,\"photo_max_orig\":\"http:\\/\\/cs109.vkontakte.ru\\/u00001\\/c_df2abf56.jpg\"}]}";
 
         private VkClientDescendant descendant;
         private IRequestFactory factory;
@@ -114,7 +114,9 @@ namespace OAuth2.Tests.Client.Impl
             });
 
             // assert
-            restRequest.Received().AddParameter("fields", "uid,first_name,last_name,photo");
+            restRequest.Received().AddParameter("fields", "first_name,last_name,has_photo,photo_max_orig");
+            restRequest.Received().AddParameter("user_ids", "1");
+            restRequest.Received().AddParameter("v", "5.74");
         }
 
         private class VkClientDescendant : VkClient
