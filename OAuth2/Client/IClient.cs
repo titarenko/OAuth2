@@ -44,7 +44,7 @@ namespace OAuth2.Client
         /// Callback request payload (parameters).
         /// <example>Request.QueryString</example>
         /// </param>
-        UserInfo GetUserInfo(NameValueCollection parameters);
+        UserInfo GetUserInfo(NameValueCollection parameters, NameValueCollection queryParameters = null);
 
         /// <summary>
         /// Client configuration object.

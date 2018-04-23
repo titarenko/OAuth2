@@ -1,3 +1,4 @@
+using System;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
@@ -109,7 +110,7 @@ namespace OAuth2.Client.Impl
             return new UserInfo
             {
                 Id = response["id"].Value<string>(),
-                Email = null,
+                Email = response["email"] == null ? null : response["email"].Value<string>(),
                 FirstName = firstName,
                 LastName = lastName,
                 AvatarUri =

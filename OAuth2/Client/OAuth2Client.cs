@@ -110,8 +110,10 @@ namespace OAuth2.Client
         /// Obtains user information using OAuth2 service and data provided via callback request.
         /// </summary>
         /// <param name="parameters">Callback request payload (parameters).</param>
-        public UserInfo GetUserInfo(NameValueCollection parameters)
+        /// <param name="queryParameters">Callback request payload (query parameters).</param>
+        public UserInfo GetUserInfo(NameValueCollection parameters, NameValueCollection queryParameters = null)
         {
+            queryParameters = queryParameters ?? new NameValueCollection();
             GrantType = "authorization_code";
             CheckErrorAndSetState(parameters);
             QueryAccessToken(parameters);

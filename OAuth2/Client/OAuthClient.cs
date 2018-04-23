@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Runtime.InteropServices.ComTypes;
 using System.Web;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
@@ -78,13 +79,16 @@ namespace OAuth2.Client
         /// </summary>
         /// <param name="parameters">Callback request payload (parameters).
         /// <example>Request.QueryString</example></param>
+        /// <param name="queryParameters">Callback request payload for query user info (parameters).
+        /// <example>Request.QueryString</example></param>
         /// <returns></returns>
-        public UserInfo GetUserInfo(NameValueCollection parameters)
+        public UserInfo GetUserInfo(NameValueCollection parameters, NameValueCollection queryParameters = null)
         {
+            queryParameters = queryParameters ?? new NameValueCollection();
             AccessToken = parameters.GetOrThrowUnexpectedResponse(OAuthTokenKey);
             QueryAccessToken(parameters.GetOrThrowUnexpectedResponse("oauth_verifier"));
 
-            var result = ParseUserInfo(QueryUserInfo());
+            var result = ParseUserInfo(QueryUserInfo(queryParameters));
             result.ProviderName = Name;
 
             return result;
@@ -207,13 +211,18 @@ namespace OAuth2.Client
         /// <summary>
         /// Queries user info using corresponding service and data received by access token request.
         /// </summary>
-        private string QueryUserInfo()
+        private string QueryUserInfo(NameValueCollection queryParameters)
         {
             var client = _factory.CreateClient(UserInfoServiceEndpoint);
             client.Authenticator = OAuth1Authenticator.ForProtectedResource(
                 Configuration.ClientId, Configuration.ClientSecret, AccessToken, AccessTokenSecret);
 
             var request = _factory.CreateRequest(UserInfoServiceEndpoint);
+
+            foreach(var parameter in queryParameters.AllKeys)
+            {
+                request.AddParameter(parameter, queryParameters[parameter]);
+            }
 
             BeforeGetUserInfo(new BeforeAfterRequestArgs
             {
