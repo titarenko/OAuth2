@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-
+using RestSharp;
 using RestSharp.Authenticators;
 
 namespace OAuth2.Client.Impl
@@ -84,13 +86,42 @@ namespace OAuth2.Client.Impl
             });
 
             var response = client.ExecuteAndVerify(request);
+            return HandleUserInfoResponse(response, userInfo);
+        }
+
+        protected override async Task<UserInfo> GetUserInfoAsync(CancellationToken cancellationToken = default)
+        {
+            var userInfo = await base.GetUserInfoAsync(cancellationToken).ConfigureAwait(false);
+            if (userInfo == null)
+                return null;
+
+            if (!String.IsNullOrEmpty(userInfo.Email))
+                return userInfo;
+
+            var client = _factory.CreateClient(UserEmailServiceEndpoint);
+            client.Authenticator = new OAuth2UriQueryParameterAuthenticator(AccessToken);
+            var request = _factory.CreateRequest(UserEmailServiceEndpoint);
+
+            BeforeGetUserInfo(new BeforeAfterRequestArgs
+            {
+                Client = client,
+                Request = request,
+                Configuration = Configuration
+            });
+
+            var response = await client.ExecuteAndVerifyAsync(request, cancellationToken).ConfigureAwait(false);
+            return HandleUserInfoResponse(response, userInfo);
+        }
+
+        UserInfo HandleUserInfoResponse(IRestResponse response, UserInfo userInfo)
+        {
             var userEmails = ParseEmailAddresses(response.Content).Where(u => !String.IsNullOrEmpty(u.Email)).ToList();
-            
+
             string primaryEmail = userEmails.Where(u => u.Primary).Select(u => u.Email).FirstOrDefault();
             string verifiedEmail = userEmails.Where(u => u.Verified).Select(u => u.Email).FirstOrDefault();
             string fallbackEmail = userEmails.Select(u => u.Email).FirstOrDefault();
             userInfo.Email = primaryEmail ?? verifiedEmail ?? fallbackEmail;
-            
+
             return userInfo;
         }
 
