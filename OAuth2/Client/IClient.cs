@@ -1,4 +1,6 @@
 using System.Collections.Specialized;
+using System.Threading;
+using System.Threading.Tasks;
 using OAuth2.Configuration;
 using OAuth2.Models;
 
@@ -45,6 +47,15 @@ namespace OAuth2.Client
         /// <example>Request.QueryString</example>
         /// </param>
         UserInfo GetUserInfo(NameValueCollection parameters);
+
+        /// <summary>
+        /// Obtains user information using third-party authentication service using data provided via callback request.
+        /// </summary>
+        /// <param name="parameters">Callback request payload (parameters).</param>
+        /// <param name="cancellationToken">Optional cancellation token</param>
+        /// <returns></returns>
+        Task<UserInfo> GetUserInfoAsync(NameValueCollection parameters,
+            CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Client configuration object.

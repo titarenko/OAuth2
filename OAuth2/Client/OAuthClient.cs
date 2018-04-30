@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
@@ -177,7 +179,31 @@ namespace OAuth2.Client
 
             var request = _factory.CreateRequest(AccessTokenServiceEndpoint, Method.POST);
 
-            var content = client.ExecuteAndVerify(request).Content;
+            var response = client.ExecuteAndVerify(request);
+            HandleTokenResponse(response);
+        }
+
+        /// <summary>
+        /// Obtains access token by calling corresponding service.
+        /// </summary>
+        /// <param name="verifier">Verifier posted with callback issued by provider.</param>
+        /// <param name="cancellationToken">Optional cancellation token</param>
+        /// <returns>Access token and other extra info.</returns>
+        private async Task QueryAccessTokenAsync(string verifier, CancellationToken cancellationToken = default)
+        {
+            var client = _factory.CreateClient(AccessTokenServiceEndpoint);
+            client.Authenticator = OAuth1Authenticator.ForAccessToken(
+                Configuration.ClientId, Configuration.ClientSecret, AccessToken, AccessTokenSecret, verifier);
+
+            var request = _factory.CreateRequest(AccessTokenServiceEndpoint, Method.POST);
+
+            var response = await client.ExecuteAndVerifyAsync(request, cancellationToken).ConfigureAwait(false);
+            HandleTokenResponse(response);
+        }
+
+        void HandleTokenResponse(IRestResponse response)
+        {
+            var content = response.Content;
             var collection = HttpUtility.ParseQueryString(content);
 
             AccessToken = collection.GetOrThrowUnexpectedResponse(OAuthTokenKey);
@@ -223,6 +249,18 @@ namespace OAuth2.Client
             });
 
             return client.ExecuteAndVerify(request).Content;
+        }
+
+        /// <inheritdoc />
+        public async Task<UserInfo> GetUserInfoAsync(NameValueCollection parameters, CancellationToken cancellationToken = default)
+        {
+            AccessToken = parameters.GetOrThrowUnexpectedResponse(OAuthTokenKey);
+            await QueryAccessTokenAsync(parameters.GetOrThrowUnexpectedResponse("oauth_verifier"), cancellationToken).ConfigureAwait(false);
+
+            var result = ParseUserInfo(QueryUserInfo());
+            result.ProviderName = Name;
+
+            return result;
         }
     }
 }
