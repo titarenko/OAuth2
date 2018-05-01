@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
@@ -68,9 +70,9 @@ namespace OAuth2.Client.Impl
             }
         }
 
-        public override string GetLoginLinkUri(string state = null)
+        public override Task<string> GetLoginLinkUriAsync(string state = null, CancellationToken cancellationToken = default)
         {
-            return base.GetLoginLinkUri(state ?? Guid.NewGuid().ToString("N"));
+            return base.GetLoginLinkUriAsync(state ?? Guid.NewGuid().ToString("N"), cancellationToken);
         }
 
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)

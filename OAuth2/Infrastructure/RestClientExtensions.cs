@@ -8,11 +8,6 @@ namespace OAuth2.Infrastructure
 {
     public static class RestClientExtensions
     {
-        public static IRestResponse ExecuteAndVerify(this IRestClient client, IRestRequest request)
-        {
-            return VerifyResponse(client.Execute(request));
-        }
-
         static IRestResponse VerifyResponse(IRestResponse response)
         {
             if (response.Content.IsEmpty() ||

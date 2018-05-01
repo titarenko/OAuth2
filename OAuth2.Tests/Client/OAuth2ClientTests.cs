@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Net;
+using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using NSubstitute;
 using NUnit.Framework;
@@ -56,7 +57,7 @@ namespace OAuth2.Tests.Client
             restResponse.StatusCode = HttpStatusCode.InternalServerError;
 
             descendant
-                .Invoking(x => x.GetUserInfo(new NameValueCollection()))
+                .Awaiting(x => x.GetUserInfoAsync(new NameValueCollection()))
                 .ShouldThrow<UnexpectedResponseException>();
         }
 
@@ -67,7 +68,7 @@ namespace OAuth2.Tests.Client
             restResponse.Content.Returns("");
             
             descendant
-                .Invoking(x => x.GetUserInfo(new NameValueCollection()))
+                .Awaiting(x => x.GetUserInfoAsync(new NameValueCollection()))
                 .ShouldThrow<UnexpectedResponseException>();
         }
 
@@ -78,7 +79,7 @@ namespace OAuth2.Tests.Client
             restClient.BuildUri(restRequest).Returns(new Uri("https://login-link.net/"));
 
             // act
-            var uri = descendant.GetLoginLinkUri();
+            var uri = descendant.GetLoginLinkUriAsync();
 
             // assert
             uri.Should().Be("https://login-link.net/");
@@ -111,7 +112,7 @@ namespace OAuth2.Tests.Client
 
             // act & assert
             descendant
-                .Invoking(x => x.GetUserInfo(parameters))
+                .Awaiting(x => x.GetUserInfoAsync(parameters))
                 .ShouldThrow<UnexpectedResponseException>()
                 .And.FieldName.Should().Be("error");
         }
@@ -126,7 +127,7 @@ namespace OAuth2.Tests.Client
 
             // act & assert
             descendant
-                .Invoking(x => x.GetUserInfo(new NameValueCollection
+                .Awaiting(x => x.GetUserInfoAsync(new NameValueCollection
                 {
                     {"error", error},
                     {"code", "code"}
@@ -135,13 +136,13 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public void Should_IssueCorrectRequestForAccessToken_When_GetUserInfoIsCalled()
+        public async Task Should_IssueCorrectRequestForAccessToken_When_GetUserInfoIsCalled()
         {
             // arrange
             restResponse.Content = "access_token=token";
 
             // act
-            descendant.GetUserInfo(new NameValueCollection {{"code", "code"}});
+            await descendant.GetUserInfoAsync(new NameValueCollection {{"code", "code"}});
 
             // assert
             restClient.Received(1).BaseUrl = new Uri("https://AccessTokenServiceEndpoint");
@@ -161,13 +162,13 @@ namespace OAuth2.Tests.Client
         [Test]
         [TestCase("access_token=token")]
         [TestCase("{\"access_token\": \"token\"}")]
-        public void Should_IssueCorrectRequestForUserInfo_When_GetUserInfoIsCalled(string response)
+        public async Task Should_IssueCorrectRequestForUserInfo_When_GetUserInfoIsCalled(string response)
         {
             // arrange
             restResponse.Content.Returns(response);
 
             // act
-            descendant.GetUserInfo(new NameValueCollection {{"code", "code"}});
+            await descendant.GetUserInfoAsync(new NameValueCollection { { "code", "code" } });
 
             // assert
             restClient.Received(1).BaseUrl = new Uri("https://UserInfoServiceEndpoint");

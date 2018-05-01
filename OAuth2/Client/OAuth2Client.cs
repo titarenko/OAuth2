@@ -80,7 +80,7 @@ namespace OAuth2.Client
         /// <param name="state">
         /// Any additional information that will be posted back by service.
         /// </param>
-        public virtual string GetLoginLinkUri(string state = null)
+        public virtual Task<string> GetLoginLinkUriAsync(string state = null, CancellationToken cancellationToken = default)
         {
             var client = _factory.CreateClient(AccessCodeServiceEndpoint);
             var request = _factory.CreateRequest(AccessCodeServiceEndpoint);
@@ -105,48 +105,20 @@ namespace OAuth2.Client
                     state
                 });
             }
-            return client.BuildUri(request).ToString();
-        }
-
-        /// <summary>
-        /// Obtains user information using OAuth2 service and data provided via callback request.
-        /// </summary>
-        /// <param name="parameters">Callback request payload (parameters).</param>
-        public UserInfo GetUserInfo(NameValueCollection parameters)
-        {
-            GrantType = "authorization_code";
-            CheckErrorAndSetState(parameters);
-            QueryAccessToken(parameters);
-            return GetUserInfo();
+            return Task.FromResult(client.BuildUri(request).ToString());
         }
 
         /// <summary>
         /// Issues query for access token and returns access token.
         /// </summary>
         /// <param name="parameters">Callback request payload (parameters).</param>
-        public string GetToken(NameValueCollection parameters)
+        /// <param name="cancellationToken">Optional cancellation token</param>
+        public async Task<string> GetTokenAsync(NameValueCollection parameters, CancellationToken cancellationToken = default)
         {
             GrantType = "authorization_code";
             CheckErrorAndSetState(parameters);
-            QueryAccessToken(parameters);
+            await QueryAccessTokenAsync(parameters, cancellationToken);
             return AccessToken;
-        }
-
-        public string GetCurrentToken(string refreshToken = null, bool forceUpdate = false)
-        {
-            if (!forceUpdate && ExpiresAt != default && DateTime.Now < ExpiresAt && !String.IsNullOrEmpty(AccessToken))
-            {
-                return AccessToken;
-            }
-
-            var parameters = ExtractCurrentTokenParameters(refreshToken);
-            if (parameters.Count > 0)
-            {
-                GrantType = "refresh_token";
-                QueryAccessToken(parameters);
-                return AccessToken;
-            }
-            throw new Exception("Token never fetched and refresh token not provided.");
         }
 
         public async Task<string> GetCurrentTokenAsync(string refreshToken = null, bool forceUpdate = false, CancellationToken cancellationToken = default)
@@ -156,18 +128,6 @@ namespace OAuth2.Client
                 return AccessToken;
             }
 
-            var parameters = ExtractCurrentTokenParameters(refreshToken);
-            if (parameters.Count > 0)
-            {
-                GrantType = "refresh_token";
-                await QueryAccessTokenAsync(parameters, cancellationToken).ConfigureAwait(false);
-                return AccessToken;
-            }
-            throw new Exception("Token never fetched and refresh token not provided.");
-        }
-
-        NameValueCollection ExtractCurrentTokenParameters(string refreshToken)
-        {
             NameValueCollection parameters = new NameValueCollection();
             if (!String.IsNullOrEmpty(refreshToken))
             {
@@ -178,7 +138,13 @@ namespace OAuth2.Client
                 parameters.Add("refresh_token", RefreshToken);
             }
 
-            return parameters;
+            if (parameters.Count > 0)
+            {
+                GrantType = "refresh_token";
+                await QueryAccessTokenAsync(parameters, cancellationToken).ConfigureAwait(false);
+                return AccessToken;
+            }
+            throw new Exception("Token never fetched and refresh token not provided.");
         }
 
         /// <summary>
@@ -213,28 +179,6 @@ namespace OAuth2.Client
         /// Issues query for access token and parses response.
         /// </summary>
         /// <param name="parameters">Callback request payload (parameters).</param>
-        private void QueryAccessToken(NameValueCollection parameters)
-        {
-            var client = _factory.CreateClient(AccessTokenServiceEndpoint);
-            var request = _factory.CreateRequest(AccessTokenServiceEndpoint, Method.POST);
-
-            BeforeGetAccessToken(new BeforeAfterRequestArgs
-            {
-                Client = client,
-                Request = request,
-                Parameters = parameters,
-                Configuration = Configuration
-            });
-
-            var response = client.ExecuteAndVerify(request);
-
-            HandleTokenResponse(parameters, response);
-        }
-
-        /// <summary>
-        /// Issues query for access token and parses response.
-        /// </summary>
-        /// <param name="parameters">Callback request payload (parameters).</param>
         /// <param name="cancellationToken">Optional cancellation token</param>
         private async Task QueryAccessTokenAsync(NameValueCollection parameters, CancellationToken cancellationToken = default)
         {
@@ -251,11 +195,6 @@ namespace OAuth2.Client
 
             var response = await client.ExecuteAndVerifyAsync(request, cancellationToken).ConfigureAwait(false);
 
-            HandleTokenResponse(parameters, response);
-        }
-
-        void HandleTokenResponse(NameValueCollection parameters, IRestResponse response)
-        {
             AfterGetAccessToken(new BeforeAfterRequestArgs
             {
                 Response = response,
@@ -339,30 +278,6 @@ namespace OAuth2.Client
         /// </summary>
         protected virtual void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-        }
-
-        /// <summary>
-        /// Obtains user information using provider API.
-        /// </summary>
-        protected virtual UserInfo GetUserInfo()
-        {
-            var client = _factory.CreateClient(UserInfoServiceEndpoint);
-            client.Authenticator = new OAuth2UriQueryParameterAuthenticator(AccessToken);
-            var request = _factory.CreateRequest(UserInfoServiceEndpoint);
-
-            BeforeGetUserInfo(new BeforeAfterRequestArgs
-            {
-                Client = client,
-                Request = request,
-                Configuration = Configuration
-            });
-
-            var response = client.ExecuteAndVerify(request);
-
-            var result = ParseUserInfo(response.Content);
-            result.ProviderName = Name;
-
-            return result;
         }
 
         /// <summary>

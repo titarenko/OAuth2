@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Net;
+using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using NSubstitute;
 using NUnit.Framework;
@@ -32,21 +33,21 @@ namespace OAuth2.Tests.Client
         [Test]
         public void Should_ThrowNotSupported_When_UserWantsToTransmitState()
         {
-            descendant.Invoking(x => x.GetLoginLinkUri("any state")).ShouldThrow<NotSupportedException>();
+            descendant.Awaiting(x => x.GetLoginLinkUriAsync("any state")).ShouldThrow<NotSupportedException>();
         }
 
         [Test]
         public void Should_ThrowUnexpectedResponse_When_StatusIsNotOk()
         {
             factory.CreateClient().Execute(factory.CreateRequest()).StatusCode = HttpStatusCode.InternalServerError;
-            descendant.Invoking(x => x.GetLoginLinkUri()).ShouldThrow<UnexpectedResponseException>();
+            descendant.Awaiting(x => x.GetLoginLinkUriAsync()).ShouldThrow<UnexpectedResponseException>();
         }
 
         [Test]
         public void Should_ThrowUnexpectedResponse_When_ContentIsEmpty()
         {
             factory.CreateClient().Execute(factory.CreateRequest()).Content = "";
-            descendant.Invoking(x => x.GetLoginLinkUri()).ShouldThrow<UnexpectedResponseException>();
+            descendant.Awaiting(x => x.GetLoginLinkUriAsync()).ShouldThrow<UnexpectedResponseException>();
         }
 
         [Test]
@@ -54,7 +55,7 @@ namespace OAuth2.Tests.Client
         {
             factory.CreateClient().Execute(factory.CreateRequest()).Content = "something=something_other";
             descendant
-                .Invoking(x => x.GetLoginLinkUri())
+                .Awaiting(x => x.GetLoginLinkUriAsync())
                 .ShouldThrow<UnexpectedResponseException>()
                 .And.FieldName.Should().Be("oauth_token");
         }
@@ -64,13 +65,13 @@ namespace OAuth2.Tests.Client
         {
             factory.CreateClient().Execute(factory.CreateRequest()).Content = "oauth_token=token";
             descendant
-                .Invoking(x => x.GetLoginLinkUri())
+                .Awaiting(x => x.GetLoginLinkUriAsync())
                 .ShouldThrow<UnexpectedResponseException>()
                 .And.FieldName.Should().Be("oauth_token_secret");
         }
 
         [Test]
-        public void Should_IssueCorrectRequestForRequestToken_When_GetLoginLinkUriIsCalled()
+        public async Task Should_IssueCorrectRequestForRequestToken_When_GetLoginLinkUriIsCalled()
         {
             // arrange
             var restClient = factory.CreateClient();
@@ -79,7 +80,7 @@ namespace OAuth2.Tests.Client
             restClient.Execute(restRequest).Content = "oauth_token=token&oauth_token_secret=secret";
 
             // act
-            descendant.GetLoginLinkUri();
+            await descendant.GetLoginLinkUriAsync();
 
             // assert
             factory.Received().CreateClient();
@@ -94,7 +95,7 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public void Should_ComposeCorrectLoginUri_When_GetLoginLinkIsCalled()
+        public async Task Should_ComposeCorrectLoginUri_When_GetLoginLinkIsCalled()
         {
             // arrange
             var restClient = factory.CreateClient();
@@ -103,7 +104,7 @@ namespace OAuth2.Tests.Client
             restClient.Execute(restRequest).Content.Returns("oauth_token=token5&oauth_token_secret=secret");
 
             // act
-            var uri = descendant.GetLoginLinkUri();
+            var uri = await descendant.GetLoginLinkUriAsync();
 
             // assert
             uri.Should().Be("https://login/");
@@ -117,7 +118,7 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public void Should_IssueCorrectRequestForAccessToken_When_GetUserInfoIsCalled()
+        public async Task Should_IssueCorrectRequestForAccessToken_When_GetUserInfoIsCalled()
         {
             // arrange
             var restClient = factory.CreateClient();
@@ -125,7 +126,7 @@ namespace OAuth2.Tests.Client
             restClient.Execute(restRequest).Content = "oauth_token=token&oauth_token_secret=secret";
             
             // act
-            descendant.GetUserInfo(new NameValueCollection
+            await descendant.GetUserInfoAsync(new NameValueCollection
             {
                 {"oauth_token", "token1"},
                 {"oauth_verifier", "verifier100"}
@@ -144,7 +145,7 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public void Should_IssueCorrectRequestForUserInfo_When_GetUserInfoIsCalled()
+        public async Task Should_IssueCorrectRequestForUserInfo_When_GetUserInfoIsCalled()
         {
             // arrange
             var restClient = factory.CreateClient();
@@ -155,7 +156,7 @@ namespace OAuth2.Tests.Client
                 "abba");
 
             // act
-            var info = descendant.GetUserInfo(new NameValueCollection
+            var info = await descendant.GetUserInfoAsync(new NameValueCollection
             {
                 {"oauth_token", "token1"},
                 {"oauth_verifier", "verifier100"}

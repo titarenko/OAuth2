@@ -59,11 +59,6 @@ namespace OAuth2.Client.Impl
             }
         }
 
-        protected override UserInfo GetUserInfo()
-        {
-            return ParseUserInfo(_accessToken);
-        }
-
         /// <inheritdoc />
         protected override Task<UserInfo> GetUserInfoAsync(CancellationToken cancellationToken = default)
         {
