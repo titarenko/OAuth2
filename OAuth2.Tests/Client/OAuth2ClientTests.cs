@@ -73,13 +73,13 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public void Should_ReturnCorrectAccessCodeRequestUri()
+        public async Task Should_ReturnCorrectAccessCodeRequestUri()
         {
             // arrange
             restClient.BuildUri(restRequest).Returns(new Uri("https://login-link.net/"));
 
             // act
-            var uri = descendant.GetLoginLinkUriAsync();
+            var uri = await descendant.GetLoginLinkUriAsync();
 
             // assert
             uri.Should().Be("https://login-link.net/");
