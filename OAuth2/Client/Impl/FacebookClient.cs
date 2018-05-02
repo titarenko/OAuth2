@@ -71,7 +71,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            args.Request.AddParameter("fields", "id,first_name,last_name,email,picture");
+            args.Request.AddParameter("fields", "id,first_name,last_name,email,picture.width(256).height(256)");
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace OAuth2.Client.Impl
         protected override UserInfo ParseUserInfo(string content)
         {
             var response = JObject.Parse(content);
-            const string avatarUriTemplate = "{0}?type={1}";
+            const string avatarUriTemplate = "{0}";
             var avatarUri = response["picture"]["data"]["url"].Value<string>();
             return new UserInfo
             {
@@ -91,9 +91,9 @@ namespace OAuth2.Client.Impl
                 Email = response["email"].SafeGet(x => x.Value<string>()),
                 AvatarUri =
                 {
-                    Small = !string.IsNullOrWhiteSpace(avatarUri) ? string.Format(avatarUriTemplate, avatarUri, "small") : string.Empty,
-                    Normal = !string.IsNullOrWhiteSpace(avatarUri) ? string.Format(avatarUriTemplate, avatarUri, "normal") : string.Empty,
-                    Large = !string.IsNullOrWhiteSpace(avatarUri) ? string.Format(avatarUriTemplate, avatarUri, "large") : string.Empty
+                    Small = !string.IsNullOrWhiteSpace(avatarUri) ? string.Format(avatarUriTemplate, avatarUri) : string.Empty,
+                    Normal = !string.IsNullOrWhiteSpace(avatarUri) ? string.Format(avatarUriTemplate, avatarUri) : string.Empty,
+                    Large = !string.IsNullOrWhiteSpace(avatarUri) ? string.Format(avatarUriTemplate, avatarUri) : string.Empty
                 }
             };
         }
