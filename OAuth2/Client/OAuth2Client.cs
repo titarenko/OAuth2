@@ -114,12 +114,15 @@ namespace OAuth2.Client
         public UserInfo GetUserInfo(NameValueCollection parameters, NameValueCollection queryParameters = null)
         {
             queryParameters = queryParameters ?? new NameValueCollection();
-            GrantType = "authorization_code";
-            CheckErrorAndSetState(parameters);
             
-            if(this.AccessToken == null)
+            if (this.AccessToken == null)
+            {
+                GrantType = "authorization_code";
+                CheckErrorAndSetState(parameters);
+                
                 QueryAccessToken(parameters);
-            
+            }
+
             return GetUserInfo();
         }
 
