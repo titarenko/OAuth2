@@ -39,12 +39,12 @@ namespace OAuth2.Client
         /// <summary>
         /// Access token received from service. Can be used for further service API calls.
         /// </summary>
-        public string AccessToken { get; private set; }
+        public string AccessToken { get; set; }
 
         /// <summary>
         /// Access token secret received from service. Can be used for further service API calls.
         /// </summary>
-        public string AccessTokenSecret { get; private set; }
+        public string AccessTokenSecret { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OAuthClient" /> class.
@@ -85,8 +85,12 @@ namespace OAuth2.Client
         public UserInfo GetUserInfo(NameValueCollection parameters, NameValueCollection queryParameters = null)
         {
             queryParameters = queryParameters ?? new NameValueCollection();
-            AccessToken = parameters.GetOrThrowUnexpectedResponse(OAuthTokenKey);
-            QueryAccessToken(parameters.GetOrThrowUnexpectedResponse("oauth_verifier"));
+            
+            if (this.AccessToken == null || this.AccessTokenSecret == null)
+            {
+                AccessToken = parameters.GetOrThrowUnexpectedResponse(OAuthTokenKey);
+                QueryAccessToken(parameters.GetOrThrowUnexpectedResponse("oauth_verifier"));
+            }
 
             var result = ParseUserInfo(QueryUserInfo(queryParameters));
             result.ProviderName = Name;

@@ -41,7 +41,7 @@ namespace OAuth2.Client
         /// <summary>
         /// Access token returned by provider. Can be used for further calls of provider API.
         /// </summary>
-        public string AccessToken { get; private set; }
+        public string AccessToken { get; set; }
 
         /// <summary>
         /// Refresh token returned by provider. Can be used for further calls of provider API.
@@ -116,7 +116,10 @@ namespace OAuth2.Client
             queryParameters = queryParameters ?? new NameValueCollection();
             GrantType = "authorization_code";
             CheckErrorAndSetState(parameters);
-            QueryAccessToken(parameters);
+            
+            if(this.AccessToken == null)
+                QueryAccessToken(parameters);
+            
             return GetUserInfo();
         }
 
@@ -128,7 +131,10 @@ namespace OAuth2.Client
         {
             GrantType = "authorization_code";
             CheckErrorAndSetState(parameters);
-            QueryAccessToken(parameters);
+            
+            if (this.AccessToken == null)
+                QueryAccessToken(parameters);
+            
             return AccessToken;
         }
 
