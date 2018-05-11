@@ -115,9 +115,9 @@ namespace OAuth2.Client.Impl
                 LastName = lastName,
                 AvatarUri =
                     {
-                        Small = avatarUri.Replace("normal", "mini"),
-                        Normal = avatarUri,
-                        Large = avatarUri.Replace("normal", "bigger")
+                        Small = avatarUri,
+                        Normal = avatarUri.Replace("normal", "bigger"),
+                        Large = avatarUri.Replace("_normal", "")
                     }
             };
         }

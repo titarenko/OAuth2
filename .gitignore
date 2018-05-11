@@ -1,5 +1,6 @@
 bin
 obj
+.idea
 *ReSharper*
 packages
 *.pyc
