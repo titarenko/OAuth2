@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
-
+using RestSharp;
 using RestSharp.Authenticators;
 
 namespace OAuth2.Client.Impl
@@ -64,9 +66,9 @@ namespace OAuth2.Client.Impl
             return result;
         }
 
-        protected override UserInfo GetUserInfo() 
+        protected override async Task<UserInfo> GetUserInfoAsync(CancellationToken cancellationToken = default)
         {
-            var userInfo = base.GetUserInfo();
+            var userInfo = await base.GetUserInfoAsync(cancellationToken).ConfigureAwait(false);
             if (userInfo == null)
                 return null;
 
@@ -77,20 +79,21 @@ namespace OAuth2.Client.Impl
             client.Authenticator = new OAuth2UriQueryParameterAuthenticator(AccessToken);
             var request = _factory.CreateRequest(UserEmailServiceEndpoint);
 
-            BeforeGetUserInfo(new BeforeAfterRequestArgs {
+            BeforeGetUserInfo(new BeforeAfterRequestArgs
+            {
                 Client = client,
                 Request = request,
                 Configuration = Configuration
             });
 
-            var response = client.ExecuteAndVerify(request);
+            var response = await client.ExecuteAndVerifyAsync(request, cancellationToken).ConfigureAwait(false);
             var userEmails = ParseEmailAddresses(response.Content).Where(u => !String.IsNullOrEmpty(u.Email)).ToList();
-            
+
             string primaryEmail = userEmails.Where(u => u.Primary).Select(u => u.Email).FirstOrDefault();
             string verifiedEmail = userEmails.Where(u => u.Verified).Select(u => u.Email).FirstOrDefault();
             string fallbackEmail = userEmails.Select(u => u.Email).FirstOrDefault();
             userInfo.Email = primaryEmail ?? verifiedEmail ?? fallbackEmail;
-            
+
             return userInfo;
         }
 

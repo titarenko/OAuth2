@@ -1,4 +1,6 @@
 using System.Collections.Specialized;
+using System.Threading;
+using System.Threading.Tasks;
 using OAuth2.Configuration;
 using OAuth2.Models;
 
@@ -28,7 +30,7 @@ namespace OAuth2.Client
         /// Returns URI of service which should be called in order to start authentication process. 
         /// You should use this URI when rendering login link.
         /// </summary>
-        string GetLoginLinkUri(string state = null);
+        Task<string> GetLoginLinkUriAsync(string state = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// State which was posted as additional parameter 
@@ -37,14 +39,13 @@ namespace OAuth2.Client
         string State { get; }
 
         /// <summary>
-        /// Obtains user information using third-party authentication service 
-        /// using data provided via callback request.
+        /// Obtains user information using third-party authentication service using data provided via callback request.
         /// </summary>
-        /// <param name="parameters">
-        /// Callback request payload (parameters).
-        /// <example>Request.QueryString</example>
-        /// </param>
-        UserInfo GetUserInfo(NameValueCollection parameters);
+        /// <param name="parameters">Callback request payload (parameters).</param>
+        /// <param name="cancellationToken">Optional cancellation token</param>
+        /// <returns></returns>
+        Task<UserInfo> GetUserInfoAsync(NameValueCollection parameters,
+            CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Client configuration object.

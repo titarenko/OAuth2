@@ -1,5 +1,6 @@
 using System.Collections.Specialized;
 using System.Net;
+using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
@@ -76,7 +77,7 @@ namespace OAuth2.Tests.Client.Impl
         }
 
         [Test]
-        public void Should_AddExtraParameters_WhenOnGetUserInfoIsCalled()
+        public async Task Should_AddExtraParameters_WhenOnGetUserInfoIsCalled()
         {
             // arrange
             requestFactory.CreateClient().Execute(requestFactory.CreateRequest())
@@ -86,7 +87,7 @@ namespace OAuth2.Tests.Client.Impl
                     content);
 
             // act
-            descendant.GetUserInfo(new NameValueCollection
+            await descendant.GetUserInfoAsync(new NameValueCollection
             {
                 {"code", "code"}
             });

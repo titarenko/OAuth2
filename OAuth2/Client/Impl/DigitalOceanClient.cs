@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
@@ -57,9 +59,10 @@ namespace OAuth2.Client.Impl
             }
         }
 
-        protected override UserInfo GetUserInfo()
+        /// <inheritdoc />
+        protected override Task<UserInfo> GetUserInfoAsync(CancellationToken cancellationToken = default)
         {
-            return ParseUserInfo(_accessToken);
+            return Task.FromResult(ParseUserInfo(_accessToken));
         }
 
         protected override UserInfo ParseUserInfo(string content)

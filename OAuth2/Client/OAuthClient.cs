@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
@@ -61,33 +63,16 @@ namespace OAuth2.Client
         /// You should use this URI when rendering login link.
         /// </summary>
         /// <param name="state">Any additional information needed by application.</param>
+        /// <param name="cancellationToken">Optional cancellation token</param>
         /// <returns>Login link URI.</returns>
-        public string GetLoginLinkUri(string state = null)
+        public async Task<string> GetLoginLinkUriAsync(string state = null, CancellationToken cancellationToken = default)
         {
             if (!state.IsEmpty())
             {
                 throw new NotSupportedException("State transmission is not supported by current implementation.");
             }
-            QueryRequestToken();
+            await QueryRequestTokenAsync(cancellationToken).ConfigureAwait(false);
             return GetLoginRequestUri(state);
-        }
-
-        /// <summary>
-        /// Obtains user information using third-party authentication service
-        /// using data provided via callback request.
-        /// </summary>
-        /// <param name="parameters">Callback request payload (parameters).
-        /// <example>Request.QueryString</example></param>
-        /// <returns></returns>
-        public UserInfo GetUserInfo(NameValueCollection parameters)
-        {
-            AccessToken = parameters.GetOrThrowUnexpectedResponse(OAuthTokenKey);
-            QueryAccessToken(parameters.GetOrThrowUnexpectedResponse("oauth_verifier"));
-
-            var result = ParseUserInfo(QueryUserInfo());
-            result.ProviderName = Name;
-
-            return result;
         }
 
         /// <summary>
@@ -118,7 +103,8 @@ namespace OAuth2.Client
         /// <summary>
         /// Issues request for request token and returns result.
         /// </summary>
-        private void QueryRequestToken()
+        /// <param name="cancellationToken">Optional cancellation token</param>
+        private async Task QueryRequestTokenAsync(CancellationToken cancellationToken = default)
         {
             var client = _factory.CreateClient(RequestTokenServiceEndpoint);
             client.Authenticator = OAuth1Authenticator.ForRequestToken(
@@ -133,7 +119,7 @@ namespace OAuth2.Client
                 Configuration = Configuration
             });
 
-            var response = client.ExecuteAndVerify(request);
+            var response = await client.ExecuteAndVerifyAsync(request, cancellationToken).ConfigureAwait(false);
 
             AfterGetAccessToken(new BeforeAfterRequestArgs
             {
@@ -168,8 +154,9 @@ namespace OAuth2.Client
         /// Obtains access token by calling corresponding service.
         /// </summary>
         /// <param name="verifier">Verifier posted with callback issued by provider.</param>
+        /// <param name="cancellationToken">Optional cancellation token</param>
         /// <returns>Access token and other extra info.</returns>
-        private void QueryAccessToken(string verifier)
+        private async Task QueryAccessTokenAsync(string verifier, CancellationToken cancellationToken = default)
         {
             var client = _factory.CreateClient(AccessTokenServiceEndpoint);
             client.Authenticator = OAuth1Authenticator.ForAccessToken(
@@ -177,7 +164,8 @@ namespace OAuth2.Client
 
             var request = _factory.CreateRequest(AccessTokenServiceEndpoint, Method.POST);
 
-            var content = client.ExecuteAndVerify(request).Content;
+            var response = await client.ExecuteAndVerifyAsync(request, cancellationToken).ConfigureAwait(false);
+            var content = response.Content;
             var collection = HttpUtility.ParseQueryString(content);
 
             AccessToken = collection.GetOrThrowUnexpectedResponse(OAuthTokenKey);
@@ -207,7 +195,8 @@ namespace OAuth2.Client
         /// <summary>
         /// Queries user info using corresponding service and data received by access token request.
         /// </summary>
-        private string QueryUserInfo()
+        /// <param name="cancellationToken">Optional cancellationtoken</param>
+        private async Task<string> QueryUserInfoAsync(CancellationToken cancellationToken = default)
         {
             var client = _factory.CreateClient(UserInfoServiceEndpoint);
             client.Authenticator = OAuth1Authenticator.ForProtectedResource(
@@ -222,7 +211,21 @@ namespace OAuth2.Client
                 Configuration = Configuration
             });
 
-            return client.ExecuteAndVerify(request).Content;
+            var response = await client.ExecuteAndVerifyAsync(request, cancellationToken).ConfigureAwait(false);
+            return response.Content;
+        }
+
+        /// <inheritdoc />
+        public async Task<UserInfo> GetUserInfoAsync(NameValueCollection parameters, CancellationToken cancellationToken = default)
+        {
+            AccessToken = parameters.GetOrThrowUnexpectedResponse(OAuthTokenKey);
+            await QueryAccessTokenAsync(parameters.GetOrThrowUnexpectedResponse("oauth_verifier"), cancellationToken).ConfigureAwait(false);
+
+            var userInfoResult = await QueryUserInfoAsync(cancellationToken).ConfigureAwait(false);
+            var result = ParseUserInfo(userInfoResult);
+            result.ProviderName = Name;
+
+            return result;
         }
     }
 }
