@@ -14,25 +14,25 @@ namespace OAuth2.Tests.Client.Impl
     [TestFixture]
     public class DigitalOceanClientTests
     {
-        private const string content = "{\"access_token\":\"yada\",\"token_type\":\"bearer\",\"expires_in\":2592000,\"refresh_token\":\"yada\",\"scope\":\"read\",\"uid\":123456,\"info\":{\"name\":\"first.last\",\"email\":\"first.last@domain.com\"}}";
+        private const string Content = "{\"access_token\":\"yada\",\"token_type\":\"bearer\",\"expires_in\":2592000,\"refresh_token\":\"yada\",\"scope\":\"read\",\"uid\":123456,\"info\":{\"name\":\"first.last\",\"email\":\"first.last@domain.com\"}}";
 
-        private DigitalOceanClientDescendant descendant;
-        private IRequestFactory requestFactory;
+        private DigitalOceanClientDescendant _descendant;
+        private IRequestFactory _requestFactory;
 
         [SetUp]
         public void SetUp()
         {
-            requestFactory = Substitute.For<IRequestFactory>();
-            requestFactory.CreateClient().Execute(requestFactory.CreateRequest()).StatusCode = HttpStatusCode.OK;
-            descendant = new DigitalOceanClientDescendant(
-                requestFactory, Substitute.For<IClientConfiguration>());
+            _requestFactory = Substitute.For<IRequestFactory>();
+            _requestFactory.CreateClient().Execute(_requestFactory.CreateRequest()).StatusCode = HttpStatusCode.OK;
+            _descendant = new DigitalOceanClientDescendant(
+                _requestFactory, Substitute.For<IClientConfiguration>());
         }
 
         [Test]
         public void Should_ReturnCorrectAccessCodeServiceEndpoint()
         {
             // act
-            var endpoint = descendant.GetAccessCodeServiceEndpoint();
+            var endpoint = _descendant.GetAccessCodeServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://cloud.digitalocean.com");
@@ -43,7 +43,7 @@ namespace OAuth2.Tests.Client.Impl
         public void Should_ReturnCorrectAccessTokenServiceEndpoint()
         {
             // act
-            var endpoint = descendant.GetAccessTokenServiceEndpoint();
+            var endpoint = _descendant.GetAccessTokenServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://cloud.digitalocean.com");
@@ -53,14 +53,14 @@ namespace OAuth2.Tests.Client.Impl
         [Test]
         public void Should_ReturnCorrectUserInfoServiceEndpoint()
         {
-            Assert.Throws<NotImplementedException>(() => descendant.GetUserInfoServiceEndpoint());
+            Assert.Throws<NotImplementedException>(() => _descendant.GetUserInfoServiceEndpoint());
         }
         
         [Test]
         public void Should_ParseAllFieldsOfUserInfo_WhenCorrectContentIsPassed()
         {
             // act
-            var info = descendant.ParseUserInfo(content);
+            var info = _descendant.ParseUserInfo(Content);
 
             //  assert
             info.Id.Should().Be("123456");

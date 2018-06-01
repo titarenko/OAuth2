@@ -11,24 +11,24 @@ namespace OAuth2.Tests.Client.Impl
 {
     public class MailRuClientTests
     {
-        private const string content = "todo";
+        private const string Content = "todo";
 
-        private MailRuClientDescendant descendant;
-        private IRequestFactory factory;
+        private MailRuClientDescendant _descendant;
+        private IRequestFactory _factory;
 
         [SetUp]
         public void SetUp()
         {
-            factory = Substitute.For<IRequestFactory>();
-            descendant = new MailRuClientDescendant(
-                factory, Substitute.For<IClientConfiguration>());
+            _factory = Substitute.For<IRequestFactory>();
+            _descendant = new MailRuClientDescendant(
+                _factory, Substitute.For<IClientConfiguration>());
         }
 
         [Test]
         public void Should_ReturnCorrectAccessCodeServiceEndpoint()
         {
             // act
-            var endpoint = descendant.GetAccessCodeServiceEndpoint();
+            var endpoint = _descendant.GetAccessCodeServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://connect.mail.ru");
@@ -39,7 +39,7 @@ namespace OAuth2.Tests.Client.Impl
         public void Should_ReturnCorrectAccessTokenServiceEndpoint()
         {
             // act
-            var endpoint = descendant.GetAccessTokenServiceEndpoint();
+            var endpoint = _descendant.GetAccessTokenServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://connect.mail.ru");
@@ -50,7 +50,7 @@ namespace OAuth2.Tests.Client.Impl
         public void Should_ReturnCorrectUserInfoServiceEndpoint()
         {
             // act
-            var endpoint = descendant.GetUserInfoServiceEndpoint();
+            var endpoint = _descendant.GetUserInfoServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("http://www.appsmail.ru");
@@ -63,7 +63,7 @@ namespace OAuth2.Tests.Client.Impl
             Assert.Ignore("todo");
 
             // act
-            var info = descendant.ParseUserInfo(content);
+            var info = _descendant.ParseUserInfo(Content);
 
             // assert
             info.Id.Should().Be("todo");

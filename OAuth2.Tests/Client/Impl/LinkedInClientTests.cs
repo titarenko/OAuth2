@@ -21,7 +21,7 @@ namespace OAuth2.Tests.Client.Impl
                                         "  <picture-url>pictureurl</picture-url>" +
                                         "</person>";
 
-        private LinkedInClientDescendant descendant;
+        private LinkedInClientDescendant _descendant;
 
         [SetUp]
         public void SetUp()
@@ -30,14 +30,14 @@ namespace OAuth2.Tests.Client.Impl
             factory.CreateClient().Returns(Substitute.For<IRestClient>());
             factory.CreateRequest().Returns(Substitute.For<IRestRequest>());
 
-            descendant = new LinkedInClientDescendant(factory, Substitute.For<IClientConfiguration>());
+            _descendant = new LinkedInClientDescendant(factory, Substitute.For<IClientConfiguration>());
         }
 
         [Test]
         public void Should_ReturnCorrectAccessCodeServiceEndpoint()
         {
             // act
-            var endpoint = descendant.GetAccessCodeServiceEndpoint();
+            var endpoint = _descendant.GetAccessCodeServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://www.linkedin.com");
@@ -48,7 +48,7 @@ namespace OAuth2.Tests.Client.Impl
         public void Should_ReturnCorrectAccessTokenServiceEndpoint()
         {
             // act
-            var endpoint = descendant.GetAccessTokenServiceEndpoint();
+            var endpoint = _descendant.GetAccessTokenServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://www.linkedin.com");
@@ -59,7 +59,7 @@ namespace OAuth2.Tests.Client.Impl
         public void Should_ReturnCorrectUserInfoServiceEndpoint()
         {
             // act
-            var endpoint = descendant.GetUserInfoServiceEndpoint();
+            var endpoint = _descendant.GetUserInfoServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://api.linkedin.com");
@@ -70,7 +70,7 @@ namespace OAuth2.Tests.Client.Impl
         public void Should_ParseAllFieldsOfUserInfo_WhenCorrectContentIsPassed()
         {
             // act
-            var info = descendant.ParseUserInfo(Content);
+            var info = _descendant.ParseUserInfo(Content);
 
             // assert
             info.Id.Should().Be("id");

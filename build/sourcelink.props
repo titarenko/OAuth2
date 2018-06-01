@@ -1,9 +1,0 @@
-<Project>
-  <PropertyGroup>
-    <DebugType>embedded</DebugType>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.2.1" PrivateAssets="all" />
-  </ItemGroup>
-</Project>

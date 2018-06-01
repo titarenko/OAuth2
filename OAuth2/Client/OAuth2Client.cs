@@ -80,6 +80,7 @@ namespace OAuth2.Client
         /// <param name="state">
         /// Any additional information that will be posted back by service.
         /// </param>
+        /// <param name="cancellationToken"></param>
         public virtual Task<string> GetLoginLinkUriAsync(string state = null, CancellationToken cancellationToken = default)
         {
             var client = _factory.CreateClient(AccessCodeServiceEndpoint);
@@ -215,23 +216,23 @@ namespace OAuth2.Client
         }
 
         protected virtual string ParseTokenResponse(string content, string key)
-		{
-		    if (String.IsNullOrEmpty(content) || String.IsNullOrEmpty(key))
-		        return null;
+        {
+            if (String.IsNullOrEmpty(content) || String.IsNullOrEmpty(key))
+                return null;
 
-			try
-			{
-				// response can be sent in JSON format
-				var token = JObject.Parse(content).SelectToken(key);
-				return token?.ToString();
-			}
-			catch (JsonReaderException)
-			{
-				// or it can be in "query string" format (param1=val1&param2=val2)
-				var collection = HttpUtility.ParseQueryString(content);
-				return collection[key];
-			}
-		}
+            try
+            {
+                // response can be sent in JSON format
+                var token = JObject.Parse(content).SelectToken(key);
+                return token?.ToString();
+            }
+            catch (JsonReaderException)
+            {
+                // or it can be in "query string" format (param1=val1&param2=val2)
+                var collection = HttpUtility.ParseQueryString(content);
+                return collection[key];
+            }
+        }
 
         /// <summary>
         /// Should return parsed <see cref="UserInfo"/> using content received from provider.

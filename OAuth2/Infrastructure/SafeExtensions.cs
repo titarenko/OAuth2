@@ -13,7 +13,7 @@ namespace OAuth2.Infrastructure
         /// </summary>
         public static T SafeGet<TModel, T>(this TModel instance, Func<TModel, T> selector) where TModel : class
         {
-            return instance == null ? default(T) : selector(instance);
+            return instance == null ? default : selector(instance);
         }
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace OAuth2.Infrastructure
         /// </summary>
         public static async Task<T> SafeGetAsync<TModel, T>(this TModel instance, Func<TModel, Task<T>> selector) where TModel : class
         {
-            return instance == null ? default(T) : await selector(instance);
+            return instance == null ? default : await selector(instance).ConfigureAwait(false);
         }
     }
 }

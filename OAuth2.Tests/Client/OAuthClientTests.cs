@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using NSubstitute;
@@ -18,55 +19,77 @@ namespace OAuth2.Tests.Client
     [TestFixture]
     public class OAuthClientTests
     {
-        private IRequestFactory factory;
-        private OAuthClientDescendant descendant;
+        private OAuthClientDescendant _descendant;
+
+        private IRequestFactory _factory;
+        private IRestClient _restClient;
+        private IRestRequest _restRequest;
+        private IRestResponse _restResponse;
 
         [SetUp]
         public void SetUp()
         {
-            factory = Substitute.For<IRequestFactory>();
-            factory.CreateClient().Execute(factory.CreateRequest()).StatusCode = HttpStatusCode.OK;
-            descendant = new OAuthClientDescendant(
-                factory, Substitute.For<IClientConfiguration>());
+            _restRequest = Substitute.For<IRestRequest>();
+            _restResponse = Substitute.For<IRestResponse>();
+
+            _restResponse.StatusCode.Returns(HttpStatusCode.OK);
+            _restResponse.Content.Returns("response");
+
+            _restClient = Substitute.For<IRestClient>();
+            _restClient.ExecuteTaskAsync(_restRequest, CancellationToken.None).Returns(_restResponse);
+
+            _factory = Substitute.For<IRequestFactory>();
+            _factory.CreateClient().Returns(_restClient);
+            _factory.CreateRequest().Returns(_restRequest);
+
+            _descendant = new OAuthClientDescendant(_factory, Substitute.For<IClientConfiguration>());
         }
 
         [Test]
         public void Should_ThrowNotSupported_When_UserWantsToTransmitState()
         {
-            descendant.Awaiting(x => x.GetLoginLinkUriAsync("any state")).ShouldThrow<NotSupportedException>();
+            _descendant.Awaiting(x => x.GetLoginLinkUriAsync("any state")).Should().Throw<NotSupportedException>();
         }
 
         [Test]
-        public void Should_ThrowUnexpectedResponse_When_StatusIsNotOk()
+        public async Task Should_ThrowUnexpectedResponse_When_StatusIsNotOk()
         {
-            factory.CreateClient().Execute(factory.CreateRequest()).StatusCode = HttpStatusCode.InternalServerError;
-            descendant.Awaiting(x => x.GetLoginLinkUriAsync()).ShouldThrow<UnexpectedResponseException>();
+            var restClient = _factory.CreateClient();
+            var restRequest = _factory.CreateRequest();
+            (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None)).StatusCode = HttpStatusCode.InternalServerError;
+            _descendant.Awaiting(x => x.GetLoginLinkUriAsync()).Should().Throw<UnexpectedResponseException>();
         }
 
         [Test]
-        public void Should_ThrowUnexpectedResponse_When_ContentIsEmpty()
+        public async Task Should_ThrowUnexpectedResponse_When_ContentIsEmpty()
         {
-            factory.CreateClient().Execute(factory.CreateRequest()).Content = "";
-            descendant.Awaiting(x => x.GetLoginLinkUriAsync()).ShouldThrow<UnexpectedResponseException>();
+            var restClient = _factory.CreateClient();
+            var restRequest = _factory.CreateRequest();
+            (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None)).Content = "";
+            _descendant.Awaiting(x => x.GetLoginLinkUriAsync()).Should().Throw<UnexpectedResponseException>();
         }
 
         [Test]
-        public void Should_ThrowUnexpectedResponse_When_OAuthTokenIsEmpty()
+        public async Task Should_ThrowUnexpectedResponse_When_OAuthTokenIsEmpty()
         {
-            factory.CreateClient().Execute(factory.CreateRequest()).Content = "something=something_other";
-            descendant
+            var restClient = _factory.CreateClient();
+            var restRequest = _factory.CreateRequest();
+            (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None)).Content = "something=something_other";
+            _descendant
                 .Awaiting(x => x.GetLoginLinkUriAsync())
-                .ShouldThrow<UnexpectedResponseException>()
+                .Should().Throw<UnexpectedResponseException>()
                 .And.FieldName.Should().Be("oauth_token");
         }
 
         [Test]
-        public void Should_ThrowUnexpectedResponse_When_OAuthSecretIsEmpty()
+        public async Task Should_ThrowUnexpectedResponse_When_OAuthSecretIsEmpty()
         {
-            factory.CreateClient().Execute(factory.CreateRequest()).Content = "oauth_token=token";
-            descendant
+            var restClient = _factory.CreateClient();
+            var restRequest = _factory.CreateRequest();
+            (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None)).Content = "oauth_token=token";
+            _descendant
                 .Awaiting(x => x.GetLoginLinkUriAsync())
-                .ShouldThrow<UnexpectedResponseException>()
+                .Should().Throw<UnexpectedResponseException>()
                 .And.FieldName.Should().Be("oauth_token_secret");
         }
 
@@ -74,17 +97,17 @@ namespace OAuth2.Tests.Client
         public async Task Should_IssueCorrectRequestForRequestToken_When_GetLoginLinkUriIsCalled()
         {
             // arrange
-            var restClient = factory.CreateClient();
-            var restRequest = factory.CreateRequest();
+            var restClient = _factory.CreateClient();
+            var restRequest = _factory.CreateRequest();
             restClient.BuildUri(restRequest).Returns(new Uri("http://login"));
-            restClient.Execute(restRequest).Content = "oauth_token=token&oauth_token_secret=secret";
+            (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None)).Content = "oauth_token=token&oauth_token_secret=secret";
 
             // act
-            await descendant.GetLoginLinkUriAsync();
+            await _descendant.GetLoginLinkUriAsync();
 
             // assert
-            factory.Received().CreateClient();
-            factory.Received().CreateRequest();
+            _factory.Received().CreateClient();
+            _factory.Received().CreateRequest();
 
             restClient.Received().BaseUrl = new Uri("https://RequestTokenServiceEndpoint");
             restRequest.Received().Resource = "/RequestTokenServiceEndpoint";
@@ -98,19 +121,19 @@ namespace OAuth2.Tests.Client
         public async Task Should_ComposeCorrectLoginUri_When_GetLoginLinkIsCalled()
         {
             // arrange
-            var restClient = factory.CreateClient();
-            var restRequest = factory.CreateRequest();
+            var restClient = _factory.CreateClient();
+            var restRequest = _factory.CreateRequest();
             restClient.BuildUri(restRequest).Returns(new Uri("https://login/"));
-            restClient.Execute(restRequest).Content.Returns("oauth_token=token5&oauth_token_secret=secret");
+            (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None)).Content.Returns("oauth_token=token5&oauth_token_secret=secret");
 
             // act
-            var uri = await descendant.GetLoginLinkUriAsync();
+            var uri = await _descendant.GetLoginLinkUriAsync();
 
             // assert
             uri.Should().Be("https://login/");
 
-            factory.Received().CreateClient();
-            factory.Received().CreateRequest();
+            _factory.Received().CreateClient();
+            _factory.Received().CreateRequest();
             
             restClient.Received().BaseUrl = new Uri("https://LoginServiceEndpoint");
             restRequest.Received().Resource = "/LoginServiceEndpoint";
@@ -121,20 +144,20 @@ namespace OAuth2.Tests.Client
         public async Task Should_IssueCorrectRequestForAccessToken_When_GetUserInfoIsCalled()
         {
             // arrange
-            var restClient = factory.CreateClient();
-            var restRequest = factory.CreateRequest();
-            restClient.Execute(restRequest).Content = "oauth_token=token&oauth_token_secret=secret";
+            var restClient = _factory.CreateClient();
+            var restRequest = _factory.CreateRequest();
+            (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None)).Content = "oauth_token=token&oauth_token_secret=secret";
             
             // act
-            await descendant.GetUserInfoAsync(new NameValueCollection
+            await _descendant.GetUserInfoAsync(new NameValueCollection
             {
                 {"oauth_token", "token1"},
                 {"oauth_verifier", "verifier100"}
             });
 
             // assert
-            factory.Received().CreateClient();
-            factory.Received().CreateRequest();
+            _factory.Received().CreateClient();
+            _factory.Received().CreateRequest();
 
             restClient.Received().BaseUrl = new Uri("https://AccessTokenServiceEndpoint");
             restRequest.Received().Resource = "/AccessTokenServiceEndpoint";
@@ -148,23 +171,23 @@ namespace OAuth2.Tests.Client
         public async Task Should_IssueCorrectRequestForUserInfo_When_GetUserInfoIsCalled()
         {
             // arrange
-            var restClient = factory.CreateClient();
-            var restRequest = factory.CreateRequest();
-            restClient.Execute(restRequest).Content.Returns(
+            var restClient = _factory.CreateClient();
+            var restRequest = _factory.CreateRequest();
+            (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None)).Content.Returns(
                 "something to pass response verification", 
                 "oauth_token=token&oauth_token_secret=secret", 
                 "abba");
 
             // act
-            var info = await descendant.GetUserInfoAsync(new NameValueCollection
+            var info = await _descendant.GetUserInfoAsync(new NameValueCollection
             {
                 {"oauth_token", "token1"},
                 {"oauth_verifier", "verifier100"}
             });
 
             // assert
-            factory.Received().CreateClient();
-            factory.Received().CreateRequest();
+            _factory.Received().CreateClient();
+            _factory.Received().CreateRequest();
 
             restClient.Received().BaseUrl = new Uri("https://UserInfoServiceEndpoint");
             restRequest.Received().Resource = "/UserInfoServiceEndpoint";

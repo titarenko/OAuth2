@@ -12,21 +12,21 @@ namespace OAuth2.Tests.Client.Impl
     [TestFixture]
     public class GitHubClientTests
     {
-        private const string contentWithNoName = "{  \"gists_url\": \"https://api.github.com/users/id/gists{/gist_id}\",  \"repos_url\": \"https://api.github.com/users/id/repos\",  \"following_url\": \"https://api.github.com/users/id/following{/other_user}\",  \"created_at\": \"2011-09-01T05:36:52+00:00\",  \"starred_url\": \"https://api.github.com/users/id/starred{/owner}{/repo}\",  \"login\": \"id\",  \"followers_url\": \"https://api.github.com/users/id/followers\",  \"type\": \"User\",  \"public_gists\": 0,  \"url\": \"https://api.github.com/users/id\",  \"subscriptions_url\": \"https://api.github.com/users/id/subscriptions\",  \"received_events_url\": \"https://api.github.com/users/id/received_events\",  \"followers\": 1,  \"avatar_url\": \"https://avatars.githubusercontent.com/u/123456?v=3\",  \"updated_at\": \"2015-04-1T05:27:31+00:00\",  \"events_url\": \"https://api.github.com/users/id/events{/privacy}\",  \"html_url\": \"https://github.com/id\",  \"following\": 23,  \"site_admin\": false,  \"id\": 123456,  \"public_repos\": 0,  \"gravatar_id\": \"\",  \"organizations_url\": \"https://api.github.com/users/id/orgs\"}";
+        private const string ContentWithNoName = "{  \"gists_url\": \"https://api.github.com/users/id/gists{/gist_id}\",  \"repos_url\": \"https://api.github.com/users/id/repos\",  \"following_url\": \"https://api.github.com/users/id/following{/other_user}\",  \"created_at\": \"2011-09-01T05:36:52+00:00\",  \"starred_url\": \"https://api.github.com/users/id/starred{/owner}{/repo}\",  \"login\": \"id\",  \"followers_url\": \"https://api.github.com/users/id/followers\",  \"type\": \"User\",  \"public_gists\": 0,  \"url\": \"https://api.github.com/users/id\",  \"subscriptions_url\": \"https://api.github.com/users/id/subscriptions\",  \"received_events_url\": \"https://api.github.com/users/id/received_events\",  \"followers\": 1,  \"avatar_url\": \"https://avatars.githubusercontent.com/u/123456?v=3\",  \"updated_at\": \"2015-04-1T05:27:31+00:00\",  \"events_url\": \"https://api.github.com/users/id/events{/privacy}\",  \"html_url\": \"https://github.com/id\",  \"following\": 23,  \"site_admin\": false,  \"id\": 123456,  \"public_repos\": 0,  \"gravatar_id\": \"\",  \"organizations_url\": \"https://api.github.com/users/id/orgs\"}";
 
-        private GitHubClientDescendant descendant;
+        private GitHubClientDescendant _descendant;
 
         [SetUp]
         public void SetUp()
         {
-            descendant = new GitHubClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IClientConfiguration>());
+            _descendant = new GitHubClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IClientConfiguration>());
         }
 
         [Test]
         public void Should_ReturnCorrectAccessCodeServiceEndpoint()
         {
             // act
-            var endpoint = descendant.GetAccessCodeServiceEndpoint();
+            var endpoint = _descendant.GetAccessCodeServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://github.com");
@@ -37,7 +37,7 @@ namespace OAuth2.Tests.Client.Impl
         public void Should_ReturnCorrectAccessTokenServiceEndpoint()
         {
             // act
-            var endpoint = descendant.GetAccessTokenServiceEndpoint();
+            var endpoint = _descendant.GetAccessTokenServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://github.com");
@@ -48,7 +48,7 @@ namespace OAuth2.Tests.Client.Impl
         public void Should_ReturnCorrectUserInfoServiceEndpoint()
         {
             // act
-            var endpoint = descendant.GetUserInfoServiceEndpoint();
+            var endpoint = _descendant.GetUserInfoServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://api.github.com");
@@ -59,7 +59,7 @@ namespace OAuth2.Tests.Client.Impl
         public void Should_ParseAllFieldsOfUserInfo_WhenCorrectContentIsPassed()
         {
             // act
-            var info = descendant.ParseUserInfo(contentWithNoName);
+            var info = _descendant.ParseUserInfo(ContentWithNoName);
 
             //  assert
             info.Id.Should().Be("123456");

@@ -6,10 +6,8 @@
     <ProjectParentDirectoryName>$([System.IO.Path]::GetFileName('$(ProjectParentDirectory)'))</ProjectParentDirectoryName>
   </PropertyGroup>
 
-  <Import Project="sourcelink.props" Condition="'$(ProjectParentDirectoryName)' == 'src'" />
-
   <ItemGroup>
-    <PackageReference Include="AsyncFixer" Version="1.1.5" PrivateAssets="All" />
+    <PackageReference Include="AsyncFixer" Version="1.1.6" PrivateAssets="All" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -23,6 +21,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageOutputPath>$(SolutionDir)artifacts\</PackageOutputPath>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <LangVersion>latest</LangVersion>
 
     <PackageReleaseNotes>https://github.com/titarenko/OAuth2/releases</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/titarenko/OAuth2</PackageProjectUrl>

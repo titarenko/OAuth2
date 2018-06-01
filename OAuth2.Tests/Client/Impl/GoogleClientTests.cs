@@ -12,22 +12,22 @@ namespace OAuth2.Tests.Client.Impl
     [TestFixture]
     public class GoogleClientTests
     {
-        private const string content = "{\"email\":\"email\",\"given_name\":\"name\",\"family_name\":\"surname\",\"id\":\"id\"}";
-        private const string contentWithPicture = "{\"email\":\"email\",\"given_name\":\"name\",\"family_name\":\"surname\",\"id\":\"id\",\"picture\":\"picture\"}";
+        private const string Content = "{\"email\":\"email\",\"given_name\":\"name\",\"family_name\":\"surname\",\"id\":\"id\"}";
+        private const string ContentWithPicture = "{\"email\":\"email\",\"given_name\":\"name\",\"family_name\":\"surname\",\"id\":\"id\",\"picture\":\"picture\"}";
 
-        private GoogleClientDescendant descendant;
+        private GoogleClientDescendant _descendant;
 
         [SetUp]
         public void SetUp()
         {
-            descendant = new GoogleClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IClientConfiguration>());
+            _descendant = new GoogleClientDescendant(Substitute.For<IRequestFactory>(), Substitute.For<IClientConfiguration>());
         }
 
         [Test]
         public void Should_ReturnCorrectAccessCodeServiceEndpoint()
         {
             // act
-            var endpoint = descendant.GetAccessCodeServiceEndpoint();
+            var endpoint = _descendant.GetAccessCodeServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://accounts.google.com");
@@ -38,7 +38,7 @@ namespace OAuth2.Tests.Client.Impl
         public void Should_ReturnCorrectAccessTokenServiceEndpoint()
         {
             // act
-            var endpoint = descendant.GetAccessTokenServiceEndpoint();
+            var endpoint = _descendant.GetAccessTokenServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://accounts.google.com");
@@ -49,7 +49,7 @@ namespace OAuth2.Tests.Client.Impl
         public void Should_ReturnCorrectUserInfoServiceEndpoint()
         {
             // act
-            var endpoint = descendant.GetUserInfoServiceEndpoint();
+            var endpoint = _descendant.GetUserInfoServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://www.googleapis.com");
@@ -60,14 +60,14 @@ namespace OAuth2.Tests.Client.Impl
         public void ShouldNot_Throw_WhenParsingUserInfoAndPictureIsNotAvailable()
         {
             // act & assert
-            descendant.Invoking(x => x.ParseUserInfo(content)).ShouldNotThrow();
+            _descendant.Invoking(x => x.ParseUserInfo(Content)).Should().NotThrow();
         }
 
         [Test]
         public void Should_ParseAllFieldsOfUserInfo_WhenCorrectContentIsPassed()
         {
             // act
-            var info = descendant.ParseUserInfo(contentWithPicture);
+            var info = _descendant.ParseUserInfo(ContentWithPicture);
 
             //  assert
             info.Id.Should().Be("id");

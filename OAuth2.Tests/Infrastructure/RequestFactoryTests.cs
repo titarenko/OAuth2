@@ -7,21 +7,21 @@ namespace OAuth2.Tests.Infrastructure
     [TestFixture]
     public class RequestFactoryTests
     {
-        private RequestFactory factory;
+        private RequestFactory _factory;
 
         [SetUp]
         public void SetUp()
         {
             // arrange
-            factory = new RequestFactory();
+            _factory = new RequestFactory();
         }
 
         [Test]
         public void Should_ReturnNewClientInstance_WhenNewClientIsCalled()
         {
             // act
-            var client1 = factory.CreateClient();
-            var client2 = factory.CreateClient();
+            var client1 = _factory.CreateClient();
+            var client2 = _factory.CreateClient();
 
             // assert
             client1.Should().NotBeNull();
@@ -33,8 +33,8 @@ namespace OAuth2.Tests.Infrastructure
         public void Should_ReturnNewRequestInstance_WhenNewRequestIsCalled()
         {
             // act
-            var request1 = factory.CreateRequest();
-            var request2 = factory.CreateRequest();
+            var request1 = _factory.CreateRequest();
+            var request2 = _factory.CreateRequest();
 
             // assert
             request1.Should().NotBeNull();

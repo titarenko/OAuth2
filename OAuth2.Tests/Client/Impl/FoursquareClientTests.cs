@@ -12,24 +12,24 @@ namespace OAuth2.Tests.Client.Impl
     [TestFixture]
     public class FoursquareClientTests
     {
-        private const string content = "todo";
+        private const string Content = "todo";
 
-        private FoursquareClientDescendant descendant;
-        private IRequestFactory factory;
+        private FoursquareClientDescendant _descendant;
+        private IRequestFactory _factory;
 
         [SetUp]
         public void SetUp()
         {
-            factory = Substitute.For<IRequestFactory>();
-            descendant = new FoursquareClientDescendant(
-                factory, Substitute.For<IClientConfiguration>());
+            _factory = Substitute.For<IRequestFactory>();
+            _descendant = new FoursquareClientDescendant(
+                _factory, Substitute.For<IClientConfiguration>());
         }
 
         [Test]
         public void Should_ReturnCorrectAccessCodeServiceEndpoint()
         {
             // act
-            var endpoint = descendant.GetAccessCodeServiceEndpoint();
+            var endpoint = _descendant.GetAccessCodeServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://foursquare.com");
@@ -40,7 +40,7 @@ namespace OAuth2.Tests.Client.Impl
         public void Should_ReturnCorrectAccessTokenServiceEndpoint()
         {
             // act
-            var endpoint = descendant.GetAccessTokenServiceEndpoint();
+            var endpoint = _descendant.GetAccessTokenServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://foursquare.com");
@@ -51,7 +51,7 @@ namespace OAuth2.Tests.Client.Impl
         public void Should_ReturnCorrectUserInfoServiceEndpoint()
         {
             // act
-            var endpoint = descendant.GetUserInfoServiceEndpoint();
+            var endpoint = _descendant.GetUserInfoServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://api.foursquare.com");
@@ -64,7 +64,7 @@ namespace OAuth2.Tests.Client.Impl
             Assert.Ignore("todo");
 
             // act
-            var info = descendant.ParseUserInfo(content);
+            var info = _descendant.ParseUserInfo(Content);
 
             // assert
             info.Id.Should().Be("todo");

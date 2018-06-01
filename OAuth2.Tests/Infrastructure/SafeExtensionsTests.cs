@@ -15,7 +15,7 @@ namespace OAuth2.Tests.Infrastructure
         {
             // act & assert
             ((IClient)null).Awaiting(x => x.SafeGetAsync(z => z.GetLoginLinkUriAsync()))
-                .ShouldNotThrow<NullReferenceException>();
+                .Should().NotThrow<NullReferenceException>();
             (await ((IClient)null).SafeGetAsync(x => x.GetLoginLinkUriAsync())).Should().Be(null);
         }
 

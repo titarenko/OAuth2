@@ -1,5 +1,6 @@
 using System.Collections.Specialized;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
@@ -9,31 +10,45 @@ using OAuth2.Client.Impl;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using RestSharp;
 
 namespace OAuth2.Tests.Client.Impl
 {
     [TestFixture]
     public class FacebookClientTests
     {
-        private const string content = "{\"email\":\"email\",\"first_name\":\"name\",\"last_name\":\"surname\",\"id\":\"id\",\"picture\":{\"data\":{\"url\":\"picture\"}}}";
+        private const string Content = "{\"email\":\"email\",\"first_name\":\"name\",\"last_name\":\"surname\",\"id\":\"id\",\"picture\":{\"data\":{\"url\":\"picture\"}}}";
 
-        private FacebookClientDescendant descendant;
-        private IRequestFactory requestFactory;
+        private FacebookClientDescendant _descendant;
+        private IRequestFactory _factory;
+        private IRestClient _restClient;
+        private IRestRequest _restRequest;
+        private IRestResponse _restResponse;
 
         [SetUp]
         public void SetUp()
         {
-            requestFactory = Substitute.For<IRequestFactory>();
-            requestFactory.CreateClient().Execute(requestFactory.CreateRequest()).StatusCode = HttpStatusCode.OK;
-            descendant = new FacebookClientDescendant(
-                requestFactory, Substitute.For<IClientConfiguration>());
+            _restRequest = Substitute.For<IRestRequest>();
+            _restResponse = Substitute.For<IRestResponse>();
+
+            _restResponse.StatusCode.Returns(HttpStatusCode.OK);
+            _restResponse.Content.Returns("response");
+
+            _restClient = Substitute.For<IRestClient>();
+            _restClient.ExecuteTaskAsync(_restRequest, CancellationToken.None).Returns(_restResponse);
+
+            _factory = Substitute.For<IRequestFactory>();
+            _factory.CreateClient().Returns(_restClient);
+            _factory.CreateRequest().Returns(_restRequest);
+
+            _descendant = new FacebookClientDescendant(_factory, Substitute.For<IClientConfiguration>());
         }
 
         [Test]
         public void Should_ReturnCorrectAccessCodeServiceEndpoint()
         {
             // act
-            var endpoint = descendant.GetAccessCodeServiceEndpoint();
+            var endpoint = _descendant.GetAccessCodeServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://www.facebook.com");
@@ -44,7 +59,7 @@ namespace OAuth2.Tests.Client.Impl
         public void Should_ReturnCorrectAccessTokenServiceEndpoint()
         {
             // act
-            var endpoint = descendant.GetAccessTokenServiceEndpoint();
+            var endpoint = _descendant.GetAccessTokenServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://graph.facebook.com");
@@ -55,7 +70,7 @@ namespace OAuth2.Tests.Client.Impl
         public void Should_ReturnCorrectUserInfoServiceEndpoint()
         {
             // act
-            var endpoint = descendant.GetUserInfoServiceEndpoint();
+            var endpoint = _descendant.GetUserInfoServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://graph.facebook.com");
@@ -66,7 +81,7 @@ namespace OAuth2.Tests.Client.Impl
         public void Should_ParseAllFieldsOfUserInfo_WhenCorrectContentIsPassed()
         {
             // act
-            var info = descendant.ParseUserInfo(content);
+            var info = _descendant.ParseUserInfo(Content);
 
             //  assert
             info.Id.Should().Be("id");
@@ -80,20 +95,22 @@ namespace OAuth2.Tests.Client.Impl
         public async Task Should_AddExtraParameters_WhenOnGetUserInfoIsCalled()
         {
             // arrange
-            requestFactory.CreateClient().Execute(requestFactory.CreateRequest())
+            var restClient = _factory.CreateClient();
+            var restRequest = _factory.CreateRequest();
+            (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None))
                 .Content.Returns(
                     "any content to pass response verification",
                     "access_token=token",
-                    content);
+                    Content);
 
             // act
-            await descendant.GetUserInfoAsync(new NameValueCollection
+            await _descendant.GetUserInfoAsync(new NameValueCollection
             {
                 {"code", "code"}
             });
 
             // assert
-            requestFactory.CreateRequest()
+            _factory.CreateRequest()
                 .Received(1)
                 .AddParameter(Arg.Is("fields"), Arg.Is("id,first_name,last_name,email,picture"));
         }
