@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Specialized;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
@@ -74,6 +79,14 @@ namespace OAuth2.Client.Impl
         }
 
 
+        public override Task<string> GetLoginLinkUriAsync(string state = null, CancellationToken cancellationToken = default, NameValueCollection parametersCollection = null)
+        {
+            if (parametersCollection == null)
+                parametersCollection = new NameValueCollection();
+            if (!parametersCollection.AllKeys.Contains("access_type"))
+                parametersCollection.Add("access_type", "offline");
+            return base.GetLoginLinkUriAsync(state, cancellationToken, parametersCollection);
+        }
         /// <summary>
         /// Should return parsed <see cref="UserInfo"/> from content received from third-party service.
         /// </summary>

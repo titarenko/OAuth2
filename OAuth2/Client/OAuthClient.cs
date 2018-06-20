@@ -65,7 +65,8 @@ namespace OAuth2.Client
         /// <param name="state">Any additional information needed by application.</param>
         /// <param name="cancellationToken">Optional cancellation token</param>
         /// <returns>Login link URI.</returns>
-        public async Task<string> GetLoginLinkUriAsync(string state = null, CancellationToken cancellationToken = default)
+        /// <param name="queryParameters">Additional query parameters</param>
+        public async Task<string> GetLoginLinkUriAsync(string state = null, CancellationToken cancellationToken = default, NameValueCollection queryParameters = null)
         {
             if (!state.IsEmpty())
             {
@@ -136,7 +137,8 @@ namespace OAuth2.Client
         /// Composes login link URI.
         /// </summary>
         /// <param name="state">Any additional information needed by application.</param>
-        private string GetLoginRequestUri(string state = null)
+        /// <param name="queryParameters">Additional query parameters</param>
+        private string GetLoginRequestUri(string state = null, NameValueCollection queryParameters = null)
         {
             var client = _factory.CreateClient(LoginServiceEndpoint);
             var request = _factory.CreateRequest(LoginServiceEndpoint);
@@ -147,6 +149,13 @@ namespace OAuth2.Client
                 request.AddParameter("state", state);
             }
 
+            if (queryParameters != null)
+            {
+                foreach (string queryParameterKey in queryParameters.AllKeys)
+                {
+                    request.AddQueryParameter(queryParameterKey, queryParameters[queryParameterKey]);
+                }
+            }
             return client.BuildUri(request).ToString();
         }
 
