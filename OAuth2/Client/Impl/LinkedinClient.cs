@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Specialized;
 using System.Threading;
 using System.Threading.Tasks;
 using OAuth2.Configuration;
@@ -70,7 +71,7 @@ namespace OAuth2.Client.Impl
             }
         }
 
-        public override Task<string> GetLoginLinkUriAsync(string state = null, CancellationToken cancellationToken = default)
+        public override Task<string> GetLoginLinkUriAsync(string state = null, CancellationToken cancellationToken = default, NameValueCollection parametersCollection = null)
         {
             return base.GetLoginLinkUriAsync(state ?? Guid.NewGuid().ToString("N"), cancellationToken);
         }

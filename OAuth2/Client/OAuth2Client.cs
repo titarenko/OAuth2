@@ -81,7 +81,8 @@ namespace OAuth2.Client
         /// Any additional information that will be posted back by service.
         /// </param>
         /// <param name="cancellationToken"></param>
-        public virtual Task<string> GetLoginLinkUriAsync(string state = null, CancellationToken cancellationToken = default)
+        /// <param name="queryParameters">Additional query parameters</param>
+        public virtual Task<string> GetLoginLinkUriAsync(string state = null, CancellationToken cancellationToken = default, NameValueCollection queryParameters = null)
         {
             var client = _factory.CreateClient(AccessCodeServiceEndpoint);
             var request = _factory.CreateRequest(AccessCodeServiceEndpoint);
@@ -105,6 +106,14 @@ namespace OAuth2.Client
                     scope = Configuration.Scope,
                     state
                 });
+            }
+
+            if (queryParameters != null)
+            {
+                foreach (string queryParameterKey in queryParameters.AllKeys)
+                {
+                    request.AddQueryParameter(queryParameterKey, queryParameters[queryParameterKey]);
+                }
             }
             return Task.FromResult(client.BuildUri(request).ToString());
         }
