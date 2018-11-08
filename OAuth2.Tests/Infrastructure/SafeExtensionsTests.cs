@@ -14,8 +14,8 @@ namespace OAuth2.Tests.Infrastructure
         public async Task Should_NotThrow_WhenSafeGetIsCalledOnNull()
         {
             // act & assert
-            ((IClient)null).Awaiting(x => x.SafeGetAsync(z => z.GetLoginLinkUriAsync()))
-                .Should().NotThrow<NullReferenceException>();
+            await ((IClient)null).Awaiting(x => x.SafeGetAsync(z => z.GetLoginLinkUriAsync()))
+                .Should().NotThrowAsync<NullReferenceException>();
             (await ((IClient)null).SafeGetAsync(x => x.GetLoginLinkUriAsync())).Should().Be(null);
         }
 

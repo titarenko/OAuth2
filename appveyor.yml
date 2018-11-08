@@ -20,7 +20,7 @@ build_script:
   - ps: dotnet build -c Release
 
 test_script:
-  - ps: dotnet test .\OAuth2.Tests\OAuth2.Tests.csproj -f netcoreapp2.0
+  - ps: dotnet test .\OAuth2.Tests\OAuth2.Tests.csproj -f netcoreapp2.1
 
 after_test:
   - ps: dotnet pack -c Release

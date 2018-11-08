@@ -57,7 +57,7 @@ namespace OAuth2.Tests.Client
             var restClient = _factory.CreateClient();
             var restRequest = _factory.CreateRequest();
             (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None)).StatusCode = HttpStatusCode.InternalServerError;
-            _descendant.Awaiting(x => x.GetLoginLinkUriAsync()).Should().Throw<UnexpectedResponseException>();
+            await _descendant.Awaiting(x => x.GetLoginLinkUriAsync()).Should().ThrowAsync<UnexpectedResponseException>();
         }
 
         [Test]
@@ -66,7 +66,7 @@ namespace OAuth2.Tests.Client
             var restClient = _factory.CreateClient();
             var restRequest = _factory.CreateRequest();
             (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None)).Content = "";
-            _descendant.Awaiting(x => x.GetLoginLinkUriAsync()).Should().Throw<UnexpectedResponseException>();
+            await _descendant.Awaiting(x => x.GetLoginLinkUriAsync()).Should().ThrowAsync<UnexpectedResponseException>();
         }
 
         [Test]
@@ -75,9 +75,9 @@ namespace OAuth2.Tests.Client
             var restClient = _factory.CreateClient();
             var restRequest = _factory.CreateRequest();
             (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None)).Content = "something=something_other";
-            _descendant
+            (await _descendant
                 .Awaiting(x => x.GetLoginLinkUriAsync())
-                .Should().Throw<UnexpectedResponseException>()
+                .Should().ThrowAsync<UnexpectedResponseException>())
                 .And.FieldName.Should().Be("oauth_token");
         }
 
@@ -87,9 +87,9 @@ namespace OAuth2.Tests.Client
             var restClient = _factory.CreateClient();
             var restRequest = _factory.CreateRequest();
             (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None)).Content = "oauth_token=token";
-            _descendant
+            (await _descendant
                 .Awaiting(x => x.GetLoginLinkUriAsync())
-                .Should().Throw<UnexpectedResponseException>()
+                .Should().ThrowAsync<UnexpectedResponseException>())
                 .And.FieldName.Should().Be("oauth_token_secret");
         }
 
