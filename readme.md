@@ -26,6 +26,59 @@ Install OAuth2 package via [NuGet](http://www.nuget.org/packages/OAuth2/)
 Install-Package OAuth2
 ```
 
+Your action function that needs to generate and redirect to the third-party service will look like
+
+```c#
+
+public ActionResult GoogleLogin()
+{
+  var redirectUri = new Uri(Url.Action("GoogleLoginCallBack", "Account", null, protocol: Request.Url.Scheme));
+  var googleClient = new GoogleClient(new RequestFactory(), new OAuth2.Configuration.ClientConfiguration
+  {
+    ClientId = auth.ClientId?.Trim(),
+    ClientSecret = auth.ClientSecret?.Trim(),
+    RedirectUri = redirectUrl,
+    Scope = "profile email"
+  });
+  return Redirect(googleClient.GetLoginLinkUri("SomeStateValueYouWantToUse"));
+}
+```
+
+Finally the action that handles the callback will look like this :
+
+```c#
+
+public ActionResult GoogleLoginCallBack()
+{
+  var code = Request.QueryString["code"];
+  var redirectUri = new Uri(Url.Action("GoogleLoginCallBack", "Account", null, protocol: Request.Url.Scheme));
+  var googleClient = new GoogleClient(new RequestFactory(), new OAuth2.Configuration.ClientConfiguration
+  {
+    ClientId = auth.ClientId?.Trim(),
+    ClientSecret = auth.ClientSecret?.Trim(),
+    RedirectUri = redirectUrl,
+    Scope = "profile email"
+  });
+  
+  try
+  {
+    userInfo = oauth.GetUserInfo(new NameValueCollection() { { "code", code } });
+  }
+  catch(Exception ex)
+  {
+    return RedirectToAction("LoginError", new {error = ex.Message});
+  }
+  
+  // do your validation and allow the user to proceed
+  if (SignInManager.IsUserValid(userInfo.Email))
+  {
+    SignInManager.Login(userInfo.Email);
+    return RedirectToAction("Index", "Home", new {error = ex.Message});
+  }
+  return Redirect(googleClient"LoginError", new {error = "User does not exists in the system"});
+}
+```
+
 ## Supported Services ##
 
 - Asana
