@@ -87,7 +87,6 @@ namespace ServRS.External
                 Request = request,
                 Configuration = Configuration
             });
-            request.AddHeader("Authorization", "Bearer " + AccessToken);
             var response = await client.ExecuteAndVerifyAsync(request, cancellationToken).ConfigureAwait(false);
 
             var result = ParseUserInfo(response.Content);
