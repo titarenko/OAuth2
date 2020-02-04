@@ -9,7 +9,7 @@ using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 
-namespace ServRS.External
+namespace OAuth2.Client.Impl
 {
     public class LoginCidadaoClient : OAuth2Client
     {
