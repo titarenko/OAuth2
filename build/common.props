@@ -1,6 +1,4 @@
 <Project ToolsVersion="15.0">
-  <Import Project="version.props" />
-
   <PropertyGroup>
     <ProjectParentDirectory>$([System.IO.Path]::GetDirectoryName('$(MSBuildProjectDirectory)'))</ProjectParentDirectory>
     <ProjectParentDirectoryName>$([System.IO.Path]::GetFileName('$(ProjectParentDirectory)'))</ProjectParentDirectoryName>
@@ -8,6 +6,8 @@
 
   <ItemGroup>
     <PackageReference Include="AsyncFixer" Version="1.3.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+    <PackageReference Include="MinVer" Version="2.3.0" PrivateAssets="All" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -22,6 +22,12 @@
     <PackageOutputPath>$(SolutionDir)artifacts\</PackageOutputPath>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>latest</LangVersion>
+    <MinVerSkip Condition="'$(Configuration)' == 'Debug'">true</MinVerSkip>
+    <MinVerTagPrefix>v</MinVerTagPrefix>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
     <PackageReleaseNotes>https://github.com/titarenko/OAuth2/releases</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/titarenko/OAuth2</PackageProjectUrl>
