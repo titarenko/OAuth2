@@ -1,5 +1,6 @@
 ﻿# OAuth2 #
-[![Build status](https://ci.appveyor.com/api/projects/status/391rgw9mf4qnolio/branch/master?svg=true)](https://ci.appveyor.com/project/niemyjski/oauth2/branch/master)
+
+[![Build status](https://github.com/titarenko/OAuth2/workflows/Build/badge.svg)](https://github.com/titarenko/OAuth2/actions)
 [![NuGet Version](http://img.shields.io/nuget/v/OAuth2.svg?style=flat)](https://www.nuget.org/packages/OAuth2/)
 
 OAuth2 is a library for user authentication using third-party services (OAuth/OAuth2 protocol) such as Google, Facebook and so on.
@@ -59,7 +60,7 @@ public ActionResult GoogleLoginCallBack()
     RedirectUri = redirectUrl,
     Scope = "profile email"
   });
-  
+
   try
   {
     userInfo = oauth.GetUserInfo(new NameValueCollection() { { "code", code } });
@@ -68,7 +69,7 @@ public ActionResult GoogleLoginCallBack()
   {
     return RedirectToAction("LoginError", new {error = ex.Message});
   }
-  
+
   // do your validation and allow the user to proceed
   if (SignInManager.IsUserValid(userInfo.Email))
   {
