@@ -85,8 +85,10 @@ namespace OAuth2.Client.Impl
             args.Request.AddParameter("session_key", AccessToken);
 
             // workaround for current design, oauth_token is always present in URL, so we need emulate it for correct request signing 
-            var fakeParam = new Parameter { Name = "oauth_token", Value = AccessToken };
+            var fakeParam = new Parameter("oauth_token", AccessToken, ParameterType.QueryString);
             args.Request.AddParameter(fakeParam);
+            args.Request.Parameters.Add(new Parameter("oauth_token", AccessToken, ParameterType.QueryString));
+            args.Request.AddParameter(new Parameter("oauth_token", AccessToken, ParameterType.QueryString));
 
             //sign=hex_md5('app_id={client_id}method=users.getInfosecure=1session_key={access_token}{secret_key}')
             string signature = string.Concat(args.Request.Parameters.OrderBy(x => x.Name).Select(x => string.Format("{0}={1}", x.Name, x.Value)).ToList());            

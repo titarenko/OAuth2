@@ -16,3 +16,5 @@ log.txt
 *.userprefs
 
 artifacts/
+
+.idea/.idea.OAuth2/.idea/

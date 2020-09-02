@@ -83,7 +83,7 @@ namespace OAuth2.Client.Impl
             args.Request.AddParameter("method", "users.getCurrentUser");
 
             // workaround for current design, oauth_token is always present in URL, so we need emulate it for correct request signing 
-            var fakeParam = new Parameter() { Name = "oauth_token", Value = AccessToken };
+            var fakeParam = new Parameter("oauth_token", AccessToken, ParameterType.QueryString);
             args.Request.AddParameter(fakeParam);
 
             // Signing.
