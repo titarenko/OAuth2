@@ -76,7 +76,7 @@ namespace OAuth2.Client.Impl
                 return userInfo;
 
             var client = _factory.CreateClient(UserEmailServiceEndpoint);
-            client.Authenticator = new OAuth2UriQueryParameterAuthenticator(AccessToken);
+            client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "token");
             var request = _factory.CreateRequest(UserEmailServiceEndpoint);
 
             BeforeGetUserInfo(new BeforeAfterRequestArgs
