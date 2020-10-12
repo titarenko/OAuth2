@@ -21,7 +21,7 @@ namespace OAuth2.Infrastructure
 
         public static async Task<IRestResponse> ExecuteAndVerifyAsync(this IRestClient client, IRestRequest request, CancellationToken cancellationToken = default)
         {
-            return VerifyResponse(await client.ExecuteTaskAsync(request, cancellationToken).ConfigureAwait(false));
+            return VerifyResponse(await client.ExecuteAsync(request, cancellationToken).ConfigureAwait(false));
         }
     }
 }

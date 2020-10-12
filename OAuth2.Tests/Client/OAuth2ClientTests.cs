@@ -36,7 +36,7 @@ namespace OAuth2.Tests.Client
             _restResponse.Content.Returns("response");
 
             _restClient = Substitute.For<IRestClient>();
-            _restClient.ExecuteTaskAsync(_restRequest, CancellationToken.None).Returns(_restResponse);
+            _restClient.ExecuteAsync(_restRequest, CancellationToken.None).Returns(_restResponse);
 
             _factory = Substitute.For<IRequestFactory>();
             _factory.CreateClient().Returns(_restClient);

@@ -36,7 +36,7 @@ namespace OAuth2.Tests.Client
             _restResponse.Content.Returns("response");
 
             _restClient = Substitute.For<IRestClient>();
-            _restClient.ExecuteTaskAsync(_restRequest, CancellationToken.None).Returns(_restResponse);
+            _restClient.ExecuteAsync(_restRequest, CancellationToken.None).Returns(_restResponse);
 
             _factory = Substitute.For<IRequestFactory>();
             _factory.CreateClient().Returns(_restClient);
@@ -56,7 +56,7 @@ namespace OAuth2.Tests.Client
         {
             var restClient = _factory.CreateClient();
             var restRequest = _factory.CreateRequest();
-            (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None)).StatusCode = HttpStatusCode.InternalServerError;
+            (await restClient.ExecuteAsync(restRequest, CancellationToken.None)).StatusCode = HttpStatusCode.InternalServerError;
             await _descendant.Awaiting(x => x.GetLoginLinkUriAsync()).Should().ThrowAsync<UnexpectedResponseException>();
         }
 
@@ -65,7 +65,7 @@ namespace OAuth2.Tests.Client
         {
             var restClient = _factory.CreateClient();
             var restRequest = _factory.CreateRequest();
-            (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None)).Content = "";
+            (await restClient.ExecuteAsync(restRequest, CancellationToken.None)).Content = "";
             await _descendant.Awaiting(x => x.GetLoginLinkUriAsync()).Should().ThrowAsync<UnexpectedResponseException>();
         }
 
@@ -74,7 +74,7 @@ namespace OAuth2.Tests.Client
         {
             var restClient = _factory.CreateClient();
             var restRequest = _factory.CreateRequest();
-            (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None)).Content = "something=something_other";
+            (await restClient.ExecuteAsync(restRequest, CancellationToken.None)).Content = "something=something_other";
             (await _descendant
                 .Awaiting(x => x.GetLoginLinkUriAsync())
                 .Should().ThrowAsync<UnexpectedResponseException>())
@@ -86,7 +86,7 @@ namespace OAuth2.Tests.Client
         {
             var restClient = _factory.CreateClient();
             var restRequest = _factory.CreateRequest();
-            (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None)).Content = "oauth_token=token";
+            (await restClient.ExecuteAsync(restRequest, CancellationToken.None)).Content = "oauth_token=token";
             (await _descendant
                 .Awaiting(x => x.GetLoginLinkUriAsync())
                 .Should().ThrowAsync<UnexpectedResponseException>())
@@ -100,7 +100,7 @@ namespace OAuth2.Tests.Client
             var restClient = _factory.CreateClient();
             var restRequest = _factory.CreateRequest();
             restClient.BuildUri(restRequest).Returns(new Uri("http://login"));
-            (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None)).Content = "oauth_token=token&oauth_token_secret=secret";
+            (await restClient.ExecuteAsync(restRequest, CancellationToken.None)).Content = "oauth_token=token&oauth_token_secret=secret";
 
             // act
             await _descendant.GetLoginLinkUriAsync();
@@ -124,7 +124,7 @@ namespace OAuth2.Tests.Client
             var restClient = _factory.CreateClient();
             var restRequest = _factory.CreateRequest();
             restClient.BuildUri(restRequest).Returns(new Uri("https://login/"));
-            (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None)).Content.Returns("oauth_token=token5&oauth_token_secret=secret");
+            (await restClient.ExecuteAsync(restRequest, CancellationToken.None)).Content.Returns("oauth_token=token5&oauth_token_secret=secret");
 
             // act
             var uri = await _descendant.GetLoginLinkUriAsync();
@@ -146,7 +146,7 @@ namespace OAuth2.Tests.Client
             // arrange
             var restClient = _factory.CreateClient();
             var restRequest = _factory.CreateRequest();
-            (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None)).Content = "oauth_token=token&oauth_token_secret=secret";
+            (await restClient.ExecuteAsync(restRequest, CancellationToken.None)).Content = "oauth_token=token&oauth_token_secret=secret";
             
             // act
             await _descendant.GetUserInfoAsync(new NameValueCollection
@@ -173,7 +173,7 @@ namespace OAuth2.Tests.Client
             // arrange
             var restClient = _factory.CreateClient();
             var restRequest = _factory.CreateRequest();
-            (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None)).Content.Returns(
+            (await restClient.ExecuteAsync(restRequest, CancellationToken.None)).Content.Returns(
                 "something to pass response verification", 
                 "oauth_token=token&oauth_token_secret=secret", 
                 "abba");

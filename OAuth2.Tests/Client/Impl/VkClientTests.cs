@@ -36,7 +36,7 @@ namespace OAuth2.Tests.Client.Impl
             _restResponse.Content.Returns("response");
 
             _restClient = Substitute.For<IRestClient>();
-            _restClient.ExecuteTaskAsync(_restRequest, CancellationToken.None).Returns(_restResponse);
+            _restClient.ExecuteAsync(_restRequest, CancellationToken.None).Returns(_restResponse);
 
             _factory = Substitute.For<IRequestFactory>();
             _factory.CreateClient().Returns(_restClient);
@@ -97,7 +97,7 @@ namespace OAuth2.Tests.Client.Impl
         {
             var restClient = _factory.CreateClient();
             var restRequest = _factory.CreateRequest();
-            var response = (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None));
+            var response = (await restClient.ExecuteAsync(restRequest, CancellationToken.None));
 
             response.Content.Returns(
                 "any content to pass response verification",
@@ -121,7 +121,7 @@ namespace OAuth2.Tests.Client.Impl
             // arrange
             var restClient = _factory.CreateClient();
             var restRequest = _factory.CreateRequest();
-            (await restClient.ExecuteTaskAsync(restRequest, CancellationToken.None)).Content.Returns(
+            (await restClient.ExecuteAsync(restRequest, CancellationToken.None)).Content.Returns(
                 "any content to pass response verification",
                 "{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}", 
                 "{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}", 
