@@ -7,7 +7,7 @@ OAuth2 is a library for user authentication using third-party services (OAuth/OA
 
 ## Current Version and Status ##
 
-Current version is 0.9. Status is "release candidate" - despite we already have several real life projects built with usage of this library, we will change status to "stable" only after comprehensive set of acceptance tests is ready and runs successfully.
+Current version is 0.10.x Status is "release candidate" - despite we already have several real life projects built with usage of this library, we will change status to "stable" only after comprehensive set of acceptance tests is ready and runs successfully.
 
 ## Standard Flow ##
 
