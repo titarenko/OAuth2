@@ -66,6 +66,11 @@ namespace OAuth2.Client.Impl
             return result;
         }
 
+        protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
+        {
+            args.Client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "token");
+        }
+
         protected override async Task<UserInfo> GetUserInfoAsync(CancellationToken cancellationToken = default)
         {
             var userInfo = await base.GetUserInfoAsync(cancellationToken).ConfigureAwait(false);

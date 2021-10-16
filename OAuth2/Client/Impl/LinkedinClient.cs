@@ -78,7 +78,7 @@ namespace OAuth2.Client.Impl
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
             args.Client.Authenticator = null;
-            args.Request.Parameters.Add(new Parameter("oauth2_access_token", AccessToken, ParameterType.GetOrPost));
+            args.Request.AddParameter("oauth2_access_token", AccessToken, ParameterType.GetOrPost);
         }
 
         /// <summary>
