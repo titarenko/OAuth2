@@ -83,8 +83,10 @@ namespace OAuth2.Client.Impl
             args.Request.AddParameter("method", "users.getCurrentUser");
 
             // workaround for current design, oauth_token is always present in URL, so we need emulate it for correct request signing 
+#pragma warning disable CS0618 // Type or member is obsolete
             var fakeParam = new Parameter("oauth_token", AccessToken, ParameterType.QueryString);
-            args.Request.AddParameter(fakeParam);
+#pragma warning restore CS0618 // Type or member is obsolete
+            args.Request.AddParameter("oauth_token", AccessToken, ParameterType.QueryString);
 
             // Signing.
             // Call API methods using access_token instead of session_key parameter
