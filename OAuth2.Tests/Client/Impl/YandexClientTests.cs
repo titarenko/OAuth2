@@ -11,7 +11,8 @@ namespace OAuth2.Tests.Client.Impl
 {
     public class YandexClientTests
     {
-        private const string Content = "todo";
+        private const string Content = "{\"id\": \"349\", \"login\": \"mylogin\", \"client_id\": \"e0000000000000000000191f3280bb\", \"display_name\": \"My Name\", \"real_name\": \"Real Name\", \"first_name\": \"Real\", \"last_name\": \"Name\", \"default_email\": \"mymail@yandex.ru\", \"emails\": [\"mymail@yandex.ru\"], \"default_avatar_id\": \"\", \"is_avatar_empty\": true, \"psuid\": \"1.AA.XXXXXXXXXXXXXXXXXXXXXXX.YYYYYYYYYYYYYYYYYYYYYYYYY\"}";
+        private const string ContentWithAvatar = "{\"id\": \"349\", \"login\": \"mylogin\", \"client_id\": \"e0000000000000000000191f3280bb\", \"display_name\": \"My Name\", \"real_name\": \"Real Name\", \"first_name\": \"Real\", \"last_name\": \"Name\", \"default_email\": \"mymail@yandex.ru\", \"emails\": [\"mymail@yandex.ru\"], \"default_avatar_id\": \"1111/enc-000\", \"is_avatar_empty\": false, \"psuid\": \"1.AA.XXXXXXXXXXXXXXXXXXXXXXX.YYYYYYYYYYYYYYYYYYYYYYYYY\"}";
 
         private YandexClientDescendant _descendant;
         private IRequestFactory _factory;
@@ -60,14 +61,24 @@ namespace OAuth2.Tests.Client.Impl
         [Test]
         public void Should_ParseAllFieldsOfUserInfo_WhenCorrectContentIsPassed()
         {
-            Assert.Ignore("todo");
-
             // act
             var info = _descendant.ParseUserInfo(Content);
 
             // assert
-            info.Id.Should().Be("todo");
+            info.Id.Should().Be("349");
+			info.AvatarUri.Normal.Should().BeNull();
         }
+
+        [Test]
+        public void Should_AvatarOfUserInfo_WhenCorrectContentIsPassed()
+        {
+            // act
+            var info = _descendant.ParseUserInfo(ContentWithAvatar);
+
+            // assert
+            info.Id.Should().Be("349");
+			info.AvatarUri.Normal.Should().Be("https://avatars.yandex.net/get-yapic/1111/enc-000/islands-retina-50");
+		}
 
         private class YandexClientDescendant : YandexClient
         {

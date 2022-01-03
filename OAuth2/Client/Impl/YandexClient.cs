@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
@@ -11,12 +12,17 @@ namespace OAuth2.Client.Impl
     /// </summary>
     public class YandexClient : OAuth2Client
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="YandexClient"/> class.
-        /// </summary>
-        /// <param name="factory">The factory.</param>
-        /// <param name="configuration">The configuration.</param>
-        public YandexClient(IRequestFactory factory, IClientConfiguration configuration)
+		private static readonly string _avatarBaseUri 	= "https://avatars.yandex.net/get-yapic/";
+		private static readonly string _small			= "islands-middle";
+		private static readonly string _normal			= "islands-retina-50";
+		private static readonly string _large			= "islands-200";
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="YandexClient"/> class.
+		/// </summary>
+		/// <param name="factory">The factory.</param>
+		/// <param name="configuration">The configuration.</param>
+		public YandexClient(IRequestFactory factory, IClientConfiguration configuration)
             : base(factory, configuration)
         {
         }
@@ -84,14 +90,26 @@ namespace OAuth2.Client.Impl
         {
             var response = JObject.Parse(content);
             var names = response["real_name"].Value<string>().Split(' ');
-            return new UserInfo
+			var avatar = response["default_avatar_id"].Value<string>();
+
+			var user = new UserInfo
             {
                 Id = response["id"].Value<string>(),
                 FirstName = names.Any() ? names.First() : response["display_name"].Value<string>(),
                 LastName = names.Count() > 1 ? names.Last() : string.Empty,
                 Email = response["default_email"].SafeGet(x => x.Value<string>()),
             };
-        }
+
+			if (!string.IsNullOrEmpty(avatar))
+			{
+				avatar = _avatarBaseUri + avatar + "/";
+				user.AvatarUri.Small = avatar+_small;
+				user.AvatarUri.Normal = avatar+_normal;
+				user.AvatarUri.Large = avatar+_large;
+			}
+
+			return user;
+		}
 
         public override string Name
         {
