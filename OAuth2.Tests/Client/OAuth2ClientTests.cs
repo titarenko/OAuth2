@@ -13,6 +13,7 @@ using OAuth2.Models;
 using RestSharp;
 using FluentAssertions;
 using RestSharp.Authenticators;
+using Newtonsoft.Json;
 
 namespace OAuth2.Tests.Client
 {
@@ -175,6 +176,26 @@ namespace OAuth2.Tests.Client
             _restClient.Received(1).BaseUrl = new Uri("https://UserInfoServiceEndpoint");
             _restRequest.Received(1).Resource = "/UserInfoServiceEndpoint";
             _restClient.Authenticator.Should().BeOfType<OAuth2UriQueryParameterAuthenticator>();
+        }
+
+        [Test]
+        public async Task Should_Update_RefreshToken_When_GetCurrentTokenAsync_Used_For_Refresh()
+        {
+            // arrange
+            var refreshToken = "abc123";
+            var newRefreshToken = "xyz456";
+            var accessToken = "qwe789";
+            var response = JsonConvert.SerializeObject(new {
+                access_token = accessToken,
+                refresh_token = newRefreshToken
+            });
+            _restResponse.Content.Returns(response);
+
+            // act
+            await _descendant.GetCurrentTokenAsync(refreshToken);
+
+            // assert
+            Assert.That(_descendant.RefreshToken, Is.EqualTo(newRefreshToken));
         }
 
         class OAuth2ClientDescendant : OAuth2Client
