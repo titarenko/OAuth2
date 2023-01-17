@@ -13,7 +13,6 @@ using OAuth2.Models;
 using RestSharp;
 using FluentAssertions;
 using RestSharp.Authenticators;
-using Newtonsoft.Json;
 
 namespace OAuth2.Tests.Client
 {
@@ -182,20 +181,29 @@ namespace OAuth2.Tests.Client
         public async Task Should_Update_RefreshToken_When_GetCurrentTokenAsync_Used_For_Refresh()
         {
             // arrange
-            var refreshToken = "abc123";
-            var newRefreshToken = "xyz456";
-            var accessToken = "qwe789";
-            var response = JsonConvert.SerializeObject(new {
-                access_token = accessToken,
-                refresh_token = newRefreshToken
-            });
+            var newRefreshToken = "new-refresh-token";
+            var response = @$"{{""access_token"": ""abc123"", ""refresh_token"": ""{newRefreshToken}""}}";
             _restResponse.Content.Returns(response);
 
             // act
-            await _descendant.GetCurrentTokenAsync(refreshToken);
+            await _descendant.GetCurrentTokenAsync("old-refresh-token");
 
             // assert
             Assert.That(_descendant.RefreshToken, Is.EqualTo(newRefreshToken));
+        }
+
+        [Test]
+        public async Task Should_Set_RefreshToken_To_Null_When_Not_Included_In_Response_From_GetCurrentTokenAsync()
+        {
+            // arrange
+            var response = @"{""access_token"": ""abc123""}";
+            _restResponse.Content.Returns(response);
+
+            // act
+            await _descendant.GetCurrentTokenAsync("refresh");
+
+            // assert
+            Assert.That(_descendant.RefreshToken, Is.Null);
         }
 
         class OAuth2ClientDescendant : OAuth2Client
