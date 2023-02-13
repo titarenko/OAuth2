@@ -206,7 +206,10 @@ namespace OAuth2.Client
             if (String.IsNullOrEmpty(AccessToken))
                 throw new UnexpectedResponseException(AccessTokenKey);
 
-            RefreshToken = ParseTokenResponse(response.Content, RefreshTokenKey);
+            var refreshToken = ParseTokenResponse(response.Content, RefreshTokenKey);
+
+            if (!string.IsNullOrWhiteSpace(refreshToken))
+                RefreshToken = ParseTokenResponse(response.Content, RefreshTokenKey);
 
             TokenType = ParseTokenResponse(response.Content, TokenTypeKey);
 

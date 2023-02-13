@@ -178,32 +178,42 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public async Task Should_Update_RefreshToken_When_GetCurrentTokenAsync_Used_For_Refresh()
+        public async Task Should_Update_RefreshToken_When_New_Token_Is_Provided_in_GetCurrentTokenAsync()
         {
             // arrange
+            var oldRefreshToken = "old-refresh-token";
             var newRefreshToken = "new-refresh-token";
             var response = @$"{{""access_token"": ""abc123"", ""refresh_token"": ""{newRefreshToken}""}}";
             _restResponse.Content.Returns(response);
 
             // act
-            await _descendant.GetCurrentTokenAsync("old-refresh-token");
+            await _descendant.GetCurrentTokenAsync(oldRefreshToken);
 
             // assert
             Assert.That(_descendant.RefreshToken, Is.EqualTo(newRefreshToken));
         }
 
         [Test]
-        public async Task Should_Set_RefreshToken_To_Null_When_Not_Included_In_Response_From_GetCurrentTokenAsync()
+        public async Task Should_Not_Modify_RefreshToken_When_Not_Included_In_Response_From_GetCurrentTokenAsync()
         {
             // arrange
-            var response = @"{""access_token"": ""abc123""}";
-            _restResponse.Content.Returns(response);
+            var currentRefreshToken = "refresh-token";
+            var initialTokenResponse = @$"{{""access_token"": ""abc123"", ""refresh_token"": ""{currentRefreshToken}""}}";
+            var refreshTokenResponse = @"{""access_token"": ""abc123""}";
+            
+            // simulate getting the initial token (to populate refresh token)
+            _restResponse.Content.Returns(initialTokenResponse);
+            await _descendant.GetTokenAsync(new NameValueCollection {{"code", "auth-code"}});
+            Assert.That(_descendant.RefreshToken, Is.EqualTo(currentRefreshToken));
+
+            // setup response for refresh token request
+            _restResponse.Content.Returns(refreshTokenResponse);
 
             // act
-            await _descendant.GetCurrentTokenAsync("refresh");
+            await _descendant.GetCurrentTokenAsync(currentRefreshToken);
 
             // assert
-            Assert.That(_descendant.RefreshToken, Is.Null);
+            Assert.That(_descendant.RefreshToken, Is.EqualTo(currentRefreshToken));
         }
 
         class OAuth2ClientDescendant : OAuth2Client
