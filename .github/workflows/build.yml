@@ -34,7 +34,7 @@ jobs:
           echo "${0##*/}": Pushing $package...
 
           # GitHub
-          dotnet nuget push $package --source https://nuget.pkg.github.com/titarenko/OAuth2/index.json --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
+          dotnet nuget push $package --source https://nuget.pkg.github.com/titarenko/index.json --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
         done
     - name: Publish Release Packages
       if: startsWith(github.ref, 'refs/tags/v')
