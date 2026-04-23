@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -10,6 +10,7 @@ using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
 using RestSharp.Authenticators;
+using RestSharp.Authenticators.OAuth2;
 
 namespace OAuth2.Client.Impl
 {
@@ -68,7 +69,7 @@ namespace OAuth2.Client.Impl
 
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            args.Client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "token");
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "token");
         }
 
         protected override async Task<UserInfo> GetUserInfoAsync(CancellationToken cancellationToken = default)
@@ -81,8 +82,8 @@ namespace OAuth2.Client.Impl
                 return userInfo;
 
             var client = _factory.CreateClient(UserEmailServiceEndpoint);
-            client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "token");
             var request = _factory.CreateRequest(UserEmailServiceEndpoint);
+            request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "token");
 
             BeforeGetUserInfo(new BeforeAfterRequestArgs
             {

@@ -23,7 +23,6 @@ namespace OAuth2.Tests.Client.Impl
         public void SetUp()
         {
             _requestFactory = Substitute.For<IRequestFactory>();
-            _requestFactory.CreateClient().Execute(_requestFactory.CreateRequest()).StatusCode = HttpStatusCode.OK;
             _descendant = new DigitalOceanClientDescendant(
                 _requestFactory, Substitute.For<IClientConfiguration>());
         }

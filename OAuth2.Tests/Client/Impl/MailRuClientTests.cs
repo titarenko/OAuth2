@@ -11,7 +11,7 @@ namespace OAuth2.Tests.Client.Impl
 {
     public class MailRuClientTests
     {
-        private const string Content = "todo";
+        private const string Content = "[{\"uid\":\"12345\",\"first_name\":\"Ivan\",\"last_name\":\"Petrov\",\"email\":\"ivan@mail.ru\",\"pic\":\"https://avt.appsmail.ru/mail/photo.jpg\"}]";
 
         private MailRuClientDescendant _descendant;
         private IRequestFactory _factory;
@@ -60,13 +60,15 @@ namespace OAuth2.Tests.Client.Impl
         [Test]
         public void Should_ParseAllFieldsOfUserInfo_WhenCorrectContentIsPassed()
         {
-            Assert.Ignore("todo");
-
             // act
             var info = _descendant.ParseUserInfo(Content);
 
             // assert
-            info.Id.Should().Be("todo");
+            info.Id.Should().Be("12345");
+            info.FirstName.Should().Be("Ivan");
+            info.LastName.Should().Be("Petrov");
+            info.Email.Should().Be("ivan@mail.ru");
+            info.PhotoUri.Should().Be("https://avt.appsmail.ru/mail/photo.jpg");
         }
 
         private class MailRuClientDescendant : MailRuClient

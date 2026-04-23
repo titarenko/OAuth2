@@ -83,9 +83,7 @@ namespace OAuth2.Client.Impl
             args.Request.AddParameter("method", "users.getCurrentUser");
 
             // workaround for current design, oauth_token is always present in URL, so we need emulate it for correct request signing 
-#pragma warning disable CS0618 // Type or member is obsolete
-            var fakeParam = new Parameter("oauth_token", AccessToken, ParameterType.QueryString);
-#pragma warning restore CS0618 // Type or member is obsolete
+            var fakeParam = new QueryParameter("oauth_token", AccessToken);
             args.Request.AddParameter("oauth_token", AccessToken, ParameterType.QueryString);
 
             // Signing.
@@ -98,7 +96,7 @@ namespace OAuth2.Client.Impl
             signature = (signature + (AccessToken + _configuration.ClientSecret).GetMd5Hash()).GetMd5Hash();
 
             // Removing fake param to prevent dups
-            args.Request.Parameters.Remove(fakeParam);
+            args.Request.Parameters.RemoveParameter(fakeParam);
 
             args.Request.AddParameter("access_token", AccessToken);
             args.Request.AddParameter("sig", signature);

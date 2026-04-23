@@ -20,8 +20,8 @@ namespace OAuth2.Tests.Infrastructure
         public void Should_ReturnNewClientInstance_WhenNewClientIsCalled()
         {
             // act
-            var client1 = _factory.CreateClient();
-            var client2 = _factory.CreateClient();
+            var client1 = _factory.CreateClient("https://example.com");
+            var client2 = _factory.CreateClient("https://example.com");
 
             // assert
             client1.Should().NotBeNull();
@@ -33,8 +33,8 @@ namespace OAuth2.Tests.Infrastructure
         public void Should_ReturnNewRequestInstance_WhenNewRequestIsCalled()
         {
             // act
-            var request1 = _factory.CreateRequest();
-            var request2 = _factory.CreateRequest();
+            var request1 = _factory.CreateRequest("/resource");
+            var request2 = _factory.CreateRequest("/resource");
 
             // assert
             request1.Should().NotBeNull();

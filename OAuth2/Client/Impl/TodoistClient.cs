@@ -75,7 +75,7 @@ namespace OAuth2.Client.Impl
 
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            args.Client.Authenticator = null;
+            args.Request.Authenticator = null;
             args.Request.AddParameter("token", AccessToken, ParameterType.GetOrPost);
             args.Request.AddParameter("resource_types", "[\"all\"]");
             base.BeforeGetUserInfo(args);

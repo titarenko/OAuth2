@@ -12,7 +12,7 @@ namespace OAuth2.Tests.Client.Impl
     [TestFixture]
     public class FoursquareClientTests
     {
-        private const string Content = "todo";
+        private const string Content = "{\"response\":{\"user\":{\"id\":\"12345\",\"firstName\":\"Jane\",\"lastName\":\"Smith\",\"contact\":{\"email\":\"jane@example.com\"},\"photo\":{\"prefix\":\"https://img.4sqi.net/\",\"suffix\":\"/photo.jpg\"}}}}";
 
         private FoursquareClientDescendant _descendant;
         private IRequestFactory _factory;
@@ -61,13 +61,14 @@ namespace OAuth2.Tests.Client.Impl
         [Test]
         public void Should_ParseAllFieldsOfUserInfo_WhenCorrectContentIsPassed()
         {
-            Assert.Ignore("todo");
-
             // act
             var info = _descendant.ParseUserInfo(Content);
 
             // assert
-            info.Id.Should().Be("todo");
+            info.Id.Should().Be("12345");
+            info.FirstName.Should().Be("Jane");
+            info.LastName.Should().Be("Smith");
+            info.Email.Should().Be("jane@example.com");
         }
         
         private class FoursquareClientDescendant : FoursquareClient

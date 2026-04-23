@@ -12,7 +12,7 @@ namespace OAuth2.Tests.Client.Impl
     [TestFixture]
     public class WindowsLiveClientTests
     {
-        private const string Content = "todo";
+        private const string Content = "{\"id\":\"abc123\",\"first_name\":\"John\",\"last_name\":\"Doe\",\"emails\":{\"preferred\":\"john@example.com\"}}";
 
         private WindowsLiveClientDescendant _descendant;
         private IRequestFactory _factory;
@@ -61,13 +61,13 @@ namespace OAuth2.Tests.Client.Impl
         [Test]
         public void Should_ParseAllFieldsOfUserInfo_WhenCorrectContentIsPassed()
         {
-            Assert.Ignore("todo");
-
             // act
             var info = _descendant.ParseUserInfo(Content);
 
             // assert
-            info.Id.Should().Be("todo");
+            info.Id.Should().Be("abc123");
+            info.FirstName.Should().Be("John");
+            info.LastName.Should().Be("Doe");
         }
 
         private class WindowsLiveClientDescendant : WindowsLiveClient

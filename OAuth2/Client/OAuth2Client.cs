@@ -10,6 +10,7 @@ using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
 using RestSharp.Authenticators;
+using RestSharp.Authenticators.OAuth2;
 
 namespace OAuth2.Client
 {
@@ -184,7 +185,7 @@ namespace OAuth2.Client
         private async Task QueryAccessTokenAsync(NameValueCollection parameters, CancellationToken cancellationToken = default)
         {
             var client = _factory.CreateClient(AccessTokenServiceEndpoint);
-            var request = _factory.CreateRequest(AccessTokenServiceEndpoint, Method.POST);
+            var request = _factory.CreateRequest(AccessTokenServiceEndpoint, Method.Post);
 
             BeforeGetAccessToken(new BeforeAfterRequestArgs
             {
@@ -289,8 +290,8 @@ namespace OAuth2.Client
         protected virtual async Task<UserInfo> GetUserInfoAsync(CancellationToken cancellationToken = default)
         {
             var client = _factory.CreateClient(UserInfoServiceEndpoint);
-            client.Authenticator = new OAuth2UriQueryParameterAuthenticator(AccessToken);
             var request = _factory.CreateRequest(UserInfoServiceEndpoint);
+            request.Authenticator = new OAuth2UriQueryParameterAuthenticator(AccessToken);
 
             BeforeGetUserInfo(new BeforeAfterRequestArgs
             {

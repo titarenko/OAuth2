@@ -9,17 +9,17 @@ namespace OAuth2.Client
         /// <summary>
         /// Client instance.
         /// </summary>
-        public IRestClient Client { get; set; }
+        public RestClient Client { get; set; }
 
         /// <summary>
         /// Request instance.
         /// </summary>
-        public IRestRequest Request { get; set; }
+        public RestRequest Request { get; set; }
 
         /// <summary>
         /// Response instance.
         /// </summary>
-        public IRestResponse Response { get; set; }
+        public RestResponse Response { get; set; }
 
         /// <summary>
         /// Values received from service.

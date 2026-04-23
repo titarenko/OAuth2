@@ -1,9 +1,11 @@
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
+using RestSharp;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp.Authenticators;
+using RestSharp.Authenticators.OAuth2;
 
 namespace OAuth2.Client.Impl
 {
@@ -69,13 +71,13 @@ namespace OAuth2.Client.Impl
         
         protected override void BeforeGetAccessToken(BeforeAfterRequestArgs args)
         {
-            args.Client.Authenticator = new HttpBasicAuthenticator(Configuration.ClientId, Configuration.ClientSecret);
+            args.Request.Authenticator = new HttpBasicAuthenticator(Configuration.ClientId, Configuration.ClientSecret);
             base.BeforeGetAccessToken(args);
         }
 
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            args.Client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
             base.BeforeGetUserInfo(args);
         }
 

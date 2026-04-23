@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OAuth2.Client;
 using OAuth2.Configuration;
+using RestSharp;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 

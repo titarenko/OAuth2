@@ -27,8 +27,12 @@ namespace OAuth2.Tests.Client.Impl
         public void SetUp()
         {
             var factory = Substitute.For<IRequestFactory>();
-            factory.CreateClient().Returns(Substitute.For<IRestClient>());
-            factory.CreateRequest().Returns(Substitute.For<IRestRequest>());
+            factory.CreateClient(Arg.Any<string>()).Returns(callInfo =>
+                new RestClient(new RestClientOptions(callInfo.Arg<string>())));
+            factory.CreateRequest(Arg.Any<string>()).Returns(callInfo =>
+                new RestRequest(callInfo.Arg<string>()));
+            factory.CreateRequest(Arg.Any<string>(), Arg.Any<Method>()).Returns(callInfo =>
+                new RestRequest(callInfo.Arg<string>(), callInfo.Arg<Method>()));
 
             _descendant = new LinkedInClientDescendant(factory, Substitute.For<IClientConfiguration>());
         }

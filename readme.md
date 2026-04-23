@@ -121,8 +121,8 @@ So, I decided to implement this library striving to achieve following goals:
 
 This library is dependent on:
 
-- RestSharp (http://restsharp.org/)
-- Newtonsoft.Json (http://json.codeplex.com/)
+- [RestSharp](https://restsharp.dev)
+- [Newtonsoft.Json](https://www.newtonsoft.com/json)
 
 ## Contributors ##
 

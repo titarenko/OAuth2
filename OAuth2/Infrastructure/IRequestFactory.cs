@@ -8,13 +8,18 @@ namespace OAuth2.Infrastructure
     public interface IRequestFactory
     {
         /// <summary>
-        /// Returns new REST client instance.
+        /// Returns new REST client instance with the specified base URL.
         /// </summary>
-        IRestClient CreateClient();
+        RestClient CreateClient(string baseUrl);
         
         /// <summary>
         /// Returns new REST request instance.
         /// </summary>
-        IRestRequest CreateRequest();
+        RestRequest CreateRequest(string resource);
+
+        /// <summary>
+        /// Returns new REST request instance with the specified HTTP method.
+        /// </summary>
+        RestRequest CreateRequest(string resource, Method method);
     }
 }

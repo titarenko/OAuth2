@@ -1,29 +1,23 @@
-﻿using System;
-using OAuth2.Client;
+﻿using OAuth2.Client;
 using RestSharp;
 
 namespace OAuth2.Infrastructure
 {
     public static class RequestFactoryExtensions
     {
-        public static IRestClient CreateClient(this IRequestFactory factory, Endpoint endpoint)
+        public static RestClient CreateClient(this IRequestFactory factory, Endpoint endpoint)
         {
-            var client = factory.CreateClient();
-            client.BaseUrl = new Uri(endpoint.BaseUri);
-            return client;
+            return factory.CreateClient(endpoint.BaseUri);
         }
 
-        public static IRestRequest CreateRequest(this IRequestFactory factory, Endpoint endpoint)
+        public static RestRequest CreateRequest(this IRequestFactory factory, Endpoint endpoint)
         {
-            return CreateRequest(factory, endpoint, Method.GET);
+            return factory.CreateRequest(endpoint.Resource, Method.Get);
         }
 
-        public static IRestRequest CreateRequest(this IRequestFactory factory, Endpoint endpoint, Method method)
+        public static RestRequest CreateRequest(this IRequestFactory factory, Endpoint endpoint, Method method)
         {
-            var request = factory.CreateRequest();
-            request.Resource = endpoint.Resource;
-            request.Method = method;
-            return request;
+            return factory.CreateRequest(endpoint.Resource, method);
         }
     }
 }
