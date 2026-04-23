@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".github/workflows/build.yml" />
+    <File Path="build/common.props" />
+    <File Path="readme.md" />
+  </Folder>
+  <Project Path="OAuth2.Tests/OAuth2.Tests.csproj" />
+  <Project Path="OAuth2/OAuth2.csproj" />
+</Solution>

@@ -46,10 +46,11 @@ namespace OAuth2.Infrastructure
         /// <param name="input">The line.</param>
         public static string GetMd5Hash(this string input)
         {
-            var provider = new MD5CryptoServiceProvider();
-            var bytes = Encoding.UTF8.GetBytes(input);
-            bytes = provider.ComputeHash(bytes);
-            return BitConverter.ToString(bytes).Replace("-", "").ToLowerInvariant();
+            using (var md5 = MD5.Create())
+            {
+                var bytes = md5.ComputeHash(Encoding.UTF8.GetBytes(input));
+                return BitConverter.ToString(bytes).Replace("-", "").ToLowerInvariant();
+            }
         }
     }
 }

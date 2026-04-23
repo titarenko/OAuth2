@@ -5,9 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AsyncFixer" Version="1.6.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
-    <PackageReference Include="MinVer" Version="4.3.0" PrivateAssets="All" />
+    <PackageReference Include="AsyncFixer" Version="2.1.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.203" PrivateAssets="All"/>
+    <PackageReference Include="MinVer" Version="7.0.0" PrivateAssets="All" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -16,7 +16,7 @@
     <Authors>Constantin Titarenko, Andrew Semack, Blake Niemyjski and others</Authors>
     <PackageTags>OAuth2, OAuth, DigitalOcean, Facebook, Foursquare, GitHub, Google, Instagram, LinkedIn, MailRu, Odnoklassniki, Twitter, VK (Vkontakte), Windows Live, Yandex</PackageTags>
     <NoWarn>$(NoWarn);CS1591;CS1658;CS1584;</NoWarn>
-    <WarningsAsErrors>true</WarningsAsErrors>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DebugType>portable</DebugType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageOutputPath>$(SolutionDir)artifacts\</PackageOutputPath>
