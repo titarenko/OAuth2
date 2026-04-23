@@ -1,4 +1,3 @@
-using System;
 using System.Text.Json;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
@@ -11,9 +10,10 @@ namespace OAuth2.Client.Impl
     /// Microsoft authentication client using Microsoft Identity Platform (v2.0) and Microsoft Graph.
     /// </summary>
     /// <remarks>
-    /// This client replaces the deprecated <see cref="WindowsLiveClient"/> which used the
-    /// retired Live Connect API (apis.live.net). It uses the current Microsoft Identity Platform
-    /// endpoints (login.microsoftonline.com) and Microsoft Graph API (graph.microsoft.com).
+    /// This client uses the current Microsoft Identity Platform (login.microsoftonline.com) and
+    /// Microsoft Graph API (graph.microsoft.com). It is the modern alternative to
+    /// <see cref="WindowsLiveClient"/> for new integrations, but is <b>not</b> a drop-in replacement —
+    /// user IDs and supported scopes differ between the two platforms.
     /// </remarks>
     /// <seealso href="https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow">Microsoft Identity Platform OAuth 2.0 Documentation</seealso>
     public class MicrosoftClient : OAuth2Client

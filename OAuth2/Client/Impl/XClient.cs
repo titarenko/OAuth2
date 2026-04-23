@@ -116,8 +116,8 @@ namespace OAuth2.Client.Impl
             using var doc = JsonDocument.Parse(content);
             var response = doc.RootElement;
 
-            var name = response.GetProperty("name").GetString();
-            var index = name.IndexOf(' ');
+            var name = response.GetStringOrDefault("name");
+            var index = name?.IndexOf(' ') ?? -1;
 
             string firstName;
             string lastName;
@@ -131,7 +131,7 @@ namespace OAuth2.Client.Impl
                 firstName = name.Substring(0, index);
                 lastName = name.Substring(index + 1);
             }
-            var avatarUri = response.GetProperty("profile_image_url").GetString();
+            var avatarUri = response.GetStringOrDefault("profile_image_url");
             return new UserInfo
             {
                 Id = response.GetProperty("id").GetStringValue(),
@@ -140,9 +140,9 @@ namespace OAuth2.Client.Impl
                 LastName = lastName,
                 AvatarUri =
                     {
-                        Small = avatarUri.Replace("normal", "mini"),
+                        Small = avatarUri?.Replace("normal", "mini"),
                         Normal = avatarUri,
-                        Large = avatarUri.Replace("normal", "bigger")
+                        Large = avatarUri?.Replace("normal", "bigger")
                     }
             };
         }
