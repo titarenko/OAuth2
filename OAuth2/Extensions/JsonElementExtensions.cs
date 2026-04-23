@@ -41,6 +41,9 @@ namespace OAuth2.Extensions
         /// </summary>
         public static string GetStringOrDefault(this JsonElement element, string propertyName)
         {
+            if (element.ValueKind != JsonValueKind.Object)
+                return null;
+
             if (element.TryGetProperty(propertyName, out var prop) && prop.ValueKind != JsonValueKind.Null)
                 return prop.GetStringValue();
 
@@ -68,7 +71,7 @@ namespace OAuth2.Extensions
                     var indexStr = part.Substring(bracketIndex + 1, closingBracketIndex - bracketIndex - 1);
                     if (!String.IsNullOrEmpty(name))
                     {
-                        if (!current.TryGetProperty(name, out var arrayProp))
+                        if (current.ValueKind != JsonValueKind.Object || !current.TryGetProperty(name, out var arrayProp))
                             return null;
 
                         current = arrayProp;
@@ -81,7 +84,7 @@ namespace OAuth2.Extensions
                 }
                 else
                 {
-                    if (!current.TryGetProperty(part, out var next))
+                    if (current.ValueKind != JsonValueKind.Object || !current.TryGetProperty(part, out var next))
                         return null;
 
                     current = next;
@@ -96,6 +99,12 @@ namespace OAuth2.Extensions
         /// </summary>
         public static bool TryGetPropertyIgnoreCase(this JsonElement element, string propertyName, out JsonElement value)
         {
+            if (element.ValueKind != JsonValueKind.Object)
+            {
+                value = default;
+                return false;
+            }
+
             foreach (var prop in element.EnumerateObject())
             {
                 if (String.Equals(prop.Name, propertyName, StringComparison.OrdinalIgnoreCase))

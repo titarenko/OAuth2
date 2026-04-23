@@ -134,10 +134,10 @@ namespace OAuth2.Client.Impl
             var userInfo = new UserInfo();
             userInfo.AvatarUri.Normal =
                 userInfo.AvatarUri.Large =
-                userInfo.AvatarUri.Small = response.SelectToken("profile.image.imageUrl")?.GetString();
+                userInfo.AvatarUri.Small = response.SelectToken("profile.image.imageUrl")?.GetStringValue();
 
-            userInfo.FirstName = response.SelectToken("profile.givenName")?.GetString();
-            userInfo.LastName = response.SelectToken("profile.familyName")?.GetString();
+            userInfo.FirstName = response.SelectToken("profile.givenName")?.GetStringValue();
+            userInfo.LastName = response.SelectToken("profile.familyName")?.GetStringValue();
             userInfo.Id = this._userProfileGUID;
             userInfo.Email = response.SelectToken("emails")?.GetStringValue();
             userInfo.ProviderName = this.Name;

@@ -102,11 +102,11 @@ namespace OAuth2.Client.Impl
             var userInfo = new UserInfo();
             userInfo.AvatarUri.Normal =
                 userInfo.AvatarUri.Large =
-                userInfo.AvatarUri.Small = response.SelectToken("images[0].url")?.GetString();
+                userInfo.AvatarUri.Small = response.SelectToken("images[0].url")?.GetStringValue();
 
-            userInfo.FirstName = response.SelectToken("display_name")?.GetString();
+            userInfo.FirstName = response.SelectToken("display_name")?.GetStringValue();
             userInfo.Id = response.SelectToken("id")?.GetStringValue();
-            userInfo.Email = response.SelectToken("email")?.GetString();
+            userInfo.Email = response.SelectToken("email")?.GetStringValue();
             userInfo.ProviderName = this.Name;
             return userInfo;
         }
