@@ -57,7 +57,7 @@ namespace OAuth2.Client.Impl
         /// <summary>
         /// Gets or sets the Salesforce user profile URL returned in the token response.
         /// </summary>
-        public string SalesforceProfileUrl { get; set; }
+        public string? SalesforceProfileUrl { get; set; }
 
         /// <summary>
         /// Defines URI of service which allows to obtain information about user which is currently logged in.
@@ -66,7 +66,7 @@ namespace OAuth2.Client.Impl
         {
             get
             {
-                Uri uri = new Uri(SalesforceProfileUrl);
+                Uri uri = new Uri(SalesforceProfileUrl!); // Non-null: set by ParseTokenResponse during token exchange
                 return new Endpoint
                 {
                     BaseUri = uri.GetLeftPart(UriPartial.Authority),
@@ -84,7 +84,7 @@ namespace OAuth2.Client.Impl
         }
 
         /// <inheritdoc />
-        protected override string ParseTokenResponse(string content, string key)
+        protected override string? ParseTokenResponse(string content, string key)
         {
             // save the user's identity service url which is included in the response
             SalesforceProfileUrl = base.ParseTokenResponse(content, "id");

@@ -14,9 +14,9 @@ namespace OAuth2.Tests.Infrastructure
         public async Task SafeGet_NullClient_DoesNotThrow()
         {
             // act & assert
-            await ((IClient)null).Awaiting(x => x.SafeGetAsync(z => z.GetLoginLinkUriAsync()))
+            await ((IClient)null!).Awaiting(x => x.SafeGetAsync(z => z.GetLoginLinkUriAsync()))
                 .Should().NotThrowAsync<NullReferenceException>();
-            (await ((IClient)null).SafeGetAsync(x => x.GetLoginLinkUriAsync())).Should().Be(null);
+            (await ((IClient)null!).SafeGetAsync(x => x.GetLoginLinkUriAsync())).Should().Be(null);
         }
 
         [Test]

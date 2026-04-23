@@ -7,7 +7,7 @@ namespace OAuth2.Tests.Infrastructure
     [TestFixture]
     public class RequestFactoryTests
     {
-        private RequestFactory _factory;
+        private RequestFactory _factory = null!;
 
         [SetUp]
         public void SetUp()

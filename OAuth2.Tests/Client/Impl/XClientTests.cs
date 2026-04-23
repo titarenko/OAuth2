@@ -17,7 +17,7 @@ namespace OAuth2.Tests.Client.Impl
         /* lang=json */
         private const string ContentWithNonStandardName = "{\n  \"name\": \"NonStandardName\",\n  \"profile_image_url\": \"http://a1.twimg.com/profile_images/554181350/matt_normal.jpg\",\n  \"id\": 777925\n}";
 
-        private XClientDescendant _descendant;
+        private XClientDescendant _descendant = null!;
 
         [SetUp]
         public void SetUp()

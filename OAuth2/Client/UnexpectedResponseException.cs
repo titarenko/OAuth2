@@ -11,12 +11,12 @@ namespace OAuth2.Client
         /// <summary>
         /// Name of field which contains unexpected (GET) response.
         /// </summary>
-        public string FieldName { get; set; }
+        public string? FieldName { get; set; }
 
         /// <summary>
         /// Unexpected response itself (can be null, if error occurred later in the response processing pipeline).
         /// </summary>
-        public RestResponse Response { get; private set; }
+        public RestResponse? Response { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UnexpectedResponseException"/> class.

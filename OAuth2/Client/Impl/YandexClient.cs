@@ -92,7 +92,7 @@ namespace OAuth2.Client.Impl
         {
             using var doc = JsonDocument.Parse(content);
             var response = doc.RootElement;
-            var names = response.GetProperty("real_name").GetString().Split(' ');
+            var names = (response.GetProperty("real_name").GetString() ?? "").Split(' ');
             var avatar = response.GetProperty("default_avatar_id").GetString();
 
             var user = new UserInfo

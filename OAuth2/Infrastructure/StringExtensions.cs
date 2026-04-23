@@ -34,7 +34,7 @@ namespace OAuth2.Infrastructure
         /// Returns true if given line is null, empty or contains only whitespaces.
         /// </summary>
         /// <param name="line">The line.</param>
-        public static bool IsEmpty(this string line)
+        public static bool IsEmpty(this string? line)
         {
             return String.IsNullOrWhiteSpace(line);
         }

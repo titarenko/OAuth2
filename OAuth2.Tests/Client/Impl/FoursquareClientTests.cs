@@ -16,8 +16,8 @@ namespace OAuth2.Tests.Client.Impl
         /* lang=json */
         private const string Content = "{\"response\":{\"user\":{\"id\":\"12345\",\"firstName\":\"Jane\",\"lastName\":\"Smith\",\"contact\":{\"email\":\"jane@example.com\"},\"photo\":{\"prefix\":\"https://img.4sqi.net/\",\"suffix\":\"/photo.jpg\"}}}}";
 
-        private FoursquareClientDescendant _descendant;
-        private IRequestFactory _factory;
+        private FoursquareClientDescendant _descendant = null!;
+        private IRequestFactory _factory = null!;
 
         [SetUp]
         public void SetUp()

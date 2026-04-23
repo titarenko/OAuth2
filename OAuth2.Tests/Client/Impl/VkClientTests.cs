@@ -25,10 +25,10 @@ namespace OAuth2.Tests.Client.Impl
         /* lang=json */
         private const string Content = "{\"response\":[{\"id\":\"1\",\"first_name\":\"Павел\",\"last_name\":\"Дуров\",\"has_photo\":1,\"photo_max_orig\":\"http:\\/\\/cs109.vkontakte.ru\\/u00001\\/c_df2abf56.jpg\"}]}";
 
-        private VkClientDescendant _descendant;
-        private IRequestFactory _factory;
-        private MockHttpMessageHandler _handler;
-        private List<RestRequest> _capturedRequests;
+        private VkClientDescendant _descendant = null!;
+        private IRequestFactory _factory = null!;
+        private MockHttpMessageHandler _handler = null!;
+        private List<RestRequest> _capturedRequests = null!;
 
         [SetUp]
         public void SetUp()

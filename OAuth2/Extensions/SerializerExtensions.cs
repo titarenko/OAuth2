@@ -11,7 +11,7 @@ namespace OAuth2.Extensions
         /// <summary>
         /// Converts a <see cref="JsonElement"/> of any type to its string representation.
         /// </summary>
-        public static string GetStringValue(this JsonElement element)
+        public static string? GetStringValue(this JsonElement element)
         {
             switch (element.ValueKind)
             {
@@ -37,7 +37,7 @@ namespace OAuth2.Extensions
         /// <summary>
         /// Gets a string value from a named property, returning <c>null</c> if the property does not exist or is null.
         /// </summary>
-        public static string GetStringOrDefault(this JsonElement element, string propertyName)
+        public static string? GetStringOrDefault(this JsonElement element, string propertyName)
         {
             if (element.ValueKind != JsonValueKind.Object)
                 return null;

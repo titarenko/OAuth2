@@ -30,13 +30,13 @@ namespace OAuth2.Client
         /// Returns URI of service which should be called in order to start authentication process. 
         /// You should use this URI when rendering login link.
         /// </summary>
-        Task<string> GetLoginLinkUriAsync(string state = null, CancellationToken cancellationToken = default);
+        Task<string> GetLoginLinkUriAsync(string? state = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// State which was posted as additional parameter 
         /// to service and then received along with main answer.
         /// </summary>
-        string State { get; }
+        string? State { get; }
 
         /// <summary>
         /// Obtains user information using third-party authentication service using data provided via callback request.

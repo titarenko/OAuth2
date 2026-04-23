@@ -81,7 +81,7 @@ namespace OAuth2.Client.Impl
         /// <inheritdoc />
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken!, "Bearer");
             base.BeforeGetUserInfo(args);
         }
 
@@ -93,7 +93,7 @@ namespace OAuth2.Client.Impl
         {
             using var doc = JsonDocument.Parse(content);
             var user = doc.RootElement.GetProperty("user");
-            var names = user.GetProperty("fullName").GetString().Split(' ');
+            var names = (user.GetProperty("fullName").GetString() ?? "").Split(' ');
             var avatarUri = user.GetProperty("avatar").GetString();
             return new UserInfo
             {

@@ -80,7 +80,7 @@ namespace OAuth2.Client.Impl
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
             args.Request.AddParameter("opt_fields", "id,name,photo.image_128x128,photo.image_60x60,photo.image_36x36,email");
-            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken!, "Bearer");
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace OAuth2.Client.Impl
             var avatarSmallUri = photo.GetProperty("image_36x36").GetString();
             var avatarNormalUri = photo.GetProperty("image_60x60").GetString();
             var avatarLargeUri = photo.GetProperty("image_128x128").GetString();
-            var splitName = new List<string>(data.GetProperty("name").GetString().Split(' '));
+            var splitName = new List<string>((data.GetProperty("name").GetString() ?? "").Split(' '));
             var firstName = splitName.FirstOrDefault();
             splitName.RemoveAt(0);
             var lastName = splitName.Join(" ");

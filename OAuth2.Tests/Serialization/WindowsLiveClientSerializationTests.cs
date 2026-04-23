@@ -12,9 +12,9 @@ namespace OAuth2.Tests.Serialization
     [TestFixture]
     public class WindowsLiveClientSerializationTests
     {
-        private IRequestFactory _factory;
-        private IClientConfiguration _configuration;
-        private TestableWindowsLiveClient _client;
+        private IRequestFactory _factory = null!;
+        private IClientConfiguration _configuration = null!;
+        private TestableWindowsLiveClient _client = null!;
 
         [SetUp]
         public void SetUp()
@@ -124,7 +124,7 @@ namespace OAuth2.Tests.Serialization
         public void ParseUserInfo_NullScope_EmailIsNull()
         {
             // arrange
-            _configuration.Scope.Returns((string)null);
+            _configuration.Scope.Returns((string?)null);
             /* lang=json */
             const string content = @"{""id"":""1"",""first_name"":""A"",""last_name"":""B"",""emails"":{""preferred"":""a@live.com""}}";
 

@@ -15,12 +15,12 @@ namespace OAuth2.Client.Impl
     /// <seealso href="https://developer.yahoo.com/oauth2/guide/">Yahoo OAuth 2.0 Documentation</seealso>
     public class YahooClient : OAuth2Client
     {
-        private string _userProfileGUID;
+        private string? _userProfileGUID;
 
         /// <summary>
         /// Gets the Yahoo user profile GUID obtained from the token response.
         /// </summary>
-        public string UserProfileGUID
+        public string? UserProfileGUID
         {
             get
             {
@@ -90,7 +90,7 @@ namespace OAuth2.Client.Impl
         /// <param name="args"></param>
         protected override void AfterGetAccessToken(BeforeAfterRequestArgs args)
         {
-            using var doc = JsonDocument.Parse(args.Response.Content);
+            using var doc = JsonDocument.Parse(args.Response.Content!); // Non-null: set from verified response
             this._userProfileGUID = doc.RootElement.SelectToken("xoauth_yahoo_guid")?.GetStringValue();
         }
 
@@ -103,7 +103,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken!, "Bearer");
             args.Request.Resource = String.Format(this.UserInfoServiceEndpoint.Resource, this._userProfileGUID);
         }
 

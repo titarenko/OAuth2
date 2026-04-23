@@ -14,8 +14,8 @@ namespace OAuth2.Tests.Client.Impl
         /* lang=json */
         private const string Content = "[{\"uid\":\"12345\",\"first_name\":\"Ivan\",\"last_name\":\"Petrov\",\"email\":\"ivan@mail.ru\",\"pic\":\"https://avt.appsmail.ru/mail/photo.jpg\"}]";
 
-        private MailRuClientDescendant _descendant;
-        private IRequestFactory _factory;
+        private MailRuClientDescendant _descendant = null!;
+        private IRequestFactory _factory = null!;
 
         [SetUp]
         public void SetUp()

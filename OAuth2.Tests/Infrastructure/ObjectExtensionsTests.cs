@@ -37,13 +37,13 @@ namespace OAuth2.Tests.Infrastructure
             {
                 number = 3,
                 uri = new Uri("http://example.com"),
-                text = (string)null
+                text = (string?)null
             };
             var right = new
             {
                 number = 3,
                 uri = new Uri("http://example.com"),
-                text = (string)null
+                text = (string?)null
             };
 
             // act & assert

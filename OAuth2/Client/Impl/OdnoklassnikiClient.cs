@@ -123,7 +123,7 @@ namespace OAuth2.Client.Impl
                     {
                         Small = null,
                         Normal = avatarUri,
-                        Large = avatarUri.Replace("&photoType=4", "&photoType=6")
+                        Large = avatarUri?.Replace("&photoType=4", "&photoType=6")
                     }
             };
         }

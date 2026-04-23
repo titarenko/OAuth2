@@ -25,10 +25,10 @@ namespace OAuth2.Tests.Client.Impl
         /* lang=json */
         private const string Content = "{\"email\":\"email\",\"first_name\":\"name\",\"last_name\":\"surname\",\"id\":\"id\",\"picture\":{\"data\":{\"url\":\"picture\"}}}";
 
-        private FacebookClientDescendant _descendant;
-        private IRequestFactory _factory;
-        private MockHttpMessageHandler _handler;
-        private List<RestRequest> _capturedRequests;
+        private FacebookClientDescendant _descendant = null!;
+        private IRequestFactory _factory = null!;
+        private MockHttpMessageHandler _handler = null!;
+        private List<RestRequest> _capturedRequests = null!;
 
         [SetUp]
         public void SetUp()

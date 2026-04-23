@@ -13,9 +13,9 @@ namespace OAuth2.Tests.Serialization
     [TestFixture]
     public class FoursquareClientSerializationTests
     {
-        private IRequestFactory _factory;
-        private IClientConfiguration _configuration;
-        private TestableFoursquareClient _client;
+        private IRequestFactory _factory = null!;
+        private IClientConfiguration _configuration = null!;
+        private TestableFoursquareClient _client = null!;
 
         [SetUp]
         public void SetUp()

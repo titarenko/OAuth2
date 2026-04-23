@@ -79,7 +79,7 @@ namespace OAuth2.Client.Impl
         /// <inheritdoc />
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken!, "Bearer");
         }
 
         /// <inheritdoc />
@@ -87,14 +87,14 @@ namespace OAuth2.Client.Impl
         {
             var userInfo = await base.GetUserInfoAsync(cancellationToken).ConfigureAwait(false);
             if (userInfo == null)
-                return null;
+                return null!;
 
             if (!String.IsNullOrEmpty(userInfo.Email))
                 return userInfo;
 
             var client = _factory.CreateClient(UserEmailServiceEndpoint);
             var request = _factory.CreateRequest(UserEmailServiceEndpoint);
-            request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
+            request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken!, "Bearer");
 
             BeforeGetUserInfo(new BeforeAfterRequestArgs
             {
@@ -104,11 +104,11 @@ namespace OAuth2.Client.Impl
             });
 
             var response = await client.ExecuteAndVerifyAsync(request, cancellationToken).ConfigureAwait(false);
-            var userEmails = ParseEmailAddresses(response.Content).Where(u => !String.IsNullOrEmpty(u.Email)).ToList();
+            var userEmails = ParseEmailAddresses(response.Content!).Where(u => !String.IsNullOrEmpty(u.Email)).ToList();
 
-            string primaryEmail = userEmails.Where(u => u.Primary).Select(u => u.Email).FirstOrDefault();
-            string verifiedEmail = userEmails.Where(u => u.Verified).Select(u => u.Email).FirstOrDefault();
-            string fallbackEmail = userEmails.Select(u => u.Email).FirstOrDefault();
+            string? primaryEmail = userEmails.Where(u => u.Primary).Select(u => u.Email).FirstOrDefault();
+            string? verifiedEmail = userEmails.Where(u => u.Verified).Select(u => u.Email).FirstOrDefault();
+            string? fallbackEmail = userEmails.Select(u => u.Email).FirstOrDefault();
             userInfo.Email = primaryEmail ?? verifiedEmail ?? fallbackEmail;
 
             return userInfo;
@@ -121,7 +121,7 @@ namespace OAuth2.Client.Impl
         /// <returns>A list of <see cref="UserEmails"/> representing the user's email addresses.</returns>
         protected virtual List<UserEmails> ParseEmailAddresses(string content)
         {
-            return JsonSerializer.Deserialize<List<UserEmails>>(content, CaseInsensitiveOptions);
+            return JsonSerializer.Deserialize<List<UserEmails>>(content, CaseInsensitiveOptions) ?? [];
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace OAuth2.Client.Impl
             /// <summary>
             /// Gets or sets the email address.
             /// </summary>
-            public string Email { get; set; }
+            public string? Email { get; set; }
 
             /// <summary>
             /// Gets or sets a value indicating whether this is the user's primary email.
