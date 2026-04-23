@@ -1,5 +1,8 @@
 namespace OAuth2.Models
 {
+    /// <summary>
+    /// Contains URIs for different sizes of a user's avatar image.
+    /// </summary>
     public class AvatarInfo
     {
         /// <summary>

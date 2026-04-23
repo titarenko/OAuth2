@@ -11,7 +11,9 @@ namespace OAuth2.Tests.Client.Impl
 {
     public class YandexClientTests
     {
+        /* lang=json */
         private const string Content = "{\"id\": \"349\", \"login\": \"mylogin\", \"client_id\": \"e0000000000000000000191f3280bb\", \"display_name\": \"My Name\", \"real_name\": \"Real Name\", \"first_name\": \"Real\", \"last_name\": \"Name\", \"default_email\": \"mymail@yandex.ru\", \"emails\": [\"mymail@yandex.ru\"], \"default_avatar_id\": \"\", \"is_avatar_empty\": true, \"psuid\": \"1.AA.XXXXXXXXXXXXXXXXXXXXXXX.YYYYYYYYYYYYYYYYYYYYYYYYY\"}";
+        /* lang=json */
         private const string ContentWithAvatar = "{\"id\": \"349\", \"login\": \"mylogin\", \"client_id\": \"e0000000000000000000191f3280bb\", \"display_name\": \"My Name\", \"real_name\": \"Real Name\", \"first_name\": \"Real\", \"last_name\": \"Name\", \"default_email\": \"mymail@yandex.ru\", \"emails\": [\"mymail@yandex.ru\"], \"default_avatar_id\": \"1111/enc-000\", \"is_avatar_empty\": false, \"psuid\": \"1.AA.XXXXXXXXXXXXXXXXXXXXXXX.YYYYYYYYYYYYYYYYYYYYYYYYY\"}";
 
         private YandexClientDescendant _descendant;

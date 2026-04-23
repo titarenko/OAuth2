@@ -1,10 +1,12 @@
-﻿using System;
+using System;
 
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using RestSharp;
 using RestSharp.Authenticators;
+using RestSharp.Authenticators.OAuth2;
 
 namespace OAuth2.Client.Impl
 {
@@ -71,7 +73,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            args.Client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
         }
 
         /// <summary>
@@ -97,8 +99,8 @@ namespace OAuth2.Client.Impl
         {
             var response = JObject.Parse(content);
             var userInfo = new UserInfo();
-            userInfo.AvatarUri.Normal = 
-                userInfo.AvatarUri.Large = 
+            userInfo.AvatarUri.Normal =
+                userInfo.AvatarUri.Large =
                 userInfo.AvatarUri.Small = response.SelectToken("images[0].url")?.ToString();
 
             userInfo.FirstName = response.SelectToken("display_name")?.ToString();

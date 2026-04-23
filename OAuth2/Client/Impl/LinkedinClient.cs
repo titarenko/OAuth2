@@ -70,14 +70,16 @@ namespace OAuth2.Client.Impl
             }
         }
 
+        /// <inheritdoc />
         public override Task<string> GetLoginLinkUriAsync(string state = null, CancellationToken cancellationToken = default)
         {
             return base.GetLoginLinkUriAsync(state ?? Guid.NewGuid().ToString("N"), cancellationToken);
         }
 
+        /// <inheritdoc />
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            args.Client.Authenticator = null;
+            args.Request.Authenticator = null;
             args.Request.AddParameter("oauth2_access_token", AccessToken, ParameterType.GetOrPost);
         }
 
@@ -91,12 +93,12 @@ namespace OAuth2.Client.Impl
             var document  = XDocument.Parse(content);
             var avatarUri = SafeGet(document, "/person/picture-url");
             var avatarSizeTemplate = "{0}_{0}";
-            if (string.IsNullOrEmpty(avatarUri))
+            if (String.IsNullOrEmpty(avatarUri))
             {
                 avatarUri = "https://www.linkedin.com/scds/common/u/images/themes/katy/ghosts/person/ghost_person_80x80_v1.png";
                 avatarSizeTemplate = "{0}x{0}";
             }
-            var avatarDefaultSize = string.Format(avatarSizeTemplate, 80);
+            var avatarDefaultSize = String.Format(avatarSizeTemplate, 80);
 
             return new UserInfo
             {
@@ -106,9 +108,9 @@ namespace OAuth2.Client.Impl
                 LastName  = document.XPathSelectElement("/person/last-name").Value,
                 AvatarUri =
                     {
-                        Small  = avatarUri.Replace(avatarDefaultSize, string.Format(avatarSizeTemplate, AvatarInfo.SmallSize)),
+                        Small  = avatarUri.Replace(avatarDefaultSize, String.Format(avatarSizeTemplate, AvatarInfo.SmallSize)),
                         Normal = avatarUri,
-                        Large  = avatarUri.Replace(avatarDefaultSize, string.Format(avatarSizeTemplate, AvatarInfo.LargeSize))
+                        Large  = avatarUri.Replace(avatarDefaultSize, String.Format(avatarSizeTemplate, AvatarInfo.LargeSize))
                     }
             };
         }

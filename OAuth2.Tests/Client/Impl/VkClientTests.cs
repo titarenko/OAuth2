@@ -1,5 +1,9 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -10,6 +14,7 @@ using OAuth2.Client.Impl;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using OAuth2.Tests.TestHelpers;
 using RestSharp;
 
 namespace OAuth2.Tests.Client.Impl
@@ -17,30 +22,35 @@ namespace OAuth2.Tests.Client.Impl
     [TestFixture]
     public class VkClientTests
     {
+        /* lang=json */
         private const string Content = "{\"response\":[{\"id\":\"1\",\"first_name\":\"Павел\",\"last_name\":\"Дуров\",\"has_photo\":1,\"photo_max_orig\":\"http:\\/\\/cs109.vkontakte.ru\\/u00001\\/c_df2abf56.jpg\"}]}";
 
         private VkClientDescendant _descendant;
-
         private IRequestFactory _factory;
-        private IRestClient _restClient;
-        private IRestRequest _restRequest;
-        private IRestResponse _restResponse;
+        private MockHttpMessageHandler _handler;
+        private List<RestRequest> _capturedRequests;
 
         [SetUp]
         public void SetUp()
         {
-            _restRequest = Substitute.For<IRestRequest>();
-            _restResponse = Substitute.For<IRestResponse>();
-
-            _restResponse.StatusCode.Returns(HttpStatusCode.OK);
-            _restResponse.Content.Returns("response");
-
-            _restClient = Substitute.For<IRestClient>();
-            _restClient.ExecuteAsync(_restRequest, CancellationToken.None).Returns(_restResponse);
+            _handler = new MockHttpMessageHandler();
+            _capturedRequests = new List<RestRequest>();
 
             _factory = Substitute.For<IRequestFactory>();
-            _factory.CreateClient().Returns(_restClient);
-            _factory.CreateRequest().Returns(_restRequest);
+            _factory.CreateClient(Arg.Any<string>()).Returns(callInfo =>
+                new RestClient(new HttpClient(_handler), new RestClientOptions(callInfo.Arg<string>())));
+            _factory.CreateRequest(Arg.Any<string>()).Returns(callInfo =>
+            {
+                var req = new RestRequest(callInfo.Arg<string>());
+                _capturedRequests.Add(req);
+                return req;
+            });
+            _factory.CreateRequest(Arg.Any<string>(), Arg.Any<Method>()).Returns(callInfo =>
+            {
+                var req = new RestRequest(callInfo.Arg<string>(), callInfo.Arg<Method>());
+                _capturedRequests.Add(req);
+                return req;
+            });
 
             _descendant = new VkClientDescendant(_factory, Substitute.For<IClientConfiguration>());
         }
@@ -52,7 +62,7 @@ namespace OAuth2.Tests.Client.Impl
             var endpoint = _descendant.GetAccessCodeServiceEndpoint();
 
             // assert
-            endpoint.BaseUri.Should().Be("http://oauth.vk.com");
+            endpoint.BaseUri.Should().Be("https://oauth.vk.com");
             endpoint.Resource.Should().Be("/authorize");
         }
 
@@ -95,48 +105,43 @@ namespace OAuth2.Tests.Client.Impl
         [Test]
         public async Task Should_ReceiveUserId_WhenAccessTokenResponseReceived()
         {
-            var restClient = _factory.CreateClient();
-            var restRequest = _factory.CreateRequest();
-            var response = (await restClient.ExecuteAsync(restRequest, CancellationToken.None));
-
-            response.Content.Returns(
-                "any content to pass response verification",
-                "{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}",
-                "{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}",
-                Content);
+            // arrange
+            _handler.EnqueueResponse("{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}");
+            _handler.EnqueueResponse(Content);
 
             // act
             await _descendant.GetUserInfoAsync(new NameValueCollection
             {
-                {"code", "code"}
+                { "code", "code" }
             });
 
             // assert
-            var notUsed = response.Received().Content;
+            var userInfoRequest = _capturedRequests.Last();
+            userInfoRequest.Parameters.FirstOrDefault(p => String.Equals(p.Name, "user_ids", StringComparison.Ordinal))?.Value
+                .Should().Be("1");
         }
 
         [Test]
         public async Task Should_AddExtraParameters_WhenOnGetUserInfoIsCalled()
         {
             // arrange
-            var restClient = _factory.CreateClient();
-            var restRequest = _factory.CreateRequest();
-            (await restClient.ExecuteAsync(restRequest, CancellationToken.None)).Content.Returns(
-                "any content to pass response verification",
-                "{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}", 
-                "{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}", 
-                Content);
+            _handler.EnqueueResponse("{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}");
+            _handler.EnqueueResponse(Content);
 
             // act
             await _descendant.GetUserInfoAsync(new NameValueCollection
             {
-                {"code", "code"}
+                { "code", "code" }
             });
 
             // assert
-            restRequest.Received().AddParameter("fields", "first_name,last_name,has_photo,photo_max_orig");
-            restRequest.Received().AddParameter("user_ids", "1");
-            restRequest.Received().AddParameter("v", "5.74");
+            var userInfoRequest = _capturedRequests.Last();
+            userInfoRequest.Parameters.FirstOrDefault(p => String.Equals(p.Name, "fields", StringComparison.Ordinal))?.Value
+                .Should().Be("first_name,last_name,has_photo,photo_max_orig");
+            userInfoRequest.Parameters.FirstOrDefault(p => String.Equals(p.Name, "user_ids", StringComparison.Ordinal))?.Value
+                .Should().Be("1");
+            userInfoRequest.Parameters.FirstOrDefault(p => String.Equals(p.Name, "v", StringComparison.Ordinal))?.Value
+                .Should().Be("5.74");
         }
 
         private class VkClientDescendant : VkClient

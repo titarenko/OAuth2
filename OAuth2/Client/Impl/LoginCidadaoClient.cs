@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -8,9 +8,13 @@ using OAuth2.Client;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using RestSharp;
 
 namespace OAuth2.Client.Impl
 {
+    /// <summary>
+    /// Login Cidadão OAuth2 client.
+    /// </summary>
     public class LoginCidadaoClient : OAuth2Client
     {
         private readonly IRequestFactory _factory;
@@ -20,7 +24,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        public LoginCidadaoClient(IRequestFactory factory, 
+        public LoginCidadaoClient(IRequestFactory factory,
             IClientConfiguration configuration)
             : base(factory, configuration)
         {
@@ -128,8 +132,14 @@ namespace OAuth2.Client.Impl
             get { return "Login Cidadão"; }
         }
 
+        /// <summary>
+        /// Represents a Login Cidadão user with additional Brazilian citizen information.
+        /// </summary>
         public class Cidadao : UserInfo
         {
+            /// <summary>
+            /// Gets or sets the CPF (Cadastro de Pessoas Físicas) number.
+            /// </summary>
             public string Cpf { get; set; }
         }
 

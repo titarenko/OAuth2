@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
@@ -18,7 +19,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        public MailRuClient(IRequestFactory factory, IClientConfiguration configuration) 
+        public MailRuClient(IRequestFactory factory, IClientConfiguration configuration)
             : base(factory, configuration)
         {
             _configuration = configuration;
@@ -63,8 +64,8 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "http://www.appsmail.ru",
-                    Resource = "/platform/api"                    
+                    BaseUri = "https://www.appsmail.ru",
+                    Resource = "/platform/api"
                 };
             }
         }
@@ -81,22 +82,20 @@ namespace OAuth2.Client.Impl
 
             args.Request.AddParameter("app_id", _configuration.ClientId);
             args.Request.AddParameter("method", "users.getInfo");
-            args.Request.AddParameter("secure", "1");            
+            args.Request.AddParameter("secure", "1");
             args.Request.AddParameter("session_key", AccessToken);
 
-            // workaround for current design, oauth_token is always present in URL, so we need emulate it for correct request signing 
-#pragma warning disable CS0618 // Type or member is obsolete
-            var fakeParam = new Parameter("oauth_token", AccessToken, ParameterType.QueryString);
-#pragma warning restore CS0618 // Type or member is obsolete
+            // workaround for current design, oauth_token is always present in URL, so we need emulate it for correct request signing
+            var fakeParam = new QueryParameter("oauth_token", AccessToken);
             args.Request.AddParameter(fakeParam);
 
             //sign=hex_md5('app_id={client_id}method=users.getInfosecure=1session_key={access_token}{secret_key}')
-            string signature = string.Concat(args.Request.Parameters.OrderBy(x => x.Name).Select(x => string.Format("{0}={1}", x.Name, x.Value)).ToList());            
+            string signature = String.Concat(args.Request.Parameters.OrderBy(x => x.Name).Select(x => String.Format("{0}={1}", x.Name, x.Value)).ToList());
             signature = (signature+_configuration.ClientSecret).GetMd5Hash();
 
-            args.Request.Parameters.Remove(fakeParam);
+            args.Request.Parameters.RemoveParameter(fakeParam);
 
-            args.Request.AddParameter("sig", signature);            
+            args.Request.AddParameter("sig", signature);
         }
 
         /// <summary>

@@ -14,6 +14,7 @@ namespace OAuth2.Tests.Client.Impl
     [TestFixture]
     public class DigitalOceanClientTests
     {
+        /* lang=json */
         private const string Content = "{\"access_token\":\"yada\",\"token_type\":\"bearer\",\"expires_in\":2592000,\"refresh_token\":\"yada\",\"scope\":\"read\",\"uid\":123456,\"info\":{\"name\":\"first.last\",\"email\":\"first.last@domain.com\"}}";
 
         private DigitalOceanClientDescendant _descendant;
@@ -23,7 +24,6 @@ namespace OAuth2.Tests.Client.Impl
         public void SetUp()
         {
             _requestFactory = Substitute.For<IRequestFactory>();
-            _requestFactory.CreateClient().Execute(_requestFactory.CreateRequest()).StatusCode = HttpStatusCode.OK;
             _descendant = new DigitalOceanClientDescendant(
                 _requestFactory, Substitute.For<IClientConfiguration>());
         }
@@ -55,7 +55,7 @@ namespace OAuth2.Tests.Client.Impl
         {
             Assert.Throws<NotImplementedException>(() => _descendant.GetUserInfoServiceEndpoint());
         }
-        
+
         [Test]
         public void Should_ParseAllFieldsOfUserInfo_WhenCorrectContentIsPassed()
         {

@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp.Authenticators;
+using RestSharp.Authenticators.OAuth2;
 
 namespace OAuth2.Client.Impl
 {
@@ -40,7 +41,7 @@ namespace OAuth2.Client.Impl
         protected override Endpoint AccessCodeServiceEndpoint
         {
             get
-            { 
+            {
                 return new Endpoint
                 {
                     BaseUri = "https://login.uber.com",
@@ -70,7 +71,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            args.Client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
         }
 
         /// <summary>

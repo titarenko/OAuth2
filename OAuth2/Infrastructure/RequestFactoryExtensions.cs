@@ -1,29 +1,45 @@
-﻿using System;
-using OAuth2.Client;
+﻿using OAuth2.Client;
 using RestSharp;
 
 namespace OAuth2.Infrastructure
 {
+    /// <summary>
+    /// Provides convenience extension methods for <see cref="IRequestFactory"/> using <see cref="Endpoint"/> instances.
+    /// </summary>
     public static class RequestFactoryExtensions
     {
-        public static IRestClient CreateClient(this IRequestFactory factory, Endpoint endpoint)
+        /// <summary>
+        /// Creates a <see cref="RestClient"/> configured with the base URI of the specified endpoint.
+        /// </summary>
+        /// <param name="factory">The request factory.</param>
+        /// <param name="endpoint">The endpoint whose base URI is used.</param>
+        /// <returns>A configured <see cref="RestClient"/> instance.</returns>
+        public static RestClient CreateClient(this IRequestFactory factory, Endpoint endpoint)
         {
-            var client = factory.CreateClient();
-            client.BaseUrl = new Uri(endpoint.BaseUri);
-            return client;
+            return factory.CreateClient(endpoint.BaseUri);
         }
 
-        public static IRestRequest CreateRequest(this IRequestFactory factory, Endpoint endpoint)
+        /// <summary>
+        /// Creates a <see cref="RestRequest"/> for the specified endpoint using <see cref="Method.Get"/>.
+        /// </summary>
+        /// <param name="factory">The request factory.</param>
+        /// <param name="endpoint">The endpoint whose resource path is used.</param>
+        /// <returns>A <see cref="RestRequest"/> configured for a GET request.</returns>
+        public static RestRequest CreateRequest(this IRequestFactory factory, Endpoint endpoint)
         {
-            return CreateRequest(factory, endpoint, Method.GET);
+            return factory.CreateRequest(endpoint.Resource, Method.Get);
         }
 
-        public static IRestRequest CreateRequest(this IRequestFactory factory, Endpoint endpoint, Method method)
+        /// <summary>
+        /// Creates a <see cref="RestRequest"/> for the specified endpoint using the given HTTP method.
+        /// </summary>
+        /// <param name="factory">The request factory.</param>
+        /// <param name="endpoint">The endpoint whose resource path is used.</param>
+        /// <param name="method">The HTTP method for the request.</param>
+        /// <returns>A <see cref="RestRequest"/> configured with the specified method.</returns>
+        public static RestRequest CreateRequest(this IRequestFactory factory, Endpoint endpoint, Method method)
         {
-            var request = factory.CreateRequest();
-            request.Resource = endpoint.Resource;
-            request.Method = method;
-            return request;
+            return factory.CreateRequest(endpoint.Resource, method);
         }
     }
 }

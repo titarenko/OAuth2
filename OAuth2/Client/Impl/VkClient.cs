@@ -2,6 +2,7 @@ using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using RestSharp;
 
 namespace OAuth2.Client.Impl
 {
@@ -22,7 +23,7 @@ namespace OAuth2.Client.Impl
             : base(factory, configuration)
         {
         }
-        
+
         /// <summary>
         /// Defines URI of service which issues access code.
         /// </summary>
@@ -32,7 +33,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "http://oauth.vk.com",
+                    BaseUri = "https://oauth.vk.com",
                     Resource = "/authorize"
                 };
             }
@@ -68,6 +69,7 @@ namespace OAuth2.Client.Impl
             }
         }
 
+        /// <inheritdoc />
         public override string Name
         {
             get { return "Vkontakte"; }

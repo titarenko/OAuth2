@@ -107,10 +107,9 @@ namespace OAuth2.Client
         private async Task QueryRequestTokenAsync(CancellationToken cancellationToken = default)
         {
             var client = _factory.CreateClient(RequestTokenServiceEndpoint);
-            client.Authenticator = OAuth1Authenticator.ForRequestToken(
+            var request = _factory.CreateRequest(RequestTokenServiceEndpoint, Method.Post);
+            request.Authenticator = OAuth1Authenticator.ForRequestToken(
                 Configuration.ClientId, Configuration.ClientSecret, Configuration.RedirectUri);
-
-            var request = _factory.CreateRequest(RequestTokenServiceEndpoint, Method.POST);
 
             BeforeGetAccessToken(new BeforeAfterRequestArgs
             {
@@ -159,10 +158,9 @@ namespace OAuth2.Client
         private async Task QueryAccessTokenAsync(string verifier, CancellationToken cancellationToken = default)
         {
             var client = _factory.CreateClient(AccessTokenServiceEndpoint);
-            client.Authenticator = OAuth1Authenticator.ForAccessToken(
+            var request = _factory.CreateRequest(AccessTokenServiceEndpoint, Method.Post);
+            request.Authenticator = OAuth1Authenticator.ForAccessToken(
                 Configuration.ClientId, Configuration.ClientSecret, AccessToken, AccessTokenSecret, verifier);
-
-            var request = _factory.CreateRequest(AccessTokenServiceEndpoint, Method.POST);
 
             var response = await client.ExecuteAndVerifyAsync(request, cancellationToken).ConfigureAwait(false);
             var content = response.Content;
@@ -172,6 +170,11 @@ namespace OAuth2.Client
             AccessTokenSecret = collection.GetOrThrowUnexpectedResponse(OAuthTokenSecretKey);
         }
 
+        /// <summary>
+        /// Called just before issuing request to obtain access token.
+        /// Allows to add extra parameters to request or do any other needed preparations.
+        /// </summary>
+        /// <param name="args">Request context containing client, request, and configuration.</param>
         protected virtual void BeforeGetAccessToken(BeforeAfterRequestArgs args)
         {
         }
@@ -199,10 +202,9 @@ namespace OAuth2.Client
         private async Task<string> QueryUserInfoAsync(CancellationToken cancellationToken = default)
         {
             var client = _factory.CreateClient(UserInfoServiceEndpoint);
-            client.Authenticator = OAuth1Authenticator.ForProtectedResource(
-                Configuration.ClientId, Configuration.ClientSecret, AccessToken, AccessTokenSecret);
-
             var request = _factory.CreateRequest(UserInfoServiceEndpoint);
+            request.Authenticator = OAuth1Authenticator.ForProtectedResource(
+                Configuration.ClientId, Configuration.ClientSecret, AccessToken, AccessTokenSecret);
 
             BeforeGetUserInfo(new BeforeAfterRequestArgs
             {

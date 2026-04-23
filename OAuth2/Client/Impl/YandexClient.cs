@@ -78,7 +78,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            // Source document 
+            // Source document
             // http://api.yandex.com/oauth/doc/dg/yandex-oauth-dg.pdf
         }
 
@@ -96,11 +96,11 @@ namespace OAuth2.Client.Impl
             {
                 Id = response["id"].Value<string>(),
                 FirstName = names.Any() ? names.First() : response["display_name"].Value<string>(),
-                LastName = names.Count() > 1 ? names.Last() : string.Empty,
+                LastName = names.Count() > 1 ? names.Last() : String.Empty,
                 Email = response["default_email"].SafeGet(x => x.Value<string>()),
             };
 
-			if (!string.IsNullOrEmpty(avatar))
+			if (!String.IsNullOrEmpty(avatar))
 			{
 				avatar = _avatarBaseUri + avatar + "/";
 				user.AvatarUri.Small = avatar+_small;
@@ -111,6 +111,7 @@ namespace OAuth2.Client.Impl
 			return user;
 		}
 
+        /// <inheritdoc />
         public override string Name
         {
             get { return "Yandex"; }

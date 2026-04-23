@@ -1,9 +1,11 @@
+using System;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp.Authenticators;
+using RestSharp.Authenticators.OAuth2;
 
 namespace OAuth2.Client.Impl
 {
@@ -17,7 +19,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        public FitbitClient(IRequestFactory factory, IClientConfiguration configuration) 
+        public FitbitClient(IRequestFactory factory, IClientConfiguration configuration)
             : base(factory, configuration)
         {
         }
@@ -66,16 +68,18 @@ namespace OAuth2.Client.Impl
                 };
             }
         }
-        
+
+        /// <inheritdoc />
         protected override void BeforeGetAccessToken(BeforeAfterRequestArgs args)
         {
-            args.Client.Authenticator = new HttpBasicAuthenticator(Configuration.ClientId, Configuration.ClientSecret);
+            args.Request.Authenticator = new HttpBasicAuthenticator(Configuration.ClientId, Configuration.ClientSecret);
             base.BeforeGetAccessToken(args);
         }
 
+        /// <inheritdoc />
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            args.Client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
             base.BeforeGetUserInfo(args);
         }
 
@@ -92,7 +96,7 @@ namespace OAuth2.Client.Impl
             {
                 Id = response["user"]["encodedId"].Value<string>(),
                 FirstName = names.Any() ? names.First() : response["user"]["displayName"].Value<string>(),
-                LastName = names.Count() > 1 ? names.Last() : string.Empty,
+                LastName = names.Count() > 1 ? names.Last() : String.Empty,
                 AvatarUri =
                     {
                         Small = null,

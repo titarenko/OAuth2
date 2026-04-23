@@ -14,15 +14,15 @@ namespace OAuth2.Client
         public string FieldName { get; set; }
 
         /// <summary>
-        /// Unexpected response itself (can be null, if error occured later in the response processing pipeline).
+        /// Unexpected response itself (can be null, if error occurred later in the response processing pipeline).
         /// </summary>
-        public IRestResponse Response { get; private set; }
+        public RestResponse Response { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UnexpectedResponseException"/> class.
         /// </summary>
         /// <param name="response">The response.</param>
-        public UnexpectedResponseException(IRestResponse response)
+        public UnexpectedResponseException(RestResponse response)
         {
             Response = response;
         }

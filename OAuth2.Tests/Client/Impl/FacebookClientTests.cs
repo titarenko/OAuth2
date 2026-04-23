@@ -1,5 +1,9 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -10,6 +14,7 @@ using OAuth2.Client.Impl;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using OAuth2.Tests.TestHelpers;
 using RestSharp;
 
 namespace OAuth2.Tests.Client.Impl
@@ -17,29 +22,35 @@ namespace OAuth2.Tests.Client.Impl
     [TestFixture]
     public class FacebookClientTests
     {
+        /* lang=json */
         private const string Content = "{\"email\":\"email\",\"first_name\":\"name\",\"last_name\":\"surname\",\"id\":\"id\",\"picture\":{\"data\":{\"url\":\"picture\"}}}";
 
         private FacebookClientDescendant _descendant;
         private IRequestFactory _factory;
-        private IRestClient _restClient;
-        private IRestRequest _restRequest;
-        private IRestResponse _restResponse;
+        private MockHttpMessageHandler _handler;
+        private List<RestRequest> _capturedRequests;
 
         [SetUp]
         public void SetUp()
         {
-            _restRequest = Substitute.For<IRestRequest>();
-            _restResponse = Substitute.For<IRestResponse>();
-
-            _restResponse.StatusCode.Returns(HttpStatusCode.OK);
-            _restResponse.Content.Returns("response");
-
-            _restClient = Substitute.For<IRestClient>();
-            _restClient.ExecuteAsync(_restRequest, CancellationToken.None).Returns(_restResponse);
+            _handler = new MockHttpMessageHandler();
+            _capturedRequests = new List<RestRequest>();
 
             _factory = Substitute.For<IRequestFactory>();
-            _factory.CreateClient().Returns(_restClient);
-            _factory.CreateRequest().Returns(_restRequest);
+            _factory.CreateClient(Arg.Any<string>()).Returns(callInfo =>
+                new RestClient(new HttpClient(_handler), new RestClientOptions(callInfo.Arg<string>())));
+            _factory.CreateRequest(Arg.Any<string>()).Returns(callInfo =>
+            {
+                var req = new RestRequest(callInfo.Arg<string>());
+                _capturedRequests.Add(req);
+                return req;
+            });
+            _factory.CreateRequest(Arg.Any<string>(), Arg.Any<Method>()).Returns(callInfo =>
+            {
+                var req = new RestRequest(callInfo.Arg<string>(), callInfo.Arg<Method>());
+                _capturedRequests.Add(req);
+                return req;
+            });
 
             _descendant = new FacebookClientDescendant(_factory, Substitute.For<IClientConfiguration>());
         }
@@ -76,7 +87,7 @@ namespace OAuth2.Tests.Client.Impl
             endpoint.BaseUri.Should().Be("https://graph.facebook.com");
             endpoint.Resource.Should().Be("/me");
         }
-        
+
         [Test]
         public void Should_ParseAllFieldsOfUserInfo_WhenCorrectContentIsPassed()
         {
@@ -95,24 +106,19 @@ namespace OAuth2.Tests.Client.Impl
         public async Task Should_AddExtraParameters_WhenOnGetUserInfoIsCalled()
         {
             // arrange
-            var restClient = _factory.CreateClient();
-            var restRequest = _factory.CreateRequest();
-            (await restClient.ExecuteAsync(restRequest, CancellationToken.None))
-                .Content.Returns(
-                    "any content to pass response verification",
-                    "access_token=token",
-                    Content);
+            _handler.EnqueueResponse("access_token=token");
+            _handler.EnqueueResponse(Content);
 
             // act
             await _descendant.GetUserInfoAsync(new NameValueCollection
             {
-                {"code", "code"}
+                { "code", "code" }
             });
 
             // assert
-            _factory.CreateRequest()
-                .Received(1)
-                .AddParameter(Arg.Is("fields"), Arg.Is("id,first_name,last_name,email,picture"));
+            var userInfoRequest = _capturedRequests.Last();
+            userInfoRequest.Parameters.FirstOrDefault(p => String.Equals(p.Name, "fields", StringComparison.Ordinal))?.Value
+                .Should().Be("id,first_name,last_name,email,picture");
         }
 
         class FacebookClientDescendant : FacebookClient

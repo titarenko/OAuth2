@@ -1,15 +1,16 @@
-﻿using System;
+using System;
 
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp.Authenticators;
+using RestSharp.Authenticators.OAuth2;
 
 namespace OAuth2.Client.Impl
 {
     /// <summary>
-    /// Yahoo client 
+    /// Yahoo client
     /// Right now only Yahoo Gemini and Yahoo Social support OAuth2
     /// https://developer.yahoo.com/oauth2/guide/
     /// </summary>
@@ -17,6 +18,9 @@ namespace OAuth2.Client.Impl
     {
         private string _userProfileGUID;
 
+        /// <summary>
+        /// Gets the Yahoo user profile GUID obtained from the token response.
+        /// </summary>
         public string UserProfileGUID
         {
             get
@@ -27,7 +31,7 @@ namespace OAuth2.Client.Impl
             {
                 _userProfileGUID = value;
             }
-        }        
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="YahooClient"/> class.
@@ -94,14 +98,14 @@ namespace OAuth2.Client.Impl
         /// <summary>
         /// Called just before issuing request to third-party service when everything is ready.
         /// Allows to add extra parameters to request or do any other needed preparations.
-        /// 
+        ///
         /// We have to reformat the Url adding the user guid for accessing their information
         /// https://developer.yahoo.com/oauth2/guide/apirequests/
         /// </summary>
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            args.Client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
-            args.Request.Resource = string.Format(this.UserInfoServiceEndpoint.Resource, this._userProfileGUID);
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
+            args.Request.Resource = String.Format(this.UserInfoServiceEndpoint.Resource, this._userProfileGUID);
         }
 
         /// <summary>

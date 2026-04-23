@@ -12,7 +12,9 @@ namespace OAuth2.Tests.Client.Impl
     [TestFixture]
     public class GoogleClientTests
     {
+        /* lang=json */
         private const string Content = "{\"email\":\"email\",\"given_name\":\"name\",\"family_name\":\"surname\",\"id\":\"id\"}";
+        /* lang=json */
         private const string ContentWithPicture = "{\"email\":\"email\",\"given_name\":\"name\",\"family_name\":\"surname\",\"id\":\"id\",\"picture\":\"picture\"}";
 
         private GoogleClientDescendant _descendant;
@@ -103,6 +105,6 @@ namespace OAuth2.Tests.Client.Impl
             {
                 return base.ParseUserInfo(content);
             }
-        } 
+        }
     }
 }

@@ -10,6 +10,7 @@ using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
 using RestSharp.Authenticators;
+using RestSharp.Authenticators.OAuth2;
 
 namespace OAuth2.Client
 {
@@ -122,6 +123,13 @@ namespace OAuth2.Client
             return AccessToken;
         }
 
+        /// <summary>
+        /// Returns a valid access token, refreshing it if expired or forced.
+        /// </summary>
+        /// <param name="refreshToken">Optional refresh token to use. Falls back to the stored refresh token.</param>
+        /// <param name="forceUpdate">When <c>true</c>, forces a token refresh even if the current token has not expired.</param>
+        /// <param name="cancellationToken">Optional cancellation token.</param>
+        /// <returns>The current access token.</returns>
         public async Task<string> GetCurrentTokenAsync(string refreshToken = null, bool forceUpdate = false, CancellationToken cancellationToken = default)
         {
             if (!forceUpdate && ExpiresAt != default && DateTime.Now < ExpiresAt && !String.IsNullOrEmpty(AccessToken))
@@ -159,7 +167,7 @@ namespace OAuth2.Client
         protected abstract Endpoint AccessTokenServiceEndpoint { get; }
 
         /// <summary>
-        /// Defines URI of service which allows to obtain information about user 
+        /// Defines URI of service which allows to obtain information about user
         /// who is currently logged in.
         /// </summary>
         protected abstract Endpoint UserInfoServiceEndpoint { get; }
@@ -184,7 +192,7 @@ namespace OAuth2.Client
         private async Task QueryAccessTokenAsync(NameValueCollection parameters, CancellationToken cancellationToken = default)
         {
             var client = _factory.CreateClient(AccessTokenServiceEndpoint);
-            var request = _factory.CreateRequest(AccessTokenServiceEndpoint, Method.POST);
+            var request = _factory.CreateRequest(AccessTokenServiceEndpoint, Method.Post);
 
             BeforeGetAccessToken(new BeforeAfterRequestArgs
             {
@@ -216,6 +224,12 @@ namespace OAuth2.Client
                 ExpiresAt = DateTime.Now.AddSeconds(expiresIn);
         }
 
+        /// <summary>
+        /// Parses a value from the access token response by key, supporting both JSON and query-string formats.
+        /// </summary>
+        /// <param name="content">The raw response content.</param>
+        /// <param name="key">The key to look up in the response.</param>
+        /// <returns>The value associated with <paramref name="key"/>, or <c>null</c> if not found.</returns>
         protected virtual string ParseTokenResponse(string content, string key)
         {
             if (String.IsNullOrEmpty(content) || String.IsNullOrEmpty(key))
@@ -241,9 +255,14 @@ namespace OAuth2.Client
         /// <param name="content">The content which is received from provider.</param>
         protected abstract UserInfo ParseUserInfo(string content);
 
+        /// <summary>
+        /// Called just before issuing request to obtain access token.
+        /// Allows to add extra parameters to request or do any other needed preparations.
+        /// </summary>
+        /// <param name="args">Request context containing client, request, parameters, and configuration.</param>
         protected virtual void BeforeGetAccessToken(BeforeAfterRequestArgs args)
         {
-            if (GrantType == "refresh_token")
+            if (String.Equals(GrantType, "refresh_token", StringComparison.OrdinalIgnoreCase))
             {
                 args.Request.AddObject(new
                 {
@@ -289,8 +308,8 @@ namespace OAuth2.Client
         protected virtual async Task<UserInfo> GetUserInfoAsync(CancellationToken cancellationToken = default)
         {
             var client = _factory.CreateClient(UserInfoServiceEndpoint);
-            client.Authenticator = new OAuth2UriQueryParameterAuthenticator(AccessToken);
             var request = _factory.CreateRequest(UserInfoServiceEndpoint);
+            request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken);
 
             BeforeGetUserInfo(new BeforeAfterRequestArgs
             {

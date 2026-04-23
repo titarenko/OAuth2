@@ -1,7 +1,9 @@
+using System;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using RestSharp;
 
 namespace OAuth2.Client.Impl
 {
@@ -15,7 +17,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        public FoursquareClient(IRequestFactory factory, IClientConfiguration configuration) 
+        public FoursquareClient(IRequestFactory factory, IClientConfiguration configuration)
             : base(factory, configuration)
         {
         }
@@ -71,7 +73,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            // Source documents 
+            // Source documents
             // https://developer.foursquare.com/overview/auth.html
             // https://developer.foursquare.com/overview/versioning
             args.Request.AddParameter("v", System.DateTime.Now.ToString("yyyyMMdd"));
@@ -94,17 +96,18 @@ namespace OAuth2.Client.Impl
                 Id = response["response"]["user"]["id"].Value<string>(),
                 FirstName = response["response"]["user"]["firstName"].Value<string>(),
                 LastName = response["response"]["user"]["lastName"].Value<string>(),
-                Email = response["response"]["user"]["contact"]["email"].SafeGet(x => x.Value<string>()),                
+                Email = response["response"]["user"]["contact"]["email"].SafeGet(x => x.Value<string>()),
                 AvatarUri =
                 {
                     // Defined photo sizes https://developer.foursquare.com/docs/responses/photo
-                    Small = !string.IsNullOrWhiteSpace(prefix) ? string.Format(avatarUriTemplate, prefix, string.Format(avatarSizeTemplate, AvatarInfo.SmallSize), suffix) : string.Empty,
-                    Normal = !string.IsNullOrWhiteSpace(prefix) ? string.Format(avatarUriTemplate, prefix, string.Empty, suffix) : string.Empty,
-                    Large = !string.IsNullOrWhiteSpace(prefix) ? string.Format(avatarUriTemplate, prefix, string.Format(avatarSizeTemplate, AvatarInfo.LargeSize), suffix) : string.Empty
+                    Small = !String.IsNullOrWhiteSpace(prefix) ? String.Format(avatarUriTemplate, prefix, String.Format(avatarSizeTemplate, AvatarInfo.SmallSize), suffix) : String.Empty,
+                    Normal = !String.IsNullOrWhiteSpace(prefix) ? String.Format(avatarUriTemplate, prefix, String.Empty, suffix) : String.Empty,
+                    Large = !String.IsNullOrWhiteSpace(prefix) ? String.Format(avatarUriTemplate, prefix, String.Format(avatarSizeTemplate, AvatarInfo.LargeSize), suffix) : String.Empty
                 }
             };
         }
 
+        /// <inheritdoc />
         public override string Name
         {
             get { return "Foursquare"; }

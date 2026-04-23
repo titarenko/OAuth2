@@ -1,11 +1,14 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using RestSharp;
 
 using RestSharp.Authenticators;
+using RestSharp.Authenticators.OAuth2;
 
 namespace OAuth2.Client.Impl
 {
@@ -76,7 +79,7 @@ namespace OAuth2.Client.Impl
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
             args.Request.AddParameter("opt_fields", "id,name,photo.image_128x128,photo.image_60x60,photo.image_36x36,email");
-            args.Client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
         }
 
         /// <summary>
@@ -106,9 +109,9 @@ namespace OAuth2.Client.Impl
                 Email = response["data"]["email"].SafeGet(x => x.Value<string>()),
                 AvatarUri =
                 {
-                    Small = !string.IsNullOrWhiteSpace(avatarSmallUri) ? avatarSmallUri : string.Empty,
-                    Normal = !string.IsNullOrWhiteSpace(avatarNormalUri) ? avatarNormalUri : string.Empty,
-                    Large = !string.IsNullOrWhiteSpace(avatarLargeUri) ? avatarLargeUri : string.Empty
+                    Small = !String.IsNullOrWhiteSpace(avatarSmallUri) ? avatarSmallUri : String.Empty,
+                    Normal = !String.IsNullOrWhiteSpace(avatarNormalUri) ? avatarNormalUri : String.Empty,
+                    Large = !String.IsNullOrWhiteSpace(avatarLargeUri) ? avatarLargeUri : String.Empty
                 }
             };
         }

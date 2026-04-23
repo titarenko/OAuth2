@@ -10,6 +10,11 @@ namespace OAuth2.Client.Impl
     /// </summary>
     public class TwitterClient : OAuthClient
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TwitterClient"/> class.
+        /// </summary>
+        /// <param name="factory">The factory.</param>
+        /// <param name="configuration">The configuration.</param>
         public TwitterClient(IRequestFactory factory, IClientConfiguration configuration)
             : base(factory, configuration)
         {

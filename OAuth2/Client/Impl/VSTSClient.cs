@@ -1,8 +1,11 @@
+using System;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using RestSharp;
 using RestSharp.Authenticators;
+using RestSharp.Authenticators.OAuth2;
 
 namespace OAuth2.Client.Impl
 {
@@ -36,6 +39,7 @@ namespace OAuth2.Client.Impl
             }
         }
 
+        /// <inheritdoc />
         protected override void BeforeGetAccessToken(BeforeAfterRequestArgs args)
         {
             string grantTypeToken = args.Parameters["refresh_token"] != null ? "refresh_token" : "urn:ietf:params:oauth:grant-type:jwt-bearer";
@@ -86,7 +90,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            args.Client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
         }
 
         /// <summary>
@@ -105,15 +109,16 @@ namespace OAuth2.Client.Impl
                 FirstName = response["displayName"].Value<string>(),
                 AvatarUri =
                     {
-                        Small = string.Format(avatarUriTemplate, response["id"].Value<string>(), "small"),
-                        Normal = string.Format(avatarUriTemplate, response["id"].Value<string>(), "medium"),
-                        Large = string.Format(avatarUriTemplate, response["id"].Value<string>(), "large")
+                        Small = String.Format(avatarUriTemplate, response["id"].Value<string>(), "small"),
+                        Normal = String.Format(avatarUriTemplate, response["id"].Value<string>(), "medium"),
+                        Large = String.Format(avatarUriTemplate, response["id"].Value<string>(), "large")
                     },
                 Email = response["emailAddress"].Value<string>()
             };
             return userinfo;
         }
 
+        /// <inheritdoc />
         public override string Name
         {
             get { return "VSTS"; }

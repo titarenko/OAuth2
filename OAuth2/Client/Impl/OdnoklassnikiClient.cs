@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
@@ -34,7 +35,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "http://www.odnoklassniki.ru",
+                    BaseUri = "https://www.odnoklassniki.ru",
                     Resource = "/oauth/authorize"
                 };
             }
@@ -49,7 +50,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "http://api.odnoklassniki.ru",
+                    BaseUri = "https://api.odnoklassniki.ru",
                     Resource = "/oauth/token.do"
                 };
             }
@@ -64,12 +65,12 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "http://api.odnoklassniki.ru",
+                    BaseUri = "https://api.odnoklassniki.ru",
                     Resource = "/fb.do"
                 };
             }
         }
-        
+
         /// <summary>
         /// Called just before issuing request to third-party service when everything is ready.
         /// Allows to add extra parameters to request or do any other needed preparations.
@@ -82,11 +83,9 @@ namespace OAuth2.Client.Impl
             args.Request.AddParameter("application_key", _configuration.ClientPublic);
             args.Request.AddParameter("method", "users.getCurrentUser");
 
-            // workaround for current design, oauth_token is always present in URL, so we need emulate it for correct request signing 
-#pragma warning disable CS0618 // Type or member is obsolete
-            var fakeParam = new Parameter("oauth_token", AccessToken, ParameterType.QueryString);
-#pragma warning restore CS0618 // Type or member is obsolete
-            args.Request.AddParameter("oauth_token", AccessToken, ParameterType.QueryString);
+            // workaround for current design, oauth_token is always present in URL, so we need emulate it for correct request signing
+            var fakeParam = new QueryParameter("oauth_token", AccessToken);
+            args.Request.AddParameter(fakeParam);
 
             // Signing.
             // Call API methods using access_token instead of session_key parameter
@@ -94,11 +93,11 @@ namespace OAuth2.Client.Impl
             // http://dev.odnoklassniki.ru/wiki/display/ok/Authentication+and+Authorization
             // sig = md5( request_params_composed_string+ md5(access_token + application_secret_key)  )
             // Don't include access_token into request_params_composed_string
-            string signature = string.Concat(args.Request.Parameters.OrderBy(x => x.Name).Select(x => string.Format("{0}={1}", x.Name, x.Value)).ToList());
+            string signature = String.Concat(args.Request.Parameters.OrderBy(x => x.Name).Select(x => String.Format("{0}={1}", x.Name, x.Value)).ToList());
             signature = (signature + (AccessToken + _configuration.ClientSecret).GetMd5Hash()).GetMd5Hash();
 
             // Removing fake param to prevent dups
-            args.Request.Parameters.Remove(fakeParam);
+            args.Request.Parameters.RemoveParameter(fakeParam);
 
             args.Request.AddParameter("access_token", AccessToken);
             args.Request.AddParameter("sig", signature);
@@ -116,13 +115,13 @@ namespace OAuth2.Client.Impl
             {
                 Id = response["uid"].Value<string>(),
                 FirstName = response["first_name"].Value<string>(),
-                LastName = response["last_name"].Value<string>(),                
+                LastName = response["last_name"].Value<string>(),
                 AvatarUri =
                     {
                         Small = null,
                         Normal = avatarUri,
                         Large = avatarUri.Replace("&photoType=4", "&photoType=6")
-                    }                
+                    }
             };
         }
         /// <summary>

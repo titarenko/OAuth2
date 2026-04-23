@@ -4,22 +4,25 @@ using RestSharp;
 
 namespace OAuth2.Client
 {
+    /// <summary>
+    /// Contains context passed to before/after request hooks during the OAuth authentication flow.
+    /// </summary>
     public class BeforeAfterRequestArgs
     {
         /// <summary>
         /// Client instance.
         /// </summary>
-        public IRestClient Client { get; set; }
+        public RestClient Client { get; set; }
 
         /// <summary>
         /// Request instance.
         /// </summary>
-        public IRestRequest Request { get; set; }
+        public RestRequest Request { get; set; }
 
         /// <summary>
         /// Response instance.
         /// </summary>
-        public IRestResponse Response { get; set; }
+        public RestResponse Response { get; set; }
 
         /// <summary>
         /// Values received from service.

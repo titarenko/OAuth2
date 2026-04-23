@@ -12,7 +12,8 @@ namespace OAuth2.Tests.Client.Impl
     [TestFixture]
     public class OdnoklassnikiClientTests
     {
-        private const string Content = "todo";
+        /* lang=json */
+        private const string Content = "{\"uid\":\"12345\",\"first_name\":\"Oleg\",\"last_name\":\"Ivanov\",\"pic_1\":\"https://i.mycdn.me/image?id=123&photoType=4\"}";
 
         private OdnoklassnikiClientDescendant _descendant;
         private IRequestFactory _factory;
@@ -32,7 +33,7 @@ namespace OAuth2.Tests.Client.Impl
             var endpoint = _descendant.GetAccessCodeServiceEndpoint();
 
             // assert
-            endpoint.BaseUri.Should().Be("http://www.odnoklassniki.ru");
+            endpoint.BaseUri.Should().Be("https://www.odnoklassniki.ru");
             endpoint.Resource.Should().Be("/oauth/authorize");
         }
 
@@ -43,7 +44,7 @@ namespace OAuth2.Tests.Client.Impl
             var endpoint = _descendant.GetAccessTokenServiceEndpoint();
 
             // assert
-            endpoint.BaseUri.Should().Be("http://api.odnoklassniki.ru");
+            endpoint.BaseUri.Should().Be("https://api.odnoklassniki.ru");
             endpoint.Resource.Should().Be("/oauth/token.do");
         }
 
@@ -54,20 +55,21 @@ namespace OAuth2.Tests.Client.Impl
             var endpoint = _descendant.GetUserInfoServiceEndpoint();
 
             // assert
-            endpoint.BaseUri.Should().Be("http://api.odnoklassniki.ru");
+            endpoint.BaseUri.Should().Be("https://api.odnoklassniki.ru");
             endpoint.Resource.Should().Be("/fb.do");
         }
 
         [Test]
         public void Should_ParseAllFieldsOfUserInfo_WhenCorrectContentIsPassed()
         {
-            Assert.Ignore("todo");
-
             // act
             var info = _descendant.ParseUserInfo(Content);
 
             // assert
-            info.Id.Should().Be("todo");
+            info.Id.Should().Be("12345");
+            info.FirstName.Should().Be("Oleg");
+            info.LastName.Should().Be("Ivanov");
+            info.AvatarUri.Large.Should().Be("https://i.mycdn.me/image?id=123&photoType=6");
         }
 
         private class OdnoklassnikiClientDescendant : OdnoklassnikiClient
@@ -96,6 +98,6 @@ namespace OAuth2.Tests.Client.Impl
             {
                 return base.ParseUserInfo(content);
             }
-        } 
+        }
     }
 }
