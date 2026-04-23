@@ -128,8 +128,28 @@ app.Run();
 - [Sasidhar Kasturi](https://github.com/skasturi) (added Uber, Spotify, Yahoo)
 - [Jamie Dalton](https://github.com/daltskin) (added Visual Studio Team Services)
 
+## Acknowledgements
+
+Many thanks to [JetBrains](https://www.jetbrains.com/) company for providing free OSS licenses
+for [**ReSharper**](https://www.jetbrains.com/resharper/) and [**dotCover**](https://www.jetbrains.com/dotcover/) -
+these tools allow us to work on this project with pleasure!
+
+Also we glad to have opportunity to use free [**Teamcity**](https://www.jetbrains.com/teamcity/) CI server
+provided by [Codebetter.com](http://codebetter.com/) and [JetBrains](https://www.jetbrains.com/) -
+many thanks for supporting OSS!
+
+OAuth2 optimization would never be so simple without YourKit .NET profiler!
+We appreciate kind support of open source projects by YourKit LLC -
+the creator of innovative and intelligent tools for profiling .NET [**YourKit .NET Profiler**](https://www.yourkit.com/.net/profiler/index.jsp)
+and Java applications [YourKit Java Profiler](https://www.yourkit.com/java/profiler/index.jsp).
+
 ## License
 
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
-
+The MIT License (MIT)
 Copyright (c) 2012-2013 Constantin Titarenko, Andrew Semack and others
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
