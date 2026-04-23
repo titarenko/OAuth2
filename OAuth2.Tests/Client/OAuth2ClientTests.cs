@@ -53,22 +53,22 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public async Task Should_ThrowUnexpectedResponse_When_CodeIsNotOk()
+        public Task Should_ThrowUnexpectedResponse_When_CodeIsNotOk()
         {
             _restResponse.StatusCode = HttpStatusCode.InternalServerError;
 
-            await _descendant
+            return _descendant
                 .Awaiting(x => x.GetUserInfoAsync(new NameValueCollection()))
                 .Should().ThrowAsync<UnexpectedResponseException>();
         }
 
         [Test]
-        public async Task Should_ThrowUnexpectedResponse_When_ResponseIsEmpty()
+        public Task Should_ThrowUnexpectedResponse_When_ResponseIsEmpty()
         {
             _restResponse.StatusCode = HttpStatusCode.OK;
             _restResponse.Content.Returns("");
-            
-            await _descendant
+
+            return _descendant
                 .Awaiting(x => x.GetUserInfoAsync(new NameValueCollection()))
                 .Should().ThrowAsync<UnexpectedResponseException>();
         }
@@ -104,7 +104,7 @@ namespace OAuth2.Tests.Client
 
             _restClient.Received(1).BuildUri(_restRequest);
         }
-        
+
         [Test]
         public async Task Should_ThrowException_WhenParametersForGetUserInfoContainError()
         {
@@ -121,13 +121,13 @@ namespace OAuth2.Tests.Client
         [Test]
         [TestCase("")]
         [TestCase(null)]
-        public async Task ShouldNot_ThrowException_When_ParametersForGetUserInfoContainEmptyError(string error)
+        public Task ShouldNot_ThrowException_When_ParametersForGetUserInfoContainEmptyError(string error)
         {
             // arrange
             _restResponse.Content.Returns("access_token=token");
 
             // act & assert
-            await _descendant
+            return _descendant
                 .Awaiting(x => x.GetUserInfoAsync(new NameValueCollection
                 {
                     {"error", error},
@@ -200,7 +200,7 @@ namespace OAuth2.Tests.Client
             var currentRefreshToken = "refresh-token";
             var initialTokenResponse = @$"{{""access_token"": ""abc123"", ""refresh_token"": ""{currentRefreshToken}""}}";
             var refreshTokenResponse = @"{""access_token"": ""abc123""}";
-            
+
             // simulate getting the initial token (to populate refresh token)
             _restResponse.Content.Returns(initialTokenResponse);
             await _descendant.GetTokenAsync(new NameValueCollection {{"code", "auth-code"}});
@@ -218,8 +218,8 @@ namespace OAuth2.Tests.Client
 
         class OAuth2ClientDescendant : OAuth2Client
         {
-            public OAuth2ClientDescendant(IRequestFactory factory, IClientConfiguration configuration) 
-                : base(factory, configuration) 
+            public OAuth2ClientDescendant(IRequestFactory factory, IClientConfiguration configuration)
+                : base(factory, configuration)
             {
             }
 

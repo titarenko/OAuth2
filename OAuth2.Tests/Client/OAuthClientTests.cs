@@ -46,9 +46,9 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public async Task Should_ThrowNotSupported_When_UserWantsToTransmitState()
+        public Task Should_ThrowNotSupported_When_UserWantsToTransmitState()
         {
-            await _descendant.Awaiting(x => x.GetLoginLinkUriAsync("any state")).Should().ThrowAsync<NotSupportedException>();
+            return _descendant.Awaiting(x => x.GetLoginLinkUriAsync("any state")).Should().ThrowAsync<NotSupportedException>();
         }
 
         [Test]
@@ -134,7 +134,7 @@ namespace OAuth2.Tests.Client
 
             _factory.Received().CreateClient();
             _factory.Received().CreateRequest();
-            
+
             restClient.Received().BaseUrl = new Uri("https://LoginServiceEndpoint");
             restRequest.Received().Resource = "/LoginServiceEndpoint";
             restRequest.Received().AddParameter("oauth_token", "token5");
@@ -147,7 +147,7 @@ namespace OAuth2.Tests.Client
             var restClient = _factory.CreateClient();
             var restRequest = _factory.CreateRequest();
             (await restClient.ExecuteAsync(restRequest, CancellationToken.None)).Content = "oauth_token=token&oauth_token_secret=secret";
-            
+
             // act
             await _descendant.GetUserInfoAsync(new NameValueCollection
             {
@@ -162,7 +162,7 @@ namespace OAuth2.Tests.Client
             restClient.Received().BaseUrl = new Uri("https://AccessTokenServiceEndpoint");
             restRequest.Received().Resource = "/AccessTokenServiceEndpoint";
             restRequest.Received().Method = Method.POST;
-            
+
             restClient.Authenticator.Should().NotBeNull();
             restClient.Authenticator.Should().BeOfType<OAuth1Authenticator>();
         }
@@ -174,8 +174,8 @@ namespace OAuth2.Tests.Client
             var restClient = _factory.CreateClient();
             var restRequest = _factory.CreateRequest();
             (await restClient.ExecuteAsync(restRequest, CancellationToken.None)).Content.Returns(
-                "something to pass response verification", 
-                "oauth_token=token&oauth_token_secret=secret", 
+                "something to pass response verification",
+                "oauth_token=token&oauth_token_secret=secret",
                 "abba");
 
             // act
@@ -204,7 +204,7 @@ namespace OAuth2.Tests.Client
                 : base(factory, configuration)
             {
             }
-            
+
             protected override Endpoint RequestTokenServiceEndpoint
             {
                 get
