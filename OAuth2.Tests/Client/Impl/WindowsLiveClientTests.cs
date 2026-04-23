@@ -69,6 +69,9 @@ namespace OAuth2.Tests.Client.Impl
             info.Id.Should().Be("abc123");
             info.FirstName.Should().Be("John");
             info.LastName.Should().Be("Doe");
+            info.AvatarUri.Small.Should().Contain("abc123").And.Contain("UserTileSmall");
+            info.AvatarUri.Normal.Should().Contain("abc123").And.Contain("UserTileSmall");
+            info.AvatarUri.Large.Should().Contain("abc123").And.Contain("UserTileLarge");
         }
 
         private class WindowsLiveClientDescendant : WindowsLiveClient

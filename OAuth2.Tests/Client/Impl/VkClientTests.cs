@@ -61,7 +61,7 @@ namespace OAuth2.Tests.Client.Impl
             var endpoint = _descendant.GetAccessCodeServiceEndpoint();
 
             // assert
-            endpoint.BaseUri.Should().Be("http://oauth.vk.com");
+            endpoint.BaseUri.Should().Be("https://oauth.vk.com");
             endpoint.Resource.Should().Be("/authorize");
         }
 

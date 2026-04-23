@@ -96,6 +96,7 @@ namespace OAuth2.Tests.Client
             queryParams["client_id"].Should().Be("client_id");
             queryParams["redirect_uri"].Should().Be("http://redirect-uri.net");
             queryParams["scope"].Should().Be("scope");
+            queryParams["state"].Should().BeNull();
 
             _factory.Received(1).CreateClient("https://AccessCodeServiceEndpoint");
             _factory.Received(1).CreateRequest("/AccessCodeServiceEndpoint", Method.Get);
@@ -173,7 +174,7 @@ namespace OAuth2.Tests.Client
             _factory.Received().CreateRequest("/UserInfoServiceEndpoint", Method.Get);
 
             var userInfoRequest = _capturedRequests.Last();
-            userInfoRequest.Authenticator.Should().BeOfType<OAuth2UriQueryParameterAuthenticator>();
+            userInfoRequest.Authenticator.Should().BeOfType<OAuth2AuthorizationRequestHeaderAuthenticator>();
         }
 
         [Test]

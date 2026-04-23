@@ -35,7 +35,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "http://www.odnoklassniki.ru",
+                    BaseUri = "https://www.odnoklassniki.ru",
                     Resource = "/oauth/authorize"
                 };
             }
@@ -50,7 +50,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "http://api.odnoklassniki.ru",
+                    BaseUri = "https://api.odnoklassniki.ru",
                     Resource = "/oauth/token.do"
                 };
             }
@@ -65,7 +65,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "http://api.odnoklassniki.ru",
+                    BaseUri = "https://api.odnoklassniki.ru",
                     Resource = "/fb.do"
                 };
             }

@@ -54,7 +54,7 @@ namespace OAuth2.Tests.Client.Impl
             var endpoint = _descendant.GetUserInfoServiceEndpoint();
 
             // assert
-            endpoint.BaseUri.Should().Be("http://www.appsmail.ru");
+            endpoint.BaseUri.Should().Be("https://www.appsmail.ru");
             endpoint.Resource.Should().Be("/platform/api");
         }
 

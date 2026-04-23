@@ -33,7 +33,7 @@ namespace OAuth2.Tests.Client.Impl
             var endpoint = _descendant.GetAccessCodeServiceEndpoint();
 
             // assert
-            endpoint.BaseUri.Should().Be("http://www.odnoklassniki.ru");
+            endpoint.BaseUri.Should().Be("https://www.odnoklassniki.ru");
             endpoint.Resource.Should().Be("/oauth/authorize");
         }
 
@@ -44,7 +44,7 @@ namespace OAuth2.Tests.Client.Impl
             var endpoint = _descendant.GetAccessTokenServiceEndpoint();
 
             // assert
-            endpoint.BaseUri.Should().Be("http://api.odnoklassniki.ru");
+            endpoint.BaseUri.Should().Be("https://api.odnoklassniki.ru");
             endpoint.Resource.Should().Be("/oauth/token.do");
         }
 
@@ -55,7 +55,7 @@ namespace OAuth2.Tests.Client.Impl
             var endpoint = _descendant.GetUserInfoServiceEndpoint();
 
             // assert
-            endpoint.BaseUri.Should().Be("http://api.odnoklassniki.ru");
+            endpoint.BaseUri.Should().Be("https://api.odnoklassniki.ru");
             endpoint.Resource.Should().Be("/fb.do");
         }
 

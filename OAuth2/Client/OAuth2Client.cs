@@ -309,7 +309,7 @@ namespace OAuth2.Client
         {
             var client = _factory.CreateClient(UserInfoServiceEndpoint);
             var request = _factory.CreateRequest(UserInfoServiceEndpoint);
-            request.Authenticator = new OAuth2UriQueryParameterAuthenticator(AccessToken);
+            request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken);
 
             BeforeGetUserInfo(new BeforeAfterRequestArgs
             {

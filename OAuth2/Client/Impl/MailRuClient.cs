@@ -64,7 +64,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "http://www.appsmail.ru",
+                    BaseUri = "https://www.appsmail.ru",
                     Resource = "/platform/api"                    
                 };
             }

@@ -5,6 +5,9 @@
     <PackageTags>OAuth2, OAuth, DigitalOcean, Facebook, Foursquare, GitHub, Google, Instagram, LinkedIn, MailRu, Odnoklassniki, Twitter, VK (Vkontakte), Windows Live, Yandex, VSTS</PackageTags>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="..\readme.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="RestSharp" Version="114.0.0" />
   </ItemGroup>
