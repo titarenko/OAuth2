@@ -1,8 +1,8 @@
 using System;
 using System.Text.Json;
 using OAuth2.Configuration;
-using OAuth2.Infrastructure;
 using OAuth2.Extensions;
+using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp.Authenticators;
 using RestSharp.Authenticators.OAuth2;
@@ -123,6 +123,6 @@ namespace OAuth2.Client.Impl
             }
 
             return userInfo;
-         }
+        }
     }
 }

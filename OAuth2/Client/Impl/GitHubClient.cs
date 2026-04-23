@@ -5,8 +5,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using OAuth2.Configuration;
-using OAuth2.Infrastructure;
 using OAuth2.Extensions;
+using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
 using RestSharp.Authenticators;
@@ -55,23 +55,23 @@ namespace OAuth2.Client.Impl
         {
             using var doc = JsonDocument.Parse(content);
             var cnt = doc.RootElement;
-            var names = (cnt.GetStringOrDefault("name") ?? String.Empty).Split(new []{ " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            var names = (cnt.GetStringOrDefault("name") ?? String.Empty).Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
             const string avatarUriTemplate = "{0}&s={1}";
             var avatarUri = cnt.GetProperty("avatar_url").GetString();
             var result = new UserInfo
-                {
-                    Email = cnt.GetStringOrDefault("email"),
-                    ProviderName = this.Name,
-                    Id = cnt.GetProperty("id").GetStringValue(),
-                    FirstName = names.Count > 0 ? names.First() : cnt.GetProperty("login").GetString(),
-                    LastName = names.Count > 1 ? names.Last() : String.Empty,
-                    AvatarUri =
+            {
+                Email = cnt.GetStringOrDefault("email"),
+                ProviderName = this.Name,
+                Id = cnt.GetProperty("id").GetStringValue(),
+                FirstName = names.Count > 0 ? names.First() : cnt.GetProperty("login").GetString(),
+                LastName = names.Count > 1 ? names.Last() : String.Empty,
+                AvatarUri =
                         {
                             Small = !String.IsNullOrWhiteSpace(avatarUri) ? String.Format(avatarUriTemplate, avatarUri, AvatarInfo.SmallSize) : String.Empty,
                             Normal = avatarUri,
                             Large = !String.IsNullOrWhiteSpace(avatarUri) ? String.Format(avatarUriTemplate, avatarUri, AvatarInfo.LargeSize) : String.Empty
                         }
-                };
+            };
 
             return result;
         }

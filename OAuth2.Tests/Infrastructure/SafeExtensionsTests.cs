@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
+using FluentAssertions;
 using NUnit.Framework;
 using OAuth2.Client;
 using OAuth2.Infrastructure;
-using FluentAssertions;
 
 namespace OAuth2.Tests.Infrastructure
 {

@@ -1,6 +1,6 @@
+using FluentAssertions;
 using NUnit.Framework;
 using OAuth2.Infrastructure;
-using FluentAssertions;
 
 namespace OAuth2.Tests.Infrastructure
 {

@@ -1,8 +1,8 @@
 using System;
 using System.Text.Json;
 using OAuth2.Configuration;
-using OAuth2.Infrastructure;
 using OAuth2.Extensions;
+using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
 using RestSharp.Authenticators;
@@ -108,7 +108,7 @@ namespace OAuth2.Client.Impl
             using var doc = JsonDocument.Parse(content);
             var response = doc.RootElement;
             var id = response.GetProperty("id").GetStringValue();
-            var userinfo =  new UserInfo
+            var userinfo = new UserInfo
             {
                 Id = id,
                 FirstName = response.GetProperty("displayName").GetString(),

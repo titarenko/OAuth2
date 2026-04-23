@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
+using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
 using OAuth2.Client;
@@ -15,7 +16,6 @@ using OAuth2.Infrastructure;
 using OAuth2.Models;
 using OAuth2.Tests.TestHelpers;
 using RestSharp;
-using FluentAssertions;
 using RestSharp.Authenticators;
 
 namespace OAuth2.Tests.Client

@@ -3,8 +3,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using OAuth2.Configuration;
-using OAuth2.Infrastructure;
 using OAuth2.Extensions;
+using OAuth2.Infrastructure;
 using OAuth2.Models;
 
 namespace OAuth2.Client.Impl
@@ -40,7 +40,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri  = "https://www.linkedin.com",
+                    BaseUri = "https://www.linkedin.com",
                     Resource = "/oauth/v2/authorization"
                 };
             }
@@ -55,7 +55,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri  = "https://www.linkedin.com",
+                    BaseUri = "https://www.linkedin.com",
                     Resource = "/oauth/v2/accessToken"
                 };
             }
@@ -70,7 +70,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri  = "https://api.linkedin.com",
+                    BaseUri = "https://api.linkedin.com",
                     Resource = "/v2/userinfo"
                 };
             }
@@ -93,10 +93,10 @@ namespace OAuth2.Client.Impl
 
             return new UserInfo
             {
-                Id        = response.GetProperty("sub").GetString(),
-                Email     = response.GetStringOrDefault("email"),
+                Id = response.GetProperty("sub").GetString(),
+                Email = response.GetStringOrDefault("email"),
                 FirstName = response.GetStringOrDefault("given_name"),
-                LastName  = response.GetStringOrDefault("family_name"),
+                LastName = response.GetStringOrDefault("family_name"),
                 AvatarUri =
                     {
                         Small  = response.GetStringOrDefault("picture"),

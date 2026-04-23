@@ -1,7 +1,7 @@
 using System;
+using FluentAssertions;
 using NUnit.Framework;
 using OAuth2.Infrastructure;
-using FluentAssertions;
 
 namespace OAuth2.Tests.Infrastructure
 {
@@ -37,7 +37,7 @@ namespace OAuth2.Tests.Infrastructure
             {
                 number = 3,
                 uri = new Uri("http://example.com"),
-                text = (string) null
+                text = (string)null
             };
             var right = new
             {

@@ -1,8 +1,8 @@
 using System;
 using System.Text.Json;
 using OAuth2.Configuration;
-using OAuth2.Infrastructure;
 using OAuth2.Extensions;
+using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
 
@@ -101,7 +101,7 @@ namespace OAuth2.Client.Impl
             var response = doc.RootElement;
             const string avatarUriTemplate = @"https://cid-{0}.users.storage.live.com/users/0x{0}/myprofile/expressionprofile/profilephoto:Win8Static,{1},UserTileStatic/MeControlXXLUserTile?ck=2&ex=24";
             var id = response.GetProperty("id").GetStringValue();
-            var userinfo =  new UserInfo
+            var userinfo = new UserInfo
             {
                 Id = id,
                 FirstName = response.GetProperty("first_name").GetString(),

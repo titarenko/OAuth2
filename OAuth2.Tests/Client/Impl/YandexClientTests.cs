@@ -76,7 +76,7 @@ namespace OAuth2.Tests.Client.Impl
 
             // assert
             info.Id.Should().Be("349");
-			info.AvatarUri.Normal.Should().BeNull();
+            info.AvatarUri.Normal.Should().BeNull();
         }
 
         [Test]
@@ -89,8 +89,8 @@ namespace OAuth2.Tests.Client.Impl
 
             // assert
             info.Id.Should().Be("349");
-			info.AvatarUri.Normal.Should().Be("https://avatars.yandex.net/get-yapic/1111/enc-000/islands-retina-50");
-		}
+            info.AvatarUri.Normal.Should().Be("https://avatars.yandex.net/get-yapic/1111/enc-000/islands-retina-50");
+        }
 
         private class YandexClientDescendant : YandexClient
         {
