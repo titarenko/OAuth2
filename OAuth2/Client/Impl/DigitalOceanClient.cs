@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
+using OAuth2.Extensions;
 using OAuth2.Models;
 
 namespace OAuth2.Client.Impl

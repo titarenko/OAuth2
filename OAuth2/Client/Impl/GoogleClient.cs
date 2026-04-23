@@ -2,6 +2,7 @@ using System;
 using System.Text.Json;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
+using OAuth2.Extensions;
 using OAuth2.Models;
 
 namespace OAuth2.Client.Impl

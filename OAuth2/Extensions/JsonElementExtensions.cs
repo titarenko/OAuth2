@@ -1,7 +1,7 @@
 using System;
 using System.Text.Json;
 
-namespace OAuth2.Infrastructure
+namespace OAuth2.Extensions
 {
     /// <summary>
     /// Extension methods for <see cref="JsonElement"/> to simplify JSON navigation and value extraction.
@@ -17,15 +17,20 @@ namespace OAuth2.Infrastructure
             {
                 case JsonValueKind.String:
                     return element.GetString();
+
                 case JsonValueKind.Number:
                     return element.GetRawText();
+
                 case JsonValueKind.True:
                     return "True";
+
                 case JsonValueKind.False:
                     return "False";
+
                 case JsonValueKind.Null:
                 case JsonValueKind.Undefined:
                     return null;
+
                 default:
                     return element.GetRawText();
             }
@@ -38,6 +43,7 @@ namespace OAuth2.Infrastructure
         {
             if (element.TryGetProperty(propertyName, out var prop) && prop.ValueKind != JsonValueKind.Null)
                 return prop.GetStringValue();
+
             return null;
         }
 
@@ -64,19 +70,24 @@ namespace OAuth2.Infrastructure
                     {
                         if (!current.TryGetProperty(name, out var arrayProp))
                             return null;
+
                         current = arrayProp;
                     }
+
                     if (!Int32.TryParse(indexStr, out var index) || index < 0 || current.ValueKind != JsonValueKind.Array || current.GetArrayLength() <= index)
                         return null;
+
                     current = current[index];
                 }
                 else
                 {
                     if (!current.TryGetProperty(part, out var next))
                         return null;
+
                     current = next;
                 }
             }
+
             return current;
         }
 
@@ -93,6 +104,7 @@ namespace OAuth2.Infrastructure
                     return true;
                 }
             }
+
             value = default;
             return false;
         }
