@@ -9,6 +9,11 @@ namespace OAuth2.Client.Impl
     /// <summary>
     /// Twitter authentication client.
     /// </summary>
+    /// <remarks>
+    /// <para>Note: Twitter has been rebranded to X. The OAuth 1.0a endpoints at api.twitter.com
+    /// are still operational but API access tiers have changed significantly.</para>
+    /// </remarks>
+    /// <seealso href="https://developer.x.com/en/docs/authentication/oauth-1-0a">X (Twitter) OAuth 1.0a Documentation</seealso>
     public class TwitterClient : OAuthClient
     {
         /// <summary>

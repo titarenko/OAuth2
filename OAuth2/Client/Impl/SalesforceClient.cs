@@ -11,6 +11,7 @@ namespace OAuth2.Client.Impl
     /// <summary>
     /// Salesforce authentication client.
     /// </summary>
+    /// <seealso href="https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_web_server_flow.htm">Salesforce OAuth Documentation</seealso>
     public class SalesforceClient : OAuth2Client
     {
         /// <summary>

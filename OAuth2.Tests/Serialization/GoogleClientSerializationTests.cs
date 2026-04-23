@@ -29,7 +29,7 @@ namespace OAuth2.Tests.Serialization
         {
             // arrange
             /* lang=json */
-            const string content = @"{""id"":""g-123"",""email"":""user@gmail.com"",""given_name"":""John"",""family_name"":""Smith"",""picture"":""https://google.com/photo.jpg""}";
+            const string content = @"{""sub"":""g-123"",""email"":""user@gmail.com"",""given_name"":""John"",""family_name"":""Smith"",""picture"":""https://google.com/photo.jpg""}";
 
             // act
             var info = _client.ParseUserInfo(content);
@@ -46,7 +46,7 @@ namespace OAuth2.Tests.Serialization
         {
             // arrange
             /* lang=json */
-            const string content = @"{""id"":""1"",""email"":""e@g.com"",""given_name"":""A"",""family_name"":""B"",""picture"":""https://google.com/photo.jpg""}";
+            const string content = @"{""sub"":""1"",""email"":""e@g.com"",""given_name"":""A"",""family_name"":""B"",""picture"":""https://google.com/photo.jpg""}";
 
             // act
             var info = _client.ParseUserInfo(content);
@@ -60,7 +60,7 @@ namespace OAuth2.Tests.Serialization
         {
             // arrange
             /* lang=json */
-            const string content = @"{""id"":""1"",""email"":""e@g.com"",""given_name"":""A"",""family_name"":""B"",""picture"":""https://google.com/photo.jpg""}";
+            const string content = @"{""sub"":""1"",""email"":""e@g.com"",""given_name"":""A"",""family_name"":""B"",""picture"":""https://google.com/photo.jpg""}";
 
             // act
             var info = _client.ParseUserInfo(content);
@@ -74,7 +74,7 @@ namespace OAuth2.Tests.Serialization
         {
             // arrange
             /* lang=json */
-            const string content = @"{""id"":""1"",""email"":""e@g.com"",""given_name"":""A"",""family_name"":""B"",""picture"":""https://google.com/photo.jpg""}";
+            const string content = @"{""sub"":""1"",""email"":""e@g.com"",""given_name"":""A"",""family_name"":""B"",""picture"":""https://google.com/photo.jpg""}";
 
             // act
             var info = _client.ParseUserInfo(content);
@@ -88,7 +88,7 @@ namespace OAuth2.Tests.Serialization
         {
             // arrange
             /* lang=json */
-            const string content = @"{""id"":""1"",""email"":""e@g.com"",""given_name"":""A"",""family_name"":""B""}";
+            const string content = @"{""sub"":""1"",""email"":""e@g.com"",""given_name"":""A"",""family_name"":""B""}";
 
             // act
             var info = _client.ParseUserInfo(content);
@@ -104,7 +104,7 @@ namespace OAuth2.Tests.Serialization
         {
             // arrange
             /* lang=json */
-            const string content = @"{""id"":""g-123"",""email"":""user@gmail.com"",""given_name"":""John"",""family_name"":""Smith"",""picture"":""https://google.com/photo.jpg""}";
+            const string content = @"{""sub"":""g-123"",""email"":""user@gmail.com"",""given_name"":""John"",""family_name"":""Smith"",""picture"":""https://google.com/photo.jpg""}";
 
             // act
             var info = _client.ParseUserInfo(content);

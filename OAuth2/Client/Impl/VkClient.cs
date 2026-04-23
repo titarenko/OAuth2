@@ -10,6 +10,7 @@ namespace OAuth2.Client.Impl
     /// <summary>
     /// VK (Vkontakte) authentication client.
     /// </summary>
+    /// <seealso href="https://dev.vk.com/en/api/access-token/authcode-flow-user">VK OAuth Documentation</seealso>
     public class VkClient : OAuth2Client
     {
         private string _userId;

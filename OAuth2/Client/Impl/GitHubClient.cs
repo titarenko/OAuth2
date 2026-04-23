@@ -17,6 +17,7 @@ namespace OAuth2.Client.Impl
     /// <summary>
     /// GitHub authentication client.
     /// </summary>
+    /// <seealso href="https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps">GitHub OAuth Documentation</seealso>
     public class GitHubClient : OAuth2Client
     {
         private static readonly JsonSerializerOptions CaseInsensitiveOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
@@ -78,7 +79,7 @@ namespace OAuth2.Client.Impl
         /// <inheritdoc />
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "token");
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
         }
 
         /// <inheritdoc />
@@ -93,7 +94,7 @@ namespace OAuth2.Client.Impl
 
             var client = _factory.CreateClient(UserEmailServiceEndpoint);
             var request = _factory.CreateRequest(UserEmailServiceEndpoint);
-            request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "token");
+            request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
 
             BeforeGetUserInfo(new BeforeAfterRequestArgs
             {

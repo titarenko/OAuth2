@@ -13,6 +13,11 @@ namespace OAuth2.Client.Impl
     /// <summary>
     /// Visual Studio Team Services (VSTS) authentication client.
     /// </summary>
+    /// <remarks>
+    /// <para>Note: VSTS has been renamed to Azure DevOps. The OAuth endpoints at
+    /// app.vssps.visualstudio.com are still operational.</para>
+    /// </remarks>
+    /// <seealso href="https://learn.microsoft.com/en-us/azure/devops/integrate/get-started/authentication/oauth">Azure DevOps OAuth Documentation</seealso>
     public class VSTSClient : OAuth2Client
     {
         /// <summary>

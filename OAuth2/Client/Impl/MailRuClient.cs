@@ -12,6 +12,7 @@ namespace OAuth2.Client.Impl
     /// <summary>
     /// Mail.Ru authentication client.
     /// </summary>
+    /// <seealso href="https://api.mail.ru/docs/guides/oauth/">Mail.Ru OAuth Documentation</seealso>
     public class MailRuClient : OAuth2Client
     {
         private readonly IClientConfiguration _configuration;

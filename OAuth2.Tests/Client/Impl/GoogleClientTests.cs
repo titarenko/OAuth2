@@ -13,9 +13,9 @@ namespace OAuth2.Tests.Client.Impl
     public class GoogleClientTests
     {
         /* lang=json */
-        private const string Content = "{\"email\":\"email\",\"given_name\":\"name\",\"family_name\":\"surname\",\"id\":\"id\"}";
+        private const string Content = "{\"email\":\"email\",\"given_name\":\"name\",\"family_name\":\"surname\",\"sub\":\"id\"}";
         /* lang=json */
-        private const string ContentWithPicture = "{\"email\":\"email\",\"given_name\":\"name\",\"family_name\":\"surname\",\"id\":\"id\",\"picture\":\"picture\"}";
+        private const string ContentWithPicture = "{\"email\":\"email\",\"given_name\":\"name\",\"family_name\":\"surname\",\"sub\":\"id\",\"picture\":\"picture\"}";
 
         private GoogleClientDescendant _descendant;
 
@@ -33,7 +33,7 @@ namespace OAuth2.Tests.Client.Impl
 
             // assert
             endpoint.BaseUri.Should().Be("https://accounts.google.com");
-            endpoint.Resource.Should().Be("/o/oauth2/auth");
+            endpoint.Resource.Should().Be("/o/oauth2/v2/auth");
         }
 
         [Test]
@@ -43,8 +43,8 @@ namespace OAuth2.Tests.Client.Impl
             var endpoint = _descendant.GetAccessTokenServiceEndpoint();
 
             // assert
-            endpoint.BaseUri.Should().Be("https://accounts.google.com");
-            endpoint.Resource.Should().Be("/o/oauth2/token");
+            endpoint.BaseUri.Should().Be("https://oauth2.googleapis.com");
+            endpoint.Resource.Should().Be("/token");
         }
 
         [Test]
@@ -55,7 +55,7 @@ namespace OAuth2.Tests.Client.Impl
 
             // assert
             endpoint.BaseUri.Should().Be("https://www.googleapis.com");
-            endpoint.Resource.Should().Be("/oauth2/v1/userinfo");
+            endpoint.Resource.Should().Be("/oauth2/v3/userinfo");
         }
 
         [Test]

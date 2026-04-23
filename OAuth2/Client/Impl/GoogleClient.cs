@@ -10,6 +10,7 @@ namespace OAuth2.Client.Impl
     /// <summary>
     /// Google authentication client.
     /// </summary>
+    /// <seealso href="https://developers.google.com/identity/protocols/oauth2/web-server">Google OAuth 2.0 Documentation</seealso>
     public class GoogleClient : OAuth2Client
     {
         /// <summary>
@@ -32,7 +33,7 @@ namespace OAuth2.Client.Impl
                 return new Endpoint
                 {
                     BaseUri = "https://accounts.google.com",
-                    Resource = "/o/oauth2/auth"
+                    Resource = "/o/oauth2/v2/auth"
                 };
             }
         }
@@ -46,8 +47,8 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://accounts.google.com",
-                    Resource = "/o/oauth2/token"
+                    BaseUri = "https://oauth2.googleapis.com",
+                    Resource = "/token"
                 };
             }
         }
@@ -62,7 +63,7 @@ namespace OAuth2.Client.Impl
                 return new Endpoint
                 {
                     BaseUri = "https://www.googleapis.com",
-                    Resource = "/oauth2/v1/userinfo"
+                    Resource = "/oauth2/v3/userinfo"
                 };
             }
         }
@@ -88,7 +89,7 @@ namespace OAuth2.Client.Impl
             const string avatarUriTemplate = "{0}?sz={1}";
             return new UserInfo
             {
-                Id = response.GetProperty("id").GetStringValue(),
+                Id = response.GetProperty("sub").GetStringValue(),
                 Email = response.GetStringOrDefault("email"),
                 FirstName = response.GetProperty("given_name").GetString(),
                 LastName = response.GetProperty("family_name").GetString(),

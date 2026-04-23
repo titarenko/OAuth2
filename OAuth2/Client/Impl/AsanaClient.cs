@@ -16,6 +16,7 @@ namespace OAuth2.Client.Impl
     /// <summary>
     /// Asana authentication client.
     /// </summary>
+    /// <seealso href="https://developers.asana.com/docs/oauth">Asana OAuth Documentation</seealso>
     public class AsanaClient : OAuth2Client
     {
         /// <summary>

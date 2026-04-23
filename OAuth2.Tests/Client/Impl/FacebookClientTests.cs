@@ -63,7 +63,7 @@ namespace OAuth2.Tests.Client.Impl
 
             // assert
             endpoint.BaseUri.Should().Be("https://www.facebook.com");
-            endpoint.Resource.Should().Be("/dialog/oauth");
+            endpoint.Resource.Should().Be("/v25.0/dialog/oauth");
         }
 
         [Test]
@@ -74,7 +74,7 @@ namespace OAuth2.Tests.Client.Impl
 
             // assert
             endpoint.BaseUri.Should().Be("https://graph.facebook.com");
-            endpoint.Resource.Should().Be("/oauth/access_token");
+            endpoint.Resource.Should().Be("/v25.0/oauth/access_token");
         }
 
         [Test]
@@ -85,7 +85,7 @@ namespace OAuth2.Tests.Client.Impl
 
             // assert
             endpoint.BaseUri.Should().Be("https://graph.facebook.com");
-            endpoint.Resource.Should().Be("/me");
+            endpoint.Resource.Should().Be("/v25.0/me");
         }
 
         [Test]

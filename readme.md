@@ -80,30 +80,39 @@ app.Run();
 
 ## Supported Services
 
-- Asana
-- DigitalOcean
-- ExactOnline
-- Facebook
-- Fitbit
-- Foursquare
-- GitHub
-- Google
-- Instagram
-- LinkedIn
-- LoginCidadao
-- MailRu
-- Odnoklassniki
-- Salesforce
-- Spotify
-- Todoist
-- Twitter
-- Uber
-- VK (Vkontakte)
-- Visual Studio Team Services (VSTS)
-- Windows Live
-- Xing
-- Yahoo
-- Yandex
+| Provider | Client Class | Status | API Version | Auth Endpoint | Last Verified | Docs |
+|----------|-------------|--------|-------------|---------------|---------------|------|
+| GitHub | `GitHubClient` | Active | Current | `github.com/login/oauth/authorize` | 2026-04-23 | [Docs](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps) |
+| Google | `GoogleClient` | Active | v3 (userinfo) | `accounts.google.com/o/oauth2/v2/auth` | 2026-04-23 | [Docs](https://developers.google.com/identity/protocols/oauth2/web-server) |
+| Facebook | `FacebookClient` | Active | Graph API v25.0 | `www.facebook.com/v25.0/dialog/oauth` | 2026-04-23 | [Docs](https://developers.facebook.com/docs/facebook-login/guides/advanced/manual-flow) |
+| Microsoft | `MicrosoftClient` | Active | Identity Platform v2.0 / Graph v1.0 | `login.microsoftonline.com/common/oauth2/v2.0/authorize` | 2026-04-23 | [Docs](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow) |
+| Asana | `AsanaClient` | Active | — | | | [Docs](https://developers.asana.com/docs/oauth) |
+| DigitalOcean | `DigitalOceanClient` | Active | — | | | [Docs](https://docs.digitalocean.com/reference/api/oauth-api/) |
+| ExactOnline | `ExactOnlineClient` | Active | — | | | [Docs](https://developers.exactonline.com/) |
+| Fitbit | `FitbitClient` | Active | — | | | [Docs](https://dev.fitbit.com/build/reference/web-api/authorization/) |
+| Foursquare | `FoursquareClient` | **Deprecated** | v2 (deprecated) | | | [Docs](https://docs.foursquare.com/) |
+| Instagram | `InstagramClient` | **Dead** | Legacy API (shut down 2020) | | | [Docs](https://developers.facebook.com/docs/instagram-platform) |
+| LinkedIn | `LinkedInClient` | **Dead** | v1 API (shut down 2019) | | | [Docs](https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow) |
+| LoginCidadao | `LoginCidadaoClient` | Unknown | — | | | |
+| MailRu | `MailRuClient` | Active | — | | | [Docs](https://api.mail.ru/docs/guides/oauth/) |
+| Odnoklassniki | `OdnoklassnikiClient` | Active | — | | | [Docs](https://apiok.ru/en/ext/oauth/) |
+| Salesforce | `SalesforceClient` | Active | — | | | [Docs](https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_web_server_flow.htm) |
+| Spotify | `SpotifyClient` | Active | — | | | [Docs](https://developer.spotify.com/documentation/web-api/tutorials/code-flow) |
+| Todoist | `TodoistClient` | **Deprecated** | Sync API v6 (deprecated) | | | [Docs](https://developer.todoist.com/guides/#authorization) |
+| Twitter | `TwitterClient` | Active | OAuth 1.0a | | | [Docs](https://developer.x.com/en/docs/authentication/oauth-1-0a) |
+| Uber | `UberClient` | Active | — | | | [Docs](https://developer.uber.com/docs/riders/guides/authentication/introduction) |
+| VK (Vkontakte) | `VkClient` | Active | — | | | [Docs](https://dev.vk.com/en/api/access-token/authcode-flow-user) |
+| VSTS | `VSTSClient` | Active | Azure DevOps (rebranded) | | | [Docs](https://learn.microsoft.com/en-us/azure/devops/integrate/get-started/authentication/oauth) |
+| Windows Live | `WindowsLiveClient` | **Dead** | Live SDK (retired Nov 2018) | | | [Migration Guide](https://learn.microsoft.com/en-us/onedrive/developer/rest-api/concepts/migrating-from-live-sdk) |
+| Xing | `XingClient` | **Dead** | OAuth 1.0a (API shut down) | | | |
+| Yahoo | `YahooClient` | Active | — | | | [Docs](https://developer.yahoo.com/oauth2/guide/) |
+| Yandex | `YandexClient` | Active | — | | | [Docs](https://yandex.com/dev/id/doc/en/codes/code-url) |
+
+> **Dead providers** (WindowsLive, Xing, LinkedIn v1, Instagram legacy): These providers' APIs have been retired or shut down. The client classes are preserved for backward compatibility but may not function. Use the replacement APIs documented in each class's XML docs.
+>
+> **Deprecated providers** (Foursquare v2, Todoist v6): These providers' API versions are deprecated. The client classes still function but should be updated to use current API versions.
+>
+> **Note:** The `WindowsLiveClient` is preserved unchanged for backward compatibility. Use `MicrosoftClient` instead, which targets Microsoft Identity Platform v2.0 and Microsoft Graph. Be aware that user IDs differ between the two platforms.
 
 ## Goals
 

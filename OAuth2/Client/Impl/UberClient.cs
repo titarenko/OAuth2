@@ -10,8 +10,9 @@ using RestSharp.Authenticators.OAuth2;
 namespace OAuth2.Client.Impl
 {
     /// <summary>
-    /// Uber authentication client
+    /// Uber authentication client.
     /// </summary>
+    /// <seealso href="https://developer.uber.com/docs/riders/guides/authentication/introduction">Uber OAuth Documentation</seealso>
     public class UberClient : OAuth2Client
     {
         /// <summary>

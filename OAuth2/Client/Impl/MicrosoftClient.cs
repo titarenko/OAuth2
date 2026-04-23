@@ -1,7 +1,5 @@
 using System;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Extensions;
@@ -10,29 +8,24 @@ using OAuth2.Models;
 namespace OAuth2.Client.Impl
 {
     /// <summary>
-    /// DigitalOcean authentication client.
+    /// Microsoft authentication client using Microsoft Identity Platform (v2.0) and Microsoft Graph.
     /// </summary>
-    /// <seealso href="https://docs.digitalocean.com/reference/api/oauth-api/">DigitalOcean OAuth Documentation</seealso>
-    public class DigitalOceanClient : OAuth2Client
+    /// <remarks>
+    /// This client replaces the deprecated <see cref="WindowsLiveClient"/> which used the
+    /// retired Live Connect API (apis.live.net). It uses the current Microsoft Identity Platform
+    /// endpoints (login.microsoftonline.com) and Microsoft Graph API (graph.microsoft.com).
+    /// </remarks>
+    /// <seealso href="https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow">Microsoft Identity Platform OAuth 2.0 Documentation</seealso>
+    public class MicrosoftClient : OAuth2Client
     {
-        private string _accessToken;
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="DigitalOceanClient"/> class.
+        /// Initializes a new instance of the <see cref="MicrosoftClient"/> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        public DigitalOceanClient(IRequestFactory factory, IClientConfiguration configuration)
+        public MicrosoftClient(IRequestFactory factory, IClientConfiguration configuration)
             : base(factory, configuration)
         {
-        }
-
-        /// <summary>
-        /// Friendly name of provider (OAuth2 service).
-        /// </summary>
-        public override string Name
-        {
-            get { return "DigitalOcean"; }
         }
 
         /// <summary>
@@ -44,18 +37,10 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://cloud.digitalocean.com",
-                    Resource = "/v1/oauth/authorize"
+                    BaseUri = "https://login.microsoftonline.com",
+                    Resource = "/common/oauth2/v2.0/authorize"
                 };
             }
-        }
-
-        /// <summary>
-        /// Called after the access token is obtained. Stores the raw response for later user info parsing.
-        /// </summary>
-        protected override void AfterGetAccessToken(BeforeAfterRequestArgs args)
-        {
-             _accessToken = args.Response.Content;
         }
 
         /// <summary>
@@ -67,8 +52,8 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://cloud.digitalocean.com",
-                    Resource = "/v1/oauth/token"
+                    BaseUri = "https://login.microsoftonline.com",
+                    Resource = "/common/oauth2/v2.0/token"
                 };
             }
         }
@@ -80,14 +65,12 @@ namespace OAuth2.Client.Impl
         {
             get
             {
-                throw new NotImplementedException();
+                return new Endpoint
+                {
+                    BaseUri = "https://graph.microsoft.com",
+                    Resource = "/v1.0/me"
+                };
             }
-        }
-
-        /// <inheritdoc />
-        protected override Task<UserInfo> GetUserInfoAsync(CancellationToken cancellationToken = default)
-        {
-            return Task.FromResult(ParseUserInfo(_accessToken));
         }
 
         /// <summary>
@@ -98,14 +81,21 @@ namespace OAuth2.Client.Impl
         {
             using var doc = JsonDocument.Parse(content);
             var response = doc.RootElement;
-            var info = response.GetProperty("info");
+            var id = response.GetProperty("id").GetStringValue();
             return new UserInfo
             {
-                Id = response.GetProperty("uid").GetStringValue(),
-                FirstName = info.GetProperty("name").GetString(),
-                LastName = "",
-                Email = info.GetStringOrDefault("email")
+                Id = id,
+                FirstName = response.GetStringOrDefault("givenName"),
+                LastName = response.GetStringOrDefault("surname"),
+                Email = response.GetStringOrDefault("mail")
+                        ?? response.GetStringOrDefault("userPrincipalName"),
             };
+        }
+
+        /// <inheritdoc />
+        public override string Name
+        {
+            get { return "Microsoft"; }
         }
     }
 }

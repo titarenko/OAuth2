@@ -12,6 +12,7 @@ namespace OAuth2.Client.Impl
     /// <summary>
     /// Odnoklassniki authentication client.
     /// </summary>
+    /// <seealso href="https://apiok.ru/en/ext/oauth/">Odnoklassniki OAuth Documentation</seealso>
     public class OdnoklassnikiClient : OAuth2Client
     {
         private readonly IClientConfiguration _configuration;
