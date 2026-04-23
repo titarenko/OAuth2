@@ -41,5 +41,19 @@ namespace OAuth2.Tests.TestHelpers
 
             return Task.FromResult(response);
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                foreach (var request in SentRequests)
+                    request.Dispose();
+
+                SentRequests.Clear();
+                _responses.Clear();
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

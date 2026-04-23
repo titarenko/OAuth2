@@ -62,7 +62,7 @@ namespace OAuth2.Tests.Client
         [Test]
         public Task Should_ThrowUnexpectedResponse_When_CodeIsNotOk()
         {
-            _handler.EnqueueResponse(HttpStatusCode.InternalServerError, "error");
+            _handler.EnqueueResponse(HttpStatusCode.InternalServerError, string.Empty);
 
             return _descendant
                 .Awaiting(x => x.GetUserInfoAsync(new NameValueCollection { { "code", "code" } }))
@@ -119,7 +119,7 @@ namespace OAuth2.Tests.Client
         [TestCase(null)]
         public Task ShouldNot_ThrowException_When_ParametersForGetUserInfoContainEmptyError(string error)
         {
-            // arrange - need responses for access token request and user info request
+            // arrange
             _handler.EnqueueResponse("access_token=token");
             _handler.EnqueueResponse("content");
 
@@ -136,14 +136,14 @@ namespace OAuth2.Tests.Client
         [Test]
         public async Task Should_IssueCorrectRequestForAccessToken_When_GetUserInfoIsCalled()
         {
-            // arrange - access token response, then user info response
+            // arrange
             _handler.EnqueueResponse("access_token=token");
             _handler.EnqueueResponse("content");
 
             // act
             await _descendant.GetUserInfoAsync(new NameValueCollection { { "code", "code" } });
 
-            // assert - verify access token request
+            // assert
             _factory.Received().CreateClient("https://AccessTokenServiceEndpoint");
             _factory.Received().CreateRequest("/AccessTokenServiceEndpoint", Method.Post);
 
@@ -161,14 +161,14 @@ namespace OAuth2.Tests.Client
         [TestCase("{\"access_token\": \"token\"}")]
         public async Task Should_IssueCorrectRequestForUserInfo_When_GetUserInfoIsCalled(string response)
         {
-            // arrange - access token response, then user info response
+            // arrange
             _handler.EnqueueResponse(response);
             _handler.EnqueueResponse("content");
 
             // act
             await _descendant.GetUserInfoAsync(new NameValueCollection { { "code", "code" } });
 
-            // assert - verify user info request
+            // assert
             _factory.Received().CreateClient("https://UserInfoServiceEndpoint");
             _factory.Received().CreateRequest("/UserInfoServiceEndpoint", Method.Get);
 

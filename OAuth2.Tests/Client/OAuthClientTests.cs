@@ -67,7 +67,7 @@ namespace OAuth2.Tests.Client
         [Test]
         public Task Should_ThrowUnexpectedResponse_When_StatusIsNotOk()
         {
-            _handler.EnqueueResponse(HttpStatusCode.InternalServerError, "error");
+            _handler.EnqueueResponse(HttpStatusCode.InternalServerError, string.Empty);
             return _descendant.Awaiting(x => x.GetLoginLinkUriAsync()).Should().ThrowAsync<UnexpectedResponseException>();
         }
 
@@ -136,7 +136,7 @@ namespace OAuth2.Tests.Client
         [Test]
         public async Task Should_IssueCorrectRequestForAccessToken_When_GetUserInfoIsCalled()
         {
-            // arrange - access token response, then user info response
+            // arrange
             _handler.EnqueueResponse("oauth_token=token&oauth_token_secret=secret");
             _handler.EnqueueResponse("content");
 
@@ -159,7 +159,7 @@ namespace OAuth2.Tests.Client
         [Test]
         public async Task Should_IssueCorrectRequestForUserInfo_When_GetUserInfoIsCalled()
         {
-            // arrange - access token response, then user info response
+            // arrange
             _handler.EnqueueResponse("oauth_token=token&oauth_token_secret=secret");
             _handler.EnqueueResponse("abba");
 

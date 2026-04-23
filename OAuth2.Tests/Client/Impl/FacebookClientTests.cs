@@ -21,7 +21,7 @@ namespace OAuth2.Tests.Client.Impl
     [TestFixture]
     public class FacebookClientTests
     {
-        private const string Content = "{\"email\":\"email\",\"first_name\":\"name\",\"last_name\":\"surname\",\"id\":\"id\",\"picture\":{\"data\":{\"url\":\"picture\"}}}";
+        private const string Content = /* lang=json */ "{\"email\":\"email\",\"first_name\":\"name\",\"last_name\":\"surname\",\"id\":\"id\",\"picture\":{\"data\":{\"url\":\"picture\"}}}";
 
         private FacebookClientDescendant _descendant;
         private IRequestFactory _factory;
@@ -103,7 +103,7 @@ namespace OAuth2.Tests.Client.Impl
         [Test]
         public async Task Should_AddExtraParameters_WhenOnGetUserInfoIsCalled()
         {
-            // arrange - access token response, then user info response
+            // arrange
             _handler.EnqueueResponse("access_token=token");
             _handler.EnqueueResponse(Content);
 
@@ -113,7 +113,7 @@ namespace OAuth2.Tests.Client.Impl
                 { "code", "code" }
             });
 
-            // assert - the user info request (last captured) should have the fields parameter
+            // assert
             var userInfoRequest = _capturedRequests.Last();
             userInfoRequest.Parameters.FirstOrDefault(p => p.Name == "fields")?.Value
                 .Should().Be("id,first_name,last_name,email,picture");

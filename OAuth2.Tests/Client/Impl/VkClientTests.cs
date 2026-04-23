@@ -21,7 +21,7 @@ namespace OAuth2.Tests.Client.Impl
     [TestFixture]
     public class VkClientTests
     {
-        private const string Content = "{\"response\":[{\"id\":\"1\",\"first_name\":\"Павел\",\"last_name\":\"Дуров\",\"has_photo\":1,\"photo_max_orig\":\"http:\\/\\/cs109.vkontakte.ru\\/u00001\\/c_df2abf56.jpg\"}]}";
+        private const string Content = /* lang=json */ "{\"response\":[{\"id\":\"1\",\"first_name\":\"Павел\",\"last_name\":\"Дуров\",\"has_photo\":1,\"photo_max_orig\":\"http:\\/\\/cs109.vkontakte.ru\\/u00001\\/c_df2abf56.jpg\"}]}";
 
         private VkClientDescendant _descendant;
         private IRequestFactory _factory;
@@ -103,7 +103,7 @@ namespace OAuth2.Tests.Client.Impl
         [Test]
         public async Task Should_ReceiveUserId_WhenAccessTokenResponseReceived()
         {
-            // arrange - access token response, then user info response
+            // arrange
             _handler.EnqueueResponse("{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}");
             _handler.EnqueueResponse(Content);
 
@@ -113,7 +113,7 @@ namespace OAuth2.Tests.Client.Impl
                 { "code", "code" }
             });
 
-            // assert - the user info request should have user_ids parameter
+            // assert
             var userInfoRequest = _capturedRequests.Last();
             userInfoRequest.Parameters.FirstOrDefault(p => p.Name == "user_ids")?.Value
                 .Should().Be("1");
@@ -122,7 +122,7 @@ namespace OAuth2.Tests.Client.Impl
         [Test]
         public async Task Should_AddExtraParameters_WhenOnGetUserInfoIsCalled()
         {
-            // arrange - access token response, then user info response
+            // arrange
             _handler.EnqueueResponse("{\"access_token\":\"token\",\"expires_in\":0,\"user_id\":1}");
             _handler.EnqueueResponse(Content);
 
@@ -132,7 +132,7 @@ namespace OAuth2.Tests.Client.Impl
                 { "code", "code" }
             });
 
-            // assert - the user info request should have the expected parameters
+            // assert
             var userInfoRequest = _capturedRequests.Last();
             userInfoRequest.Parameters.FirstOrDefault(p => p.Name == "fields")?.Value
                 .Should().Be("first_name,last_name,has_photo,photo_max_orig");

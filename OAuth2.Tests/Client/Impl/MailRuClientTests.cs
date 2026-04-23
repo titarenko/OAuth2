@@ -11,7 +11,7 @@ namespace OAuth2.Tests.Client.Impl
 {
     public class MailRuClientTests
     {
-        private const string Content = "[{\"uid\":\"12345\",\"first_name\":\"Ivan\",\"last_name\":\"Petrov\",\"email\":\"ivan@mail.ru\",\"pic\":\"https://avt.appsmail.ru/mail/photo.jpg\"}]";
+        private const string Content = /* lang=json */ "[{\"uid\":\"12345\",\"first_name\":\"Ivan\",\"last_name\":\"Petrov\",\"email\":\"ivan@mail.ru\",\"pic\":\"https://avt.appsmail.ru/mail/photo.jpg\"}]";
 
         private MailRuClientDescendant _descendant;
         private IRequestFactory _factory;

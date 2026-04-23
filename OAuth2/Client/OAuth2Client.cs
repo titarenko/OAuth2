@@ -244,7 +244,7 @@ namespace OAuth2.Client
 
         protected virtual void BeforeGetAccessToken(BeforeAfterRequestArgs args)
         {
-            if (GrantType == "refresh_token")
+            if (string.Equals(GrantType, "refresh_token", StringComparison.OrdinalIgnoreCase))
             {
                 args.Request.AddObject(new
                 {

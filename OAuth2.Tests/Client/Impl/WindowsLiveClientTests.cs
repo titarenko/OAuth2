@@ -12,7 +12,7 @@ namespace OAuth2.Tests.Client.Impl
     [TestFixture]
     public class WindowsLiveClientTests
     {
-        private const string Content = "{\"id\":\"abc123\",\"first_name\":\"John\",\"last_name\":\"Doe\",\"emails\":{\"preferred\":\"john@example.com\"}}";
+        private const string Content = /* lang=json */ "{\"id\":\"abc123\",\"first_name\":\"John\",\"last_name\":\"Doe\",\"emails\":{\"preferred\":\"john@example.com\"}}";
 
         private WindowsLiveClientDescendant _descendant;
         private IRequestFactory _factory;
