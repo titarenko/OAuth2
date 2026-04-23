@@ -13,9 +13,10 @@ namespace OAuth2.Client.Impl
     /// </summary>
     /// <remarks>
     /// <para>Warning: Foursquare deprecated the v2 consumer API, including the /v2/users/self endpoint
-    /// used by this client. New applications should use the Foursquare Places API (v3).</para>
+    /// used by this client. New applications should use the Foursquare Places API (v3) with API keys.</para>
     /// </remarks>
     /// <seealso href="https://docs.foursquare.com/">Foursquare Developer Documentation</seealso>
+    [Obsolete("Foursquare v2 consumer OAuth API is deprecated. The replacement Places API v3 uses API keys, not OAuth.")]
     public class FoursquareClient : OAuth2Client
     {
         /// <summary>

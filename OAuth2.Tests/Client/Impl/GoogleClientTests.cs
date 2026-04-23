@@ -26,8 +26,10 @@ namespace OAuth2.Tests.Client.Impl
         }
 
         [Test]
-        public void Should_ReturnCorrectAccessCodeServiceEndpoint()
+        public void AccessCodeEndpoint_Default_ReturnsCorrectEndpoint()
         {
+            // arrange
+
             // act
             var endpoint = _descendant.GetAccessCodeServiceEndpoint();
 
@@ -37,8 +39,10 @@ namespace OAuth2.Tests.Client.Impl
         }
 
         [Test]
-        public void Should_ReturnCorrectAccessTokenServiceEndpoint()
+        public void AccessTokenEndpoint_Default_ReturnsCorrectEndpoint()
         {
+            // arrange
+
             // act
             var endpoint = _descendant.GetAccessTokenServiceEndpoint();
 
@@ -48,8 +52,10 @@ namespace OAuth2.Tests.Client.Impl
         }
 
         [Test]
-        public void Should_ReturnCorrectUserInfoServiceEndpoint()
+        public void UserInfoEndpoint_Default_ReturnsCorrectEndpoint()
         {
+            // arrange
+
             // act
             var endpoint = _descendant.GetUserInfoServiceEndpoint();
 
@@ -59,19 +65,23 @@ namespace OAuth2.Tests.Client.Impl
         }
 
         [Test]
-        public void ShouldNot_Throw_WhenParsingUserInfoAndPictureIsNotAvailable()
+        public void ParseUserInfo_NoPicture_DoesNotThrow()
         {
+            // arrange (uses Content const without picture)
+
             // act & assert
             _descendant.Invoking(x => x.ParseUserInfo(Content)).Should().NotThrow();
         }
 
         [Test]
-        public void Should_ParseAllFieldsOfUserInfo_WhenCorrectContentIsPassed()
+        public void ParseUserInfo_ValidContent_ReturnsCorrectFields()
         {
+            // arrange (uses ContentWithPicture const)
+
             // act
             var info = _descendant.ParseUserInfo(ContentWithPicture);
 
-            //  assert
+            // assert
             info.Id.Should().Be("id");
             info.FirstName.Should().Be("name");
             info.LastName.Should().Be("surname");

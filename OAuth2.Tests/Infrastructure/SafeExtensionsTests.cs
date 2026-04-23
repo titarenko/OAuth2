@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using OAuth2.Client;
@@ -11,7 +11,7 @@ namespace OAuth2.Tests.Infrastructure
     public class SafeExtensionsTests
     {
         [Test]
-        public async Task Should_NotThrow_WhenSafeGetIsCalledOnNull()
+        public async Task SafeGet_NullClient_DoesNotThrow()
         {
             // act & assert
             await ((IClient)null).Awaiting(x => x.SafeGetAsync(z => z.GetLoginLinkUriAsync()))
@@ -20,7 +20,7 @@ namespace OAuth2.Tests.Infrastructure
         }
 
         [Test]
-        public void Should_ReturnResultObtainedFromSelector_WhenSafeGetIsCalledOnInstance()
+        public void SafeGet_ValidInstance_ReturnsSelectorResult()
         {
             // arrange
             const string value = "abc";

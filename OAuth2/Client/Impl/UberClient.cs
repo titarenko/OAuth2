@@ -45,7 +45,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://login.uber.com",
+                    BaseUri = "https://auth.uber.com",
                     Resource = "/oauth/v2/authorize"
                 };
             }
@@ -60,7 +60,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://login.uber.com",
+                    BaseUri = "https://auth.uber.com",
                     Resource = "/oauth/v2/token"
                 };
             }

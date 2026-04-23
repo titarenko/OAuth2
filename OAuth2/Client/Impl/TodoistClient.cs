@@ -4,6 +4,7 @@ using OAuth2.Infrastructure;
 using OAuth2.Extensions;
 using OAuth2.Models;
 using RestSharp;
+using RestSharp.Authenticators.OAuth2;
 
 namespace OAuth2.Client.Impl
 {
@@ -11,12 +12,12 @@ namespace OAuth2.Client.Impl
     /// Todoist authentication client.
     /// </summary>
     /// <remarks>
-    /// <para>This client uses Todoist's deprecated Sync API v6 (<c>API/v6/sync</c>).
-    /// The current API is Todoist API v1 (unified), which replaced Sync API v9 and REST API v2.
-    /// The OAuth endpoints are still correct; only the user info endpoint needs updating.</para>
+    /// <para>Updated from deprecated Sync API v6 to the current Todoist API v1 (unified).
+    /// Uses <c>GET /api/v1/user</c> with Bearer token for user info instead of the
+    /// old <c>API/v6/sync</c> endpoint.</para>
     /// </remarks>
-    /// <seealso href="https://developer.todoist.com/guides/#authorization">Todoist OAuth Documentation</seealso>
-    /// <seealso href="https://developer.todoist.com/api/v1/">Todoist API v1 Documentation</seealso>
+    /// <seealso href="https://developer.todoist.com/api/v1/#tag/Authorization/OAuth">Todoist OAuth Documentation</seealso>
+    /// <seealso href="https://developer.todoist.com/api/v1/#tag/User/operation/user_info_api_v1_user_get">Todoist User Info API</seealso>
     public class TodoistClient : OAuth2Client
     {
         /// <summary>
@@ -36,8 +37,8 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://todoist.com/",
-                    Resource = "oauth/authorize"
+                    BaseUri = "https://app.todoist.com",
+                    Resource = "/oauth/authorize"
                 };
             }
         }
@@ -51,8 +52,8 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://todoist.com/",
-                    Resource = "oauth/access_token"
+                    BaseUri = "https://api.todoist.com",
+                    Resource = "/oauth/access_token"
                 };
             }
         }
@@ -66,8 +67,8 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://todoist.com/",
-                    Resource = "API/v6/sync"
+                    BaseUri = "https://api.todoist.com",
+                    Resource = "/api/v1/user"
                 };
             }
         }
@@ -80,14 +81,10 @@ namespace OAuth2.Client.Impl
             get { return "Todoist"; }
         }
 
-
         /// <inheritdoc />
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            args.Request.Authenticator = null;
-            args.Request.AddParameter("token", AccessToken, ParameterType.GetOrPost);
-            args.Request.AddParameter("resource_types", "[\"all\"]");
-            base.BeforeGetUserInfo(args);
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
         }
 
         /// <summary>
@@ -97,17 +94,17 @@ namespace OAuth2.Client.Impl
         protected override UserInfo ParseUserInfo(string content)
         {
             using var doc = JsonDocument.Parse(content);
-            var user = doc.RootElement.GetProperty("User");
+            var user = doc.RootElement;
             return new UserInfo
             {
                 Id = user.GetProperty("id").GetStringValue(),
                 Email = user.GetStringOrDefault("email"),
-                LastName = user.GetProperty("full_name").GetString(),
+                LastName = user.GetStringOrDefault("full_name"),
                 AvatarUri =
                 {
-                    Small = user.GetProperty("avatar_small").GetString(),
-                    Normal = user.GetProperty("avatar_medium").GetString(),
-                    Large = user.GetProperty("avatar_big").GetString(),
+                    Small = user.GetStringOrDefault("avatar_small"),
+                    Normal = user.GetStringOrDefault("avatar_medium"),
+                    Large = user.GetStringOrDefault("avatar_big"),
                 }
             };
         }

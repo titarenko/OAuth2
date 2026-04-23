@@ -25,8 +25,10 @@ namespace OAuth2.Tests.Client.Impl
         }
 
         [Test]
-        public void Should_ReturnCorrectAccessCodeServiceEndpoint()
+        public void AccessCodeEndpoint_Default_ReturnsCorrectEndpoint()
         {
+            // arrange
+
             // act
             var endpoint = _descendant.GetAccessCodeServiceEndpoint();
 
@@ -36,8 +38,10 @@ namespace OAuth2.Tests.Client.Impl
         }
 
         [Test]
-        public void Should_ReturnCorrectAccessTokenServiceEndpoint()
+        public void AccessTokenEndpoint_Default_ReturnsCorrectEndpoint()
         {
+            // arrange
+
             // act
             var endpoint = _descendant.GetAccessTokenServiceEndpoint();
 
@@ -47,8 +51,10 @@ namespace OAuth2.Tests.Client.Impl
         }
 
         [Test]
-        public void Should_ReturnCorrectUserInfoServiceEndpoint()
+        public void UserInfoEndpoint_Default_ReturnsCorrectEndpoint()
         {
+            // arrange
+
             // act
             var endpoint = _descendant.GetUserInfoServiceEndpoint();
 
@@ -58,12 +64,14 @@ namespace OAuth2.Tests.Client.Impl
         }
 
         [Test]
-        public void Should_ParseAllFieldsOfUserInfo_WhenCorrectContentIsPassed()
+        public void ParseUserInfo_ValidContent_ReturnsCorrectFields()
         {
+            // arrange (uses ContentWithNoName const)
+
             // act
             var info = _descendant.ParseUserInfo(ContentWithNoName);
 
-            //  assert
+            // assert
             info.Id.Should().Be("123456");
             info.FirstName.Should().Be("id");
             info.LastName.Should().Be(String.Empty);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -60,27 +60,31 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public Task Should_ThrowUnexpectedResponse_When_CodeIsNotOk()
+        public Task GetUserInfo_StatusNotOk_ThrowsUnexpectedResponse()
         {
+            // arrange
             _handler.EnqueueResponse(HttpStatusCode.InternalServerError, String.Empty);
 
+            // act & assert
             return _descendant
                 .Awaiting(x => x.GetUserInfoAsync(new NameValueCollection { { "code", "code" } }))
                 .Should().ThrowAsync<UnexpectedResponseException>();
         }
 
         [Test]
-        public Task Should_ThrowUnexpectedResponse_When_ResponseIsEmpty()
+        public Task GetUserInfo_EmptyResponse_ThrowsUnexpectedResponse()
         {
+            // arrange
             _handler.EnqueueResponse(HttpStatusCode.OK, "");
 
+            // act & assert
             return _descendant
                 .Awaiting(x => x.GetUserInfoAsync(new NameValueCollection { { "code", "code" } }))
                 .Should().ThrowAsync<UnexpectedResponseException>();
         }
 
         [Test]
-        public async Task Should_ReturnCorrectAccessCodeRequestUri()
+        public async Task GetLoginLinkUri_Called_ReturnsCorrectUri()
         {
             // act
             var uri = await _descendant.GetLoginLinkUriAsync();
@@ -103,7 +107,7 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public async Task Should_ThrowException_WhenParametersForGetUserInfoContainError()
+        public async Task GetUserInfo_ErrorParameter_ThrowsUnexpectedResponse()
         {
             // arrange
             var parameters = new NameValueCollection { { "error", "error2" } };
@@ -118,7 +122,7 @@ namespace OAuth2.Tests.Client
         [Test]
         [TestCase("")]
         [TestCase(null)]
-        public Task ShouldNot_ThrowException_When_ParametersForGetUserInfoContainEmptyError(string error)
+        public Task GetUserInfo_EmptyErrorParameter_DoesNotThrow(string error)
         {
             // arrange
             _handler.EnqueueResponse("access_token=token");
@@ -135,7 +139,7 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public async Task Should_IssueCorrectRequestForAccessToken_When_GetUserInfoIsCalled()
+        public async Task GetUserInfo_Called_IssuesCorrectAccessTokenRequest()
         {
             // arrange
             _handler.EnqueueResponse("access_token=token");
@@ -159,8 +163,8 @@ namespace OAuth2.Tests.Client
 
         [Test]
         [TestCase("access_token=token")]
-        [TestCase("{\"access_token\": \"token\"}")]
-        public async Task Should_IssueCorrectRequestForUserInfo_When_GetUserInfoIsCalled(string response)
+        [TestCase(/* lang=json */ "{\"access_token\": \"token\"}")]
+        public async Task GetUserInfo_Called_IssuesCorrectUserInfoRequest(string response)
         {
             // arrange
             _handler.EnqueueResponse(response);
@@ -178,7 +182,7 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public async Task Should_Update_RefreshToken_When_New_Token_Is_Provided_in_GetCurrentTokenAsync()
+        public async Task GetCurrentToken_NewRefreshToken_UpdatesRefreshToken()
         {
             // arrange
             var newRefreshToken = "new-refresh-token";
@@ -192,7 +196,7 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public async Task Should_Not_Modify_RefreshToken_When_Not_Included_In_Response_From_GetCurrentTokenAsync()
+        public async Task GetCurrentToken_NoRefreshTokenInResponse_KeepsExistingRefreshToken()
         {
             // arrange
             var currentRefreshToken = "refresh-token";

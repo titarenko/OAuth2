@@ -1,20 +1,14 @@
-using System.Text.Json;
+using System;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
-using OAuth2.Extensions;
-using OAuth2.Models;
 
 namespace OAuth2.Client.Impl
 {
     /// <summary>
-    /// Twitter authentication client.
+    /// Obsolete. Use <see cref="XClient"/> instead. Twitter has been rebranded to X.
     /// </summary>
-    /// <remarks>
-    /// <para>Note: Twitter has been rebranded to X. The OAuth 1.0a endpoints at api.twitter.com
-    /// are still operational but API access tiers have changed significantly.</para>
-    /// </remarks>
-    /// <seealso href="https://developer.x.com/en/docs/authentication/oauth-1-0a">X (Twitter) OAuth 1.0a Documentation</seealso>
-    public class TwitterClient : OAuthClient
+    [Obsolete("Use XClient instead. Twitter has been rebranded to X.", true)]
+    public class TwitterClient : XClient
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TwitterClient"/> class.
@@ -24,113 +18,6 @@ namespace OAuth2.Client.Impl
         public TwitterClient(IRequestFactory factory, IClientConfiguration configuration)
             : base(factory, configuration)
         {
-        }
-
-        /// <summary>
-        /// Defines URI of service which is called for obtaining request token.
-        /// </summary>
-        protected override Endpoint RequestTokenServiceEndpoint
-        {
-            get
-            {
-                return new Endpoint
-                {
-                    BaseUri = "https://api.twitter.com",
-                    Resource = "/oauth/request_token"
-                };
-            }
-        }
-
-        /// <summary>
-        /// Defines URI of service which should be called to initiate authentication process.
-        /// </summary>
-        protected override Endpoint LoginServiceEndpoint
-        {
-            get
-            {
-                return new Endpoint
-                {
-                    BaseUri = "https://api.twitter.com",
-                    Resource = "/oauth/authenticate"
-                };
-            }
-        }
-
-        /// <summary>
-        /// Defines URI of service which issues access token.
-        /// </summary>
-        protected override Endpoint AccessTokenServiceEndpoint
-        {
-            get
-            {
-                return new Endpoint
-                {
-                    BaseUri = "https://api.twitter.com",
-                    Resource = "/oauth/access_token"
-                };
-            }
-        }
-
-        /// <summary>
-        /// Defines URI of service which is called to obtain user information.
-        /// </summary>
-        protected override Endpoint UserInfoServiceEndpoint
-        {
-            get
-            {
-                return new Endpoint
-                {
-                    BaseUri = "https://api.twitter.com",
-                    Resource = "/1.1/account/verify_credentials.json"
-                };
-            }
-        }
-
-        /// <summary>
-        /// Friendly name of provider (OAuth service).
-        /// </summary>
-        public override string Name
-        {
-            get { return "Twitter"; }
-        }
-
-        /// <summary>
-        /// Should return parsed <see cref="UserInfo" /> using content of callback issued by service.
-        /// </summary>
-        protected override UserInfo ParseUserInfo(string content)
-        {
-            using var doc = JsonDocument.Parse(content);
-            var response = doc.RootElement;
-
-            var name = response.GetProperty("name").GetString();
-            var index = name.IndexOf(' ');
-
-            string firstName;
-            string lastName;
-            if (index == -1)
-            {
-                firstName = name;
-                lastName = null;
-            }
-            else
-            {
-                firstName = name.Substring(0, index);
-                lastName = name.Substring(index + 1);
-            }
-            var avatarUri = response.GetProperty("profile_image_url").GetString();
-            return new UserInfo
-            {
-                Id = response.GetProperty("id").GetStringValue(),
-                Email = null,
-                FirstName = firstName,
-                LastName = lastName,
-                AvatarUri =
-                    {
-                        Small = avatarUri.Replace("normal", "mini"),
-                        Normal = avatarUri,
-                        Large = avatarUri.Replace("normal", "bigger")
-                    }
-            };
         }
     }
 }

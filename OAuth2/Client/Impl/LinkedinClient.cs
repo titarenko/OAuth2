@@ -1,28 +1,24 @@
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
+using OAuth2.Extensions;
 using OAuth2.Models;
-using RestSharp;
-using System.Xml.Linq;
-using System.Xml.XPath;
 
 namespace OAuth2.Client.Impl
 {
     /// <summary>
-    /// LinkedIn authentication client.
+    /// LinkedIn authentication client using OpenID Connect (Sign In with LinkedIn v2).
     /// </summary>
     /// <remarks>
-    /// <para>This client uses LinkedIn's deprecated v1 API endpoints (<c>/uas/oauth2/</c> and
-    /// <c>/v1/people/~</c>) with XML response format. LinkedIn shut down the v1 API in 2019.</para>
-    /// <para>LinkedIn's OAuth2 service is still fully active using v2 endpoints:
-    /// <c>https://www.linkedin.com/oauth/v2/authorization</c> for auth,
-    /// <c>https://api.linkedin.com/v2/userinfo</c> for user info (OpenID Connect).
-    /// This client needs to be updated to use the v2 endpoints with JSON responses.</para>
+    /// <para>Updated from deprecated v1 API (<c>/uas/oauth2/</c>, <c>/v1/people/~</c> XML)
+    /// to current v2 OAuth 2.0 with OpenID Connect (<c>/oauth/v2/</c>, <c>/v2/userinfo</c> JSON).
+    /// Requires <c>openid profile email</c> scopes.</para>
     /// </remarks>
-    /// <seealso href="https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow">LinkedIn OAuth 2.0 Authorization Code Flow</seealso>
     /// <seealso href="https://learn.microsoft.com/en-us/linkedin/consumer/integrations/self-serve/sign-in-with-linkedin-v2">Sign In with LinkedIn using OpenID Connect</seealso>
+    /// <seealso href="https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow">LinkedIn OAuth 2.0 Authorization Code Flow</seealso>
     public class LinkedInClient : OAuth2Client
     {
         /// <summary>
@@ -45,7 +41,7 @@ namespace OAuth2.Client.Impl
                 return new Endpoint
                 {
                     BaseUri  = "https://www.linkedin.com",
-                    Resource = "/uas/oauth2/authorization"
+                    Resource = "/oauth/v2/authorization"
                 };
             }
         }
@@ -60,7 +56,7 @@ namespace OAuth2.Client.Impl
                 return new Endpoint
                 {
                     BaseUri  = "https://www.linkedin.com",
-                    Resource = "/uas/oauth2/accessToken"
+                    Resource = "/oauth/v2/accessToken"
                 };
             }
         }
@@ -75,7 +71,7 @@ namespace OAuth2.Client.Impl
                 return new Endpoint
                 {
                     BaseUri  = "https://api.linkedin.com",
-                    Resource = "/v1/people/~:(id,email-address,first-name,last-name,picture-url)"
+                    Resource = "/v2/userinfo"
                 };
             }
         }
@@ -86,53 +82,28 @@ namespace OAuth2.Client.Impl
             return base.GetLoginLinkUriAsync(state ?? Guid.NewGuid().ToString("N"), cancellationToken);
         }
 
-        /// <inheritdoc />
-        protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
-        {
-            args.Request.Authenticator = null;
-            args.Request.AddParameter("oauth2_access_token", AccessToken, ParameterType.GetOrPost);
-        }
-
         /// <summary>
         /// Should return parsed <see cref="UserInfo"/> from content received from third-party service.
         /// </summary>
         /// <param name="content">The content which is received from third-party service.</param>
         protected override UserInfo ParseUserInfo(string content)
         {
-
-            var document  = XDocument.Parse(content);
-            var avatarUri = SafeGet(document, "/person/picture-url");
-            var avatarSizeTemplate = "{0}_{0}";
-            if (String.IsNullOrEmpty(avatarUri))
-            {
-                avatarUri = "https://www.linkedin.com/scds/common/u/images/themes/katy/ghosts/person/ghost_person_80x80_v1.png";
-                avatarSizeTemplate = "{0}x{0}";
-            }
-            var avatarDefaultSize = String.Format(avatarSizeTemplate, 80);
+            using var doc = JsonDocument.Parse(content);
+            var response = doc.RootElement;
 
             return new UserInfo
             {
-                Id        = document.XPathSelectElement("/person/id").Value,
-                Email     = SafeGet(document, "/person/email-address"),
-                FirstName = document.XPathSelectElement("/person/first-name").Value,
-                LastName  = document.XPathSelectElement("/person/last-name").Value,
+                Id        = response.GetProperty("sub").GetString(),
+                Email     = response.GetStringOrDefault("email"),
+                FirstName = response.GetStringOrDefault("given_name"),
+                LastName  = response.GetStringOrDefault("family_name"),
                 AvatarUri =
                     {
-                        Small  = avatarUri.Replace(avatarDefaultSize, String.Format(avatarSizeTemplate, AvatarInfo.SmallSize)),
-                        Normal = avatarUri,
-                        Large  = avatarUri.Replace(avatarDefaultSize, String.Format(avatarSizeTemplate, AvatarInfo.LargeSize))
+                        Small  = response.GetStringOrDefault("picture"),
+                        Normal = response.GetStringOrDefault("picture"),
+                        Large  = response.GetStringOrDefault("picture")
                     }
             };
-        }
-
-
-        private string SafeGet(XDocument document, string path)
-        {
-            var element = document.XPathSelectElement(path);
-            if (element == null)
-                return null;
-
-            return element.Value;
         }
 
         /// <summary>
