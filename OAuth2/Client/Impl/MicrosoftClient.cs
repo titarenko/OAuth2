@@ -1,4 +1,3 @@
-using System;
 using System.Text.Json;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
@@ -8,17 +7,23 @@ using OAuth2.Models;
 namespace OAuth2.Client.Impl
 {
     /// <summary>
-    /// Google authentication client.
+    /// Microsoft authentication client using Microsoft Identity Platform (v2.0) and Microsoft Graph.
     /// </summary>
-    /// <seealso href="https://developers.google.com/identity/protocols/oauth2/web-server">Google OAuth 2.0 Documentation</seealso>
-    public class GoogleClient : OAuth2Client
+    /// <remarks>
+    /// This client uses the current Microsoft Identity Platform (login.microsoftonline.com) and
+    /// Microsoft Graph API (graph.microsoft.com). It is the modern alternative to
+    /// <see cref="WindowsLiveClient"/> for new integrations, but is <b>not</b> a drop-in replacement —
+    /// user IDs and supported scopes differ between the two platforms.
+    /// </remarks>
+    /// <seealso href="https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow">Microsoft Identity Platform OAuth 2.0 Documentation</seealso>
+    public class MicrosoftClient : OAuth2Client
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GoogleClient"/> class.
+        /// Initializes a new instance of the <see cref="MicrosoftClient"/> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        public GoogleClient(IRequestFactory factory, IClientConfiguration configuration)
+        public MicrosoftClient(IRequestFactory factory, IClientConfiguration configuration)
             : base(factory, configuration)
         {
         }
@@ -32,8 +37,8 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://accounts.google.com",
-                    Resource = "/o/oauth2/v2/auth"
+                    BaseUri = "https://login.microsoftonline.com",
+                    Resource = "/common/oauth2/v2.0/authorize"
                 };
             }
         }
@@ -47,8 +52,8 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://oauth2.googleapis.com",
-                    Resource = "/token"
+                    BaseUri = "https://login.microsoftonline.com",
+                    Resource = "/common/oauth2/v2.0/token"
                 };
             }
         }
@@ -62,20 +67,11 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://www.googleapis.com",
-                    Resource = "/oauth2/v3/userinfo"
+                    BaseUri = "https://graph.microsoft.com",
+                    Resource = "/v1.0/me"
                 };
             }
         }
-
-        /// <summary>
-        /// Friendly name of provider (OAuth2 service).
-        /// </summary>
-        public override string Name
-        {
-            get { return "Google"; }
-        }
-
 
         /// <summary>
         /// Should return parsed <see cref="UserInfo"/> from content received from third-party service.
@@ -85,21 +81,21 @@ namespace OAuth2.Client.Impl
         {
             using var doc = JsonDocument.Parse(content);
             var response = doc.RootElement;
-            var avatarUri = response.GetStringOrDefault("picture");
-            const string avatarUriTemplate = "{0}?sz={1}";
+            var id = response.GetProperty("id").GetStringValue();
             return new UserInfo
             {
-                Id = response.GetProperty("sub").GetStringValue(),
-                Email = response.GetStringOrDefault("email"),
-                FirstName = response.GetProperty("given_name").GetString(),
-                LastName = response.GetProperty("family_name").GetString(),
-                AvatarUri =
-                    {
-                        Small = !String.IsNullOrWhiteSpace(avatarUri) ? String.Format(avatarUriTemplate, avatarUri, AvatarInfo.SmallSize) : String.Empty,
-                        Normal = avatarUri,
-                        Large = !String.IsNullOrWhiteSpace(avatarUri) ? String.Format(avatarUriTemplate, avatarUri, AvatarInfo.LargeSize): String.Empty
-                    }
+                Id = id,
+                FirstName = response.GetStringOrDefault("givenName"),
+                LastName = response.GetStringOrDefault("surname"),
+                Email = response.GetStringOrDefault("mail")
+                        ?? response.GetStringOrDefault("userPrincipalName"),
             };
+        }
+
+        /// <inheritdoc />
+        public override string Name
+        {
+            get { return "Microsoft"; }
         }
     }
 }

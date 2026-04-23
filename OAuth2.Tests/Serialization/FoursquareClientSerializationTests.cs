@@ -1,3 +1,4 @@
+#pragma warning disable CS0618 // Foursquare v2 OAuth is deprecated
 using System.Text.Json;
 using FluentAssertions;
 using NSubstitute;

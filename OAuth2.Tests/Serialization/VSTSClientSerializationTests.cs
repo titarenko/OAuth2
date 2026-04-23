@@ -101,6 +101,7 @@ namespace OAuth2.Tests.Serialization
             doc.RootElement.GetProperty("FirstName").GetString().Should().Be("Dev User");
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         private class TestableVSTSClient : VSTSClient
         {
             public TestableVSTSClient(IRequestFactory factory, IClientConfiguration configuration)
@@ -108,5 +109,6 @@ namespace OAuth2.Tests.Serialization
 
             public new UserInfo ParseUserInfo(string content) => base.ParseUserInfo(content);
         }
+#pragma warning restore CS0618
     }
 }

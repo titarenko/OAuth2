@@ -11,6 +11,7 @@ namespace OAuth2.Client.Impl
     /// <summary>
     /// Facebook authentication client.
     /// </summary>
+    /// <seealso href="https://developers.facebook.com/docs/facebook-login/guides/advanced/manual-flow">Facebook OAuth Documentation</seealso>
     public class FacebookClient : OAuth2Client
     {
         /// <summary>
@@ -33,7 +34,7 @@ namespace OAuth2.Client.Impl
                 return new Endpoint
                 {
                     BaseUri = "https://www.facebook.com",
-                    Resource = "/dialog/oauth"
+                    Resource = "/v25.0/dialog/oauth"
                 };
             }
         }
@@ -48,7 +49,7 @@ namespace OAuth2.Client.Impl
                 return new Endpoint
                 {
                     BaseUri = "https://graph.facebook.com",
-                    Resource = "/oauth/access_token"
+                    Resource = "/v25.0/oauth/access_token"
                 };
             }
         }
@@ -63,7 +64,7 @@ namespace OAuth2.Client.Impl
                 return new Endpoint
                 {
                     BaseUri = "https://graph.facebook.com",
-                    Resource = "/me"
+                    Resource = "/v25.0/me"
                 };
             }
         }

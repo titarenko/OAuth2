@@ -11,6 +11,7 @@ namespace OAuth2.Client.Impl
     /// <summary>
     /// Yandex authentication client.
     /// </summary>
+    /// <seealso href="https://yandex.com/dev/id/doc/en/codes/code-url">Yandex OAuth Documentation</seealso>
     public class YandexClient : OAuth2Client
     {
 		private static readonly string _avatarBaseUri 	= "https://avatars.yandex.net/get-yapic/";

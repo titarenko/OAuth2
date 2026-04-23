@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using NUnit.Framework;
 using OAuth2.Infrastructure;
 using FluentAssertions;
@@ -9,7 +9,7 @@ namespace OAuth2.Tests.Infrastructure
     public class ObjectExtensionsTests
     {
         [Test]
-        public void Should_ReturnTrue_ForObjectsOfAnonymousClass_HavingSameSetsOfProperties_WithSameValues()
+        public void AllPropertiesAreEqualTo_SameValues_ReturnsTrue()
         {
             // arrange
             var left = new
@@ -30,7 +30,7 @@ namespace OAuth2.Tests.Infrastructure
         }
 
         [Test]
-        public void Should_ReturnTrue_ForObjectsOfAnonymousClass_HavingSameSetsOfProperties_WithSameValues_WhereSomeOfValuesAreNulls()
+        public void AllPropertiesAreEqualTo_SameValuesWithNulls_ReturnsTrue()
         {
             // arrange
             var left = new
@@ -51,7 +51,7 @@ namespace OAuth2.Tests.Infrastructure
         }
 
         [Test]
-        public void Should_ReturnTrue_ForObjectsOfAnonymousClass_HavingSameSetsOfProperties_WithDifferentValues()
+        public void AllPropertiesAreEqualTo_DifferentReferenceValues_ReturnsFalse()
         {
             // arrange
             var left = new
@@ -70,7 +70,7 @@ namespace OAuth2.Tests.Infrastructure
         }
 
         [Test]
-        public void Should_ReturnTrue_ForObjectsOfAnonymousClass_HavingSameSetsOfProperties_WithDifferentValues_WhereSomeOfThemAreNotOfReferenceTypes()
+        public void AllPropertiesAreEqualTo_DifferentValueTypeValues_ReturnsFalse()
         {
             // arrange
             var left = new
@@ -89,7 +89,7 @@ namespace OAuth2.Tests.Infrastructure
         }
 
         [Test]
-        public void Should_ReturnTrue_ForObjectsOfAnonymousClass_HavingDifferentSetsOfProperties()
+        public void AllPropertiesAreEqualTo_DifferentPropertySets_ReturnsFalse()
         {
             // arrange
             var left = new

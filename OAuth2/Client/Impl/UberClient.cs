@@ -10,8 +10,9 @@ using RestSharp.Authenticators.OAuth2;
 namespace OAuth2.Client.Impl
 {
     /// <summary>
-    /// Uber authentication client
+    /// Uber authentication client.
     /// </summary>
+    /// <seealso href="https://developer.uber.com/docs/riders/guides/authentication/introduction">Uber OAuth Documentation</seealso>
     public class UberClient : OAuth2Client
     {
         /// <summary>
@@ -44,7 +45,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://login.uber.com",
+                    BaseUri = "https://auth.uber.com",
                     Resource = "/oauth/v2/authorize"
                 };
             }
@@ -59,7 +60,7 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://login.uber.com",
+                    BaseUri = "https://auth.uber.com",
                     Resource = "/oauth/v2/token"
                 };
             }

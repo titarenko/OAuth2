@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using NUnit.Framework;
 using OAuth2.Infrastructure;
 using FluentAssertions;
@@ -9,7 +9,7 @@ namespace OAuth2.Tests.Infrastructure
     public class EnumerableExtensionsTests
     {
         [Test]
-        public void Should_CallActionForEachItem_WhenForEachIsInvoked()
+        public void ForEach_MultipleItems_CallsActionForEachItem()
         {
             // arrange
             var items = new[] {1, 2, 3, 4, 5};

@@ -11,6 +11,20 @@ namespace OAuth2.Client.Impl
     /// <summary>
     /// Windows Live authentication client.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This client uses the legacy Windows Live / Live Connect endpoints (login.live.com
+    /// and apis.live.net/v5.0). Although Microsoft officially retired the Live SDK in
+    /// November 2018, these endpoints continue to function in practice and are actively
+    /// used in production (e.g. Exceptionless with <c>wl.emails</c> scope).
+    /// </para>
+    /// <para>
+    /// For new integrations, consider using <see cref="MicrosoftClient"/> instead, which
+    /// targets the Microsoft Identity Platform (v2.0) and Microsoft Graph API. Note that
+    /// user IDs differ between the two platforms.
+    /// </para>
+    /// </remarks>
+    /// <seealso href="https://learn.microsoft.com/en-us/onedrive/developer/rest-api/concepts/migrating-from-live-sdk">Migrating from Live SDK to Microsoft Graph</seealso>
     public class WindowsLiveClient : OAuth2Client
     {
         /// <summary>

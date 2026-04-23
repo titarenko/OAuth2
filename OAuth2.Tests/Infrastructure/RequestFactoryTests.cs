@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using OAuth2.Infrastructure;
 using FluentAssertions;
 
@@ -17,7 +17,7 @@ namespace OAuth2.Tests.Infrastructure
         }
 
         [Test]
-        public void Should_ReturnNewClientInstance_WhenNewClientIsCalled()
+        public void CreateClient_CalledTwice_ReturnsNewInstances()
         {
             // act
             var client1 = _factory.CreateClient("https://localhost");
@@ -30,7 +30,7 @@ namespace OAuth2.Tests.Infrastructure
         }
 
         [Test]
-        public void Should_ReturnNewRequestInstance_WhenNewRequestIsCalled()
+        public void CreateRequest_CalledTwice_ReturnsNewInstances()
         {
             // act
             var request1 = _factory.CreateRequest("/resource");

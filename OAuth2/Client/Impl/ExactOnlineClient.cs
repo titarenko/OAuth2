@@ -11,9 +11,9 @@ using RestSharp.Authenticators.OAuth2;
 namespace OAuth2.Client.Impl
 {
     /// <summary>
-    /// Exact Online Client
-    /// https://developers.exactonline.com/
+    /// Exact Online authentication client.
     /// </summary>
+    /// <seealso href="https://developers.exactonline.com/">Exact Online Developer Documentation</seealso>
     public class ExactOnlineClient : OAuth2Client
     {
         /// <summary>

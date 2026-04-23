@@ -10,10 +10,9 @@ using RestSharp.Authenticators.OAuth2;
 namespace OAuth2.Client.Impl
 {
     /// <summary>
-    /// Spotify client
-    /// https://developer.spotify.com/web-api/authorization-guide/
-    /// https://developer.spotify.com/web-api/endpoint-reference/
+    /// Spotify authentication client.
     /// </summary>
+    /// <seealso href="https://developer.spotify.com/documentation/web-api/tutorials/code-flow">Spotify OAuth Documentation</seealso>
     public class SpotifyClient : OAuth2Client
     {
         /// <summary>

@@ -13,9 +13,9 @@ namespace OAuth2.Tests.Client.Impl
     public class GoogleClientTests
     {
         /* lang=json */
-        private const string Content = "{\"email\":\"email\",\"given_name\":\"name\",\"family_name\":\"surname\",\"id\":\"id\"}";
+        private const string Content = "{\"email\":\"email\",\"given_name\":\"name\",\"family_name\":\"surname\",\"sub\":\"id\"}";
         /* lang=json */
-        private const string ContentWithPicture = "{\"email\":\"email\",\"given_name\":\"name\",\"family_name\":\"surname\",\"id\":\"id\",\"picture\":\"picture\"}";
+        private const string ContentWithPicture = "{\"email\":\"email\",\"given_name\":\"name\",\"family_name\":\"surname\",\"sub\":\"id\",\"picture\":\"picture\"}";
 
         private GoogleClientDescendant _descendant;
 
@@ -26,52 +26,62 @@ namespace OAuth2.Tests.Client.Impl
         }
 
         [Test]
-        public void Should_ReturnCorrectAccessCodeServiceEndpoint()
+        public void AccessCodeEndpoint_Default_ReturnsCorrectEndpoint()
         {
+            // arrange
+
             // act
             var endpoint = _descendant.GetAccessCodeServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://accounts.google.com");
-            endpoint.Resource.Should().Be("/o/oauth2/auth");
+            endpoint.Resource.Should().Be("/o/oauth2/v2/auth");
         }
 
         [Test]
-        public void Should_ReturnCorrectAccessTokenServiceEndpoint()
+        public void AccessTokenEndpoint_Default_ReturnsCorrectEndpoint()
         {
+            // arrange
+
             // act
             var endpoint = _descendant.GetAccessTokenServiceEndpoint();
 
             // assert
-            endpoint.BaseUri.Should().Be("https://accounts.google.com");
-            endpoint.Resource.Should().Be("/o/oauth2/token");
+            endpoint.BaseUri.Should().Be("https://oauth2.googleapis.com");
+            endpoint.Resource.Should().Be("/token");
         }
 
         [Test]
-        public void Should_ReturnCorrectUserInfoServiceEndpoint()
+        public void UserInfoEndpoint_Default_ReturnsCorrectEndpoint()
         {
+            // arrange
+
             // act
             var endpoint = _descendant.GetUserInfoServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://www.googleapis.com");
-            endpoint.Resource.Should().Be("/oauth2/v1/userinfo");
+            endpoint.Resource.Should().Be("/oauth2/v3/userinfo");
         }
 
         [Test]
-        public void ShouldNot_Throw_WhenParsingUserInfoAndPictureIsNotAvailable()
+        public void ParseUserInfo_NoPicture_DoesNotThrow()
         {
+            // arrange (uses Content const without picture)
+
             // act & assert
             _descendant.Invoking(x => x.ParseUserInfo(Content)).Should().NotThrow();
         }
 
         [Test]
-        public void Should_ParseAllFieldsOfUserInfo_WhenCorrectContentIsPassed()
+        public void ParseUserInfo_ValidContent_ReturnsCorrectFields()
         {
+            // arrange (uses ContentWithPicture const)
+
             // act
             var info = _descendant.ParseUserInfo(ContentWithPicture);
 
-            //  assert
+            // assert
             info.Id.Should().Be("id");
             info.FirstName.Should().Be("name");
             info.LastName.Should().Be("surname");

@@ -13,6 +13,7 @@ namespace OAuth2.Client.Impl
     /// <summary>
     /// Fitbit authentication client.
     /// </summary>
+    /// <seealso href="https://dev.fitbit.com/build/reference/web-api/authorization/">Fitbit OAuth Documentation</seealso>
     public class FitbitClient : OAuth2Client
     {
         /// <summary>

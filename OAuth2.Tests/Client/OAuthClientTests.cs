@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -59,27 +59,34 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public Task Should_ThrowNotSupported_When_UserWantsToTransmitState()
+        public Task GetLoginLinkUri_WithState_ThrowsNotSupported()
         {
+            // arrange & act & assert
             return _descendant.Awaiting(x => x.GetLoginLinkUriAsync("any state")).Should().ThrowAsync<NotSupportedException>();
         }
 
         [Test]
-        public Task Should_ThrowUnexpectedResponse_When_StatusIsNotOk()
+        public Task GetLoginLinkUri_StatusNotOk_ThrowsUnexpectedResponse()
         {
+            // arrange
             _handler.EnqueueResponse(HttpStatusCode.InternalServerError, String.Empty);
+
+            // act & assert
             return _descendant.Awaiting(x => x.GetLoginLinkUriAsync()).Should().ThrowAsync<UnexpectedResponseException>();
         }
 
         [Test]
-        public Task Should_ThrowUnexpectedResponse_When_ContentIsEmpty()
+        public Task GetLoginLinkUri_EmptyContent_ThrowsUnexpectedResponse()
         {
+            // arrange
             _handler.EnqueueResponse(HttpStatusCode.OK, "");
+
+            // act & assert
             return _descendant.Awaiting(x => x.GetLoginLinkUriAsync()).Should().ThrowAsync<UnexpectedResponseException>();
         }
 
         [Test]
-        public async Task Should_ThrowUnexpectedResponse_When_OAuthTokenIsEmpty()
+        public async Task GetLoginLinkUri_EmptyOAuthToken_ThrowsUnexpectedResponse()
         {
             _handler.EnqueueResponse("something=something_other");
             var ex = await _descendant
@@ -89,7 +96,7 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public async Task Should_ThrowUnexpectedResponse_When_OAuthSecretIsEmpty()
+        public async Task GetLoginLinkUri_EmptyOAuthSecret_ThrowsUnexpectedResponse()
         {
             _handler.EnqueueResponse("oauth_token=token");
             var ex = await _descendant
@@ -99,7 +106,7 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public async Task Should_IssueCorrectRequestForRequestToken_When_GetLoginLinkUriIsCalled()
+        public async Task GetLoginLinkUri_Called_IssuesCorrectRequestTokenRequest()
         {
             // arrange
             _handler.EnqueueResponse("oauth_token=token&oauth_token_secret=secret");
@@ -117,7 +124,7 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public async Task Should_ComposeCorrectLoginUri_When_GetLoginLinkIsCalled()
+        public async Task GetLoginLinkUri_Called_ComposesCorrectLoginUri()
         {
             // arrange
             _handler.EnqueueResponse("oauth_token=token5&oauth_token_secret=secret");
@@ -136,7 +143,7 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public async Task Should_IssueCorrectRequestForAccessToken_When_GetUserInfoIsCalled()
+        public async Task GetUserInfo_Called_IssuesCorrectAccessTokenRequest()
         {
             // arrange
             _handler.EnqueueResponse("oauth_token=token&oauth_token_secret=secret");
@@ -159,7 +166,7 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public async Task Should_IssueCorrectRequestForUserInfo_When_GetUserInfoIsCalled()
+        public async Task GetUserInfo_Called_IssuesCorrectUserInfoRequest()
         {
             // arrange
             _handler.EnqueueResponse("oauth_token=token&oauth_token_secret=secret");

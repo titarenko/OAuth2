@@ -14,7 +14,7 @@ using RestSharp;
 namespace OAuth2.Client.Impl
 {
     /// <summary>
-    /// Login Cidadão OAuth2 client.
+    /// Login Cidadão OAuth2 authentication client.
     /// </summary>
     public class LoginCidadaoClient : OAuth2Client
     {

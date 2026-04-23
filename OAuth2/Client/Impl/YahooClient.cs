@@ -10,10 +10,9 @@ using RestSharp.Authenticators.OAuth2;
 namespace OAuth2.Client.Impl
 {
     /// <summary>
-    /// Yahoo client
-    /// Right now only Yahoo Gemini and Yahoo Social support OAuth2
-    /// https://developer.yahoo.com/oauth2/guide/
+    /// Yahoo authentication client.
     /// </summary>
+    /// <seealso href="https://developer.yahoo.com/oauth2/guide/">Yahoo OAuth 2.0 Documentation</seealso>
     public class YahooClient : OAuth2Client
     {
         private string _userProfileGUID;

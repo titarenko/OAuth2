@@ -29,7 +29,7 @@ namespace OAuth2.Tests.Serialization
         {
             // arrange
             /* lang=json */
-            const string content = @"{""User"":{""id"":1234,""email"":""user@todoist.com"",""full_name"":""Todo User"",""avatar_small"":""https://td.com/s.jpg"",""avatar_medium"":""https://td.com/m.jpg"",""avatar_big"":""https://td.com/l.jpg""}}";
+            const string content = @"{""id"":""1234"",""email"":""user@todoist.com"",""full_name"":""Todo User"",""avatar_small"":""https://td.com/s.jpg"",""avatar_medium"":""https://td.com/m.jpg"",""avatar_big"":""https://td.com/l.jpg""}";
 
             // act
             var info = _client.ParseUserInfo(content);
@@ -45,7 +45,7 @@ namespace OAuth2.Tests.Serialization
         {
             // arrange
             /* lang=json */
-            const string content = @"{""User"":{""id"":1,""email"":""a@t.com"",""full_name"":""A"",""avatar_small"":""https://td.com/s.jpg"",""avatar_medium"":""https://td.com/m.jpg"",""avatar_big"":""https://td.com/l.jpg""}}";
+            const string content = @"{""id"":""1"",""email"":""a@t.com"",""full_name"":""A"",""avatar_small"":""https://td.com/s.jpg"",""avatar_medium"":""https://td.com/m.jpg"",""avatar_big"":""https://td.com/l.jpg""}";
 
             // act
             var info = _client.ParseUserInfo(content);
@@ -57,11 +57,25 @@ namespace OAuth2.Tests.Serialization
         }
 
         [Test]
+        public void ParseUserInfo_StringId_ReturnsIdAsIs()
+        {
+            // arrange
+            /* lang=json */
+            const string content = @"{""id"":""99999"",""email"":""a@t.com"",""full_name"":""A"",""avatar_small"":""s.jpg"",""avatar_medium"":""m.jpg"",""avatar_big"":""l.jpg""}";
+
+            // act
+            var info = _client.ParseUserInfo(content);
+
+            // assert
+            info.Id.Should().Be("99999");
+        }
+
+        [Test]
         public void ParseUserInfo_NumericId_ConvertsToString()
         {
             // arrange
             /* lang=json */
-            const string content = @"{""User"":{""id"":99999,""email"":""a@t.com"",""full_name"":""A"",""avatar_small"":""s.jpg"",""avatar_medium"":""m.jpg"",""avatar_big"":""l.jpg""}}";
+            const string content = @"{""id"":99999,""email"":""a@t.com"",""full_name"":""A"",""avatar_small"":""s.jpg"",""avatar_medium"":""m.jpg"",""avatar_big"":""l.jpg""}";
 
             // act
             var info = _client.ParseUserInfo(content);
@@ -75,7 +89,7 @@ namespace OAuth2.Tests.Serialization
         {
             // arrange
             /* lang=json */
-            const string content = @"{""User"":{""id"":1,""email"":""a@t.com"",""full_name"":""John Smith"",""avatar_small"":""s.jpg"",""avatar_medium"":""m.jpg"",""avatar_big"":""l.jpg""}}";
+            const string content = @"{""id"":""1"",""email"":""a@t.com"",""full_name"":""John Smith"",""avatar_small"":""s.jpg"",""avatar_medium"":""m.jpg"",""avatar_big"":""l.jpg""}";
 
             // act
             var info = _client.ParseUserInfo(content);
@@ -90,7 +104,7 @@ namespace OAuth2.Tests.Serialization
         {
             // arrange
             /* lang=json */
-            const string content = @"{""User"":{""id"":1234,""email"":""user@todoist.com"",""full_name"":""Todo User"",""avatar_small"":""https://td.com/s.jpg"",""avatar_medium"":""https://td.com/m.jpg"",""avatar_big"":""https://td.com/l.jpg""}}";
+            const string content = @"{""id"":""1234"",""email"":""user@todoist.com"",""full_name"":""Todo User"",""avatar_small"":""https://td.com/s.jpg"",""avatar_medium"":""https://td.com/m.jpg"",""avatar_big"":""https://td.com/l.jpg""}";
 
             // act
             var info = _client.ParseUserInfo(content);

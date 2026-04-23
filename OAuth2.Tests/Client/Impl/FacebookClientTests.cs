@@ -56,45 +56,53 @@ namespace OAuth2.Tests.Client.Impl
         }
 
         [Test]
-        public void Should_ReturnCorrectAccessCodeServiceEndpoint()
+        public void AccessCodeEndpoint_Default_ReturnsCorrectEndpoint()
         {
+            // arrange
+
             // act
             var endpoint = _descendant.GetAccessCodeServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://www.facebook.com");
-            endpoint.Resource.Should().Be("/dialog/oauth");
+            endpoint.Resource.Should().Be("/v25.0/dialog/oauth");
         }
 
         [Test]
-        public void Should_ReturnCorrectAccessTokenServiceEndpoint()
+        public void AccessTokenEndpoint_Default_ReturnsCorrectEndpoint()
         {
+            // arrange
+
             // act
             var endpoint = _descendant.GetAccessTokenServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://graph.facebook.com");
-            endpoint.Resource.Should().Be("/oauth/access_token");
+            endpoint.Resource.Should().Be("/v25.0/oauth/access_token");
         }
 
         [Test]
-        public void Should_ReturnCorrectUserInfoServiceEndpoint()
+        public void UserInfoEndpoint_Default_ReturnsCorrectEndpoint()
         {
+            // arrange
+
             // act
             var endpoint = _descendant.GetUserInfoServiceEndpoint();
 
             // assert
             endpoint.BaseUri.Should().Be("https://graph.facebook.com");
-            endpoint.Resource.Should().Be("/me");
+            endpoint.Resource.Should().Be("/v25.0/me");
         }
 
         [Test]
-        public void Should_ParseAllFieldsOfUserInfo_WhenCorrectContentIsPassed()
+        public void ParseUserInfo_ValidContent_ReturnsCorrectFields()
         {
+            // arrange (uses Content const)
+
             // act
             var info = _descendant.ParseUserInfo(Content);
 
-            //  assert
+            // assert
             info.Id.Should().Be("id");
             info.FirstName.Should().Be("name");
             info.LastName.Should().Be("surname");
@@ -103,7 +111,7 @@ namespace OAuth2.Tests.Client.Impl
         }
 
         [Test]
-        public async Task Should_AddExtraParameters_WhenOnGetUserInfoIsCalled()
+        public async Task GetUserInfo_Called_AddsFieldsParameter()
         {
             // arrange
             _handler.EnqueueResponse("access_token=token");

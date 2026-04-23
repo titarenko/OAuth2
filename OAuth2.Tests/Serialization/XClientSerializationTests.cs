@@ -10,18 +10,18 @@ using OAuth2.Models;
 namespace OAuth2.Tests.Serialization
 {
     [TestFixture]
-    public class TwitterClientSerializationTests
+    public class XClientSerializationTests
     {
         private IRequestFactory _factory;
         private IClientConfiguration _configuration;
-        private TestableTwitterClient _client;
+        private TestableXClient _client;
 
         [SetUp]
         public void SetUp()
         {
             _factory = Substitute.For<IRequestFactory>();
             _configuration = Substitute.For<IClientConfiguration>();
-            _client = new TestableTwitterClient(_factory, _configuration);
+            _client = new TestableXClient(_factory, _configuration);
         }
 
         [Test]
@@ -29,7 +29,7 @@ namespace OAuth2.Tests.Serialization
         {
             // arrange
             /* lang=json */
-            const string content = @"{""id"":987,""name"":""Tweet Bird"",""profile_image_url"":""https://twitter.com/pic_normal.jpg""}";
+            const string content = @"{""id"":987,""name"":""Tweet Bird"",""email"":""tweet@x.com"",""profile_image_url"":""https://twitter.com/pic_normal.jpg""}";
 
             // act
             var info = _client.ParseUserInfo(content);
@@ -38,7 +38,7 @@ namespace OAuth2.Tests.Serialization
             info.Id.Should().Be("987");
             info.FirstName.Should().Be("Tweet");
             info.LastName.Should().Be("Bird");
-            info.Email.Should().BeNull();
+            info.Email.Should().Be("tweet@x.com");
         }
 
         [Test]
@@ -114,7 +114,7 @@ namespace OAuth2.Tests.Serialization
         }
 
         [Test]
-        public void ParseUserInfo_EmailAlwaysNull_ReturnsNullEmail()
+        public void ParseUserInfo_NoEmail_ReturnsNullEmail()
         {
             // arrange
             /* lang=json */
@@ -125,6 +125,20 @@ namespace OAuth2.Tests.Serialization
 
             // assert
             info.Email.Should().BeNull();
+        }
+
+        [Test]
+        public void ParseUserInfo_WithEmail_ReturnsEmail()
+        {
+            // arrange
+            /* lang=json */
+            const string content = @"{""id"":1,""name"":""A B"",""email"":""user@x.com"",""profile_image_url"":""pic.jpg""}";
+
+            // act
+            var info = _client.ParseUserInfo(content);
+
+            // assert
+            info.Email.Should().Be("user@x.com");
         }
 
         [Test]
@@ -145,9 +159,9 @@ namespace OAuth2.Tests.Serialization
                 .Should().Contain("mini");
         }
 
-        private class TestableTwitterClient : TwitterClient
+        private class TestableXClient : XClient
         {
-            public TestableTwitterClient(IRequestFactory factory, IClientConfiguration configuration)
+            public TestableXClient(IRequestFactory factory, IClientConfiguration configuration)
                 : base(factory, configuration) { }
 
             public new UserInfo ParseUserInfo(string content) => base.ParseUserInfo(content);

@@ -11,8 +11,10 @@ using RestSharp.Authenticators.OAuth2;
 namespace OAuth2.Client.Impl
 {
     /// <summary>
-    /// Visual Studio Team Services (VSTS) authentication client.
+    /// Visual Studio Team Services (VSTS) / Azure DevOps authentication client.
     /// </summary>
+    /// <seealso href="https://learn.microsoft.com/en-us/azure/devops/integrate/get-started/authentication/oauth">Azure DevOps OAuth Documentation</seealso>
+    [Obsolete("Azure DevOps OAuth is deprecated (Apr 2025) and will be fully retired in 2026. Use MicrosoftClient with Microsoft Entra ID OAuth instead.")]
     public class VSTSClient : OAuth2Client
     {
         /// <summary>
@@ -96,7 +98,7 @@ namespace OAuth2.Client.Impl
 
         /// <summary>
         /// Should return parsed <see cref="UserInfo"/> from content received from third-party service.
-        /// For more information see https://www.visualstudio.com/en-us/docs/integrate/api/shared/profiles
+        /// For more information see https://learn.microsoft.com/en-us/rest/api/azure/devops/profile/profiles/get
         /// </summary>
         /// <param name="content">The content which is received from third-party service.</param>
         protected override UserInfo ParseUserInfo(string content)

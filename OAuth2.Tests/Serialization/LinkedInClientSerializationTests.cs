@@ -25,17 +25,11 @@ namespace OAuth2.Tests.Serialization
         }
 
         [Test]
-        public void ParseUserInfo_ValidXml_ReturnsCorrectFields()
+        public void ParseUserInfo_ValidJson_ReturnsCorrectFields()
         {
             // arrange
-            const string content = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<person>
-    <id>li-123</id>
-    <first-name>Jane</first-name>
-    <last-name>Doe</last-name>
-    <email-address>jane@linkedin.com</email-address>
-    <picture-url>https://linkedin.com/photo_80x80.jpg</picture-url>
-</person>";
+            /* lang=json */
+            const string content = @"{""sub"":""li-123"",""given_name"":""Jane"",""family_name"":""Doe"",""email"":""jane@linkedin.com"",""picture"":""https://media.licdn.com/photo.jpg""}";
 
             // act
             var info = _client.ParseUserInfo(content);
@@ -48,84 +42,57 @@ namespace OAuth2.Tests.Serialization
         }
 
         [Test]
-        public void ParseUserInfo_WithPictureUrl_SetsNormalAvatarToOriginalUrl()
+        public void ParseUserInfo_WithPicture_SetsAllAvatarSizesToPictureUrl()
         {
             // arrange
-            const string content = @"<?xml version=""1.0"" encoding=""UTF-8""?><person><id>1</id><first-name>A</first-name><last-name>B</last-name><picture-url>https://linkedin.com/photo_80x80.jpg</picture-url></person>";
+            /* lang=json */
+            const string content = @"{""sub"":""1"",""given_name"":""A"",""family_name"":""B"",""picture"":""https://media.licdn.com/photo.jpg""}";
 
             // act
             var info = _client.ParseUserInfo(content);
 
             // assert
-            info.AvatarUri.Normal.Should().Be("https://linkedin.com/photo_80x80.jpg");
+            info.AvatarUri.Small.Should().Be("https://media.licdn.com/photo.jpg");
+            info.AvatarUri.Normal.Should().Be("https://media.licdn.com/photo.jpg");
+            info.AvatarUri.Large.Should().Be("https://media.licdn.com/photo.jpg");
         }
 
         [Test]
-        public void ParseUserInfo_WithPictureUrl_FormatsSmallAvatarWithUnderscoreSize()
+        public void ParseUserInfo_MissingPicture_AvatarFieldsAreNull()
         {
             // arrange
-            const string content = @"<?xml version=""1.0"" encoding=""UTF-8""?><person><id>1</id><first-name>A</first-name><last-name>B</last-name><picture-url>https://linkedin.com/photo_80_80.jpg</picture-url></person>";
+            /* lang=json */
+            const string content = @"{""sub"":""1"",""given_name"":""A"",""family_name"":""B""}";
 
             // act
             var info = _client.ParseUserInfo(content);
 
             // assert
-            info.AvatarUri.Small.Should().Contain("36_36");
+            info.AvatarUri.Small.Should().BeNull();
+            info.AvatarUri.Normal.Should().BeNull();
+            info.AvatarUri.Large.Should().BeNull();
         }
 
         [Test]
-        public void ParseUserInfo_WithPictureUrl_FormatsLargeAvatarWithUnderscoreSize()
+        public void ParseUserInfo_MissingEmail_ReturnsNullEmail()
         {
             // arrange
-            const string content = @"<?xml version=""1.0"" encoding=""UTF-8""?><person><id>1</id><first-name>A</first-name><last-name>B</last-name><picture-url>https://linkedin.com/photo_80_80.jpg</picture-url></person>";
+            /* lang=json */
+            const string content = @"{""sub"":""1"",""given_name"":""A"",""family_name"":""B""}";
 
             // act
             var info = _client.ParseUserInfo(content);
 
             // assert
-            info.AvatarUri.Large.Should().Contain("300_300");
+            info.Email.Should().BeNull();
         }
 
         [Test]
-        public void ParseUserInfo_MissingPictureUrl_GhostAvatarUsesXSizeFormat()
+        public void ParseUserInfo_ValidJson_SerializesToValidJson()
         {
             // arrange
-            const string content = @"<?xml version=""1.0"" encoding=""UTF-8""?><person><id>1</id><first-name>A</first-name><last-name>B</last-name></person>";
-
-            // act
-            var info = _client.ParseUserInfo(content);
-
-            // assert
-            info.AvatarUri.Small.Should().Contain("36x36");
-            info.AvatarUri.Large.Should().Contain("300x300");
-        }
-
-        [Test]
-        public void ParseUserInfo_MissingPictureUrl_UsesDefaultGhostAvatar()
-        {
-            // arrange
-            const string content = @"<?xml version=""1.0"" encoding=""UTF-8""?><person><id>1</id><first-name>A</first-name><last-name>B</last-name></person>";
-
-            // act
-            var info = _client.ParseUserInfo(content);
-
-            // assert
-            info.AvatarUri.Normal.Should().Contain("linkedin.com");
-            info.AvatarUri.Normal.Should().Contain("ghost");
-        }
-
-        [Test]
-        public void ParseUserInfo_ValidXml_SerializesToValidJson()
-        {
-            // arrange
-            const string content = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<person>
-    <id>li-123</id>
-    <first-name>Jane</first-name>
-    <last-name>Doe</last-name>
-    <email-address>jane@linkedin.com</email-address>
-    <picture-url>https://linkedin.com/photo_80x80.jpg</picture-url>
-</person>";
+            /* lang=json */
+            const string content = @"{""sub"":""li-123"",""given_name"":""Jane"",""family_name"":""Doe"",""email"":""jane@linkedin.com"",""picture"":""https://media.licdn.com/photo.jpg""}";
 
             // act
             var info = _client.ParseUserInfo(content);

@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
 using OAuth2.Client;
@@ -28,8 +28,10 @@ namespace OAuth2.Tests.Client.Impl
         }
 
         [Test]
-        public void Should_ReturnCorrectAccessCodeServiceEndpoint()
+        public void AccessCodeEndpoint_Default_ReturnsCorrectEndpoint()
         {
+            // arrange
+
             // act
             var endpoint = _descendant.GetAccessCodeServiceEndpoint();
 
@@ -39,8 +41,10 @@ namespace OAuth2.Tests.Client.Impl
         }
 
         [Test]
-        public void Should_ReturnCorrectAccessTokenServiceEndpoint()
+        public void AccessTokenEndpoint_Default_ReturnsCorrectEndpoint()
         {
+            // arrange
+
             // act
             var endpoint = _descendant.GetAccessTokenServiceEndpoint();
 
@@ -50,8 +54,10 @@ namespace OAuth2.Tests.Client.Impl
         }
 
         [Test]
-        public void Should_ReturnCorrectUserInfoServiceEndpoint()
+        public void UserInfoEndpoint_Default_ReturnsCorrectEndpoint()
         {
+            // arrange
+
             // act
             var endpoint = _descendant.GetUserInfoServiceEndpoint();
 
@@ -61,8 +67,10 @@ namespace OAuth2.Tests.Client.Impl
         }
 
         [Test]
-        public void Should_ParseAllFieldsOfUserInfo_WhenCorrectContentIsPassed()
+        public void ParseUserInfo_ValidContent_ReturnsCorrectFields()
         {
+            // arrange (uses Content const)
+
             // act
             var info = _descendant.ParseUserInfo(Content);
 
@@ -72,8 +80,10 @@ namespace OAuth2.Tests.Client.Impl
         }
 
         [Test]
-        public void Should_AvatarOfUserInfo_WhenCorrectContentIsPassed()
+        public void ParseUserInfo_ContentWithAvatar_ReturnsCorrectAvatarUri()
         {
+            // arrange (uses ContentWithAvatar const)
+
             // act
             var info = _descendant.ParseUserInfo(ContentWithAvatar);
 
