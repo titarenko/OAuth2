@@ -106,6 +106,7 @@ namespace OAuth2.Client.Impl
             };
         }
 
+        /// <inheritdoc />
         public override string Name
         {
             get { return "Foursquare"; }

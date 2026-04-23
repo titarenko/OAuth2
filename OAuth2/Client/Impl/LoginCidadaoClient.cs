@@ -12,6 +12,9 @@ using OAuth2.Models;
 
 namespace OAuth2.Client.Impl
 {
+    /// <summary>
+    /// Login Cidadão OAuth2 client.
+    /// </summary>
     public class LoginCidadaoClient : OAuth2Client
     {
         private readonly IRequestFactory _factory;
@@ -129,8 +132,14 @@ namespace OAuth2.Client.Impl
             get { return "Login Cidadão"; }
         }
 
+        /// <summary>
+        /// Represents a Login Cidadão user with additional Brazilian citizen information.
+        /// </summary>
         public class Cidadao : UserInfo
         {
+            /// <summary>
+            /// Gets or sets the CPF (Cadastro de Pessoas Físicas) number.
+            /// </summary>
             public string Cpf { get; set; }
         }
 

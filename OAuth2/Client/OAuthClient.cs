@@ -170,6 +170,11 @@ namespace OAuth2.Client
             AccessTokenSecret = collection.GetOrThrowUnexpectedResponse(OAuthTokenSecretKey);
         }
 
+        /// <summary>
+        /// Called just before issuing request to obtain access token.
+        /// Allows to add extra parameters to request or do any other needed preparations.
+        /// </summary>
+        /// <param name="args">Request context containing client, request, and configuration.</param>
         protected virtual void BeforeGetAccessToken(BeforeAfterRequestArgs args)
         {
         }

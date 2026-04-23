@@ -62,7 +62,7 @@ namespace OAuth2.Tests.Client
         [Test]
         public Task Should_ThrowUnexpectedResponse_When_CodeIsNotOk()
         {
-            _handler.EnqueueResponse(HttpStatusCode.InternalServerError, string.Empty);
+            _handler.EnqueueResponse(HttpStatusCode.InternalServerError, String.Empty);
 
             return _descendant
                 .Awaiting(x => x.GetUserInfoAsync(new NameValueCollection { { "code", "code" } }))

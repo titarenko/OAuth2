@@ -15,7 +15,6 @@
     <Description>Allows you to perform user authentication via DigitalOcean, Facebook, Foursquare, GitHub, Google, Instagram, LinkedIn, MailRu, Odnoklassniki, Salesforce, Twitter, VK (Vkontakte), Windows Live, Yandex just in two method calls.</Description>
     <Authors>Constantin Titarenko, Andrew Semack, Blake Niemyjski and others</Authors>
     <PackageTags>OAuth2, OAuth, DigitalOcean, Facebook, Foursquare, GitHub, Google, Instagram, LinkedIn, MailRu, Odnoklassniki, Twitter, VK (Vkontakte), Windows Live, Yandex</PackageTags>
-    <NoWarn>$(NoWarn);CS1591;CS1658;CS1584;</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DebugType>portable</DebugType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

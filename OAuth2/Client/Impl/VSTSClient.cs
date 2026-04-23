@@ -38,6 +38,7 @@ namespace OAuth2.Client.Impl
             }
         }
 
+        /// <inheritdoc />
         protected override void BeforeGetAccessToken(BeforeAfterRequestArgs args)
         {
             string grantTypeToken = args.Parameters["refresh_token"] != null ? "refresh_token" : "urn:ietf:params:oauth:grant-type:jwt-bearer";
@@ -116,6 +117,7 @@ namespace OAuth2.Client.Impl
             return userinfo;
         }
 
+        /// <inheritdoc />
         public override string Name
         {
             get { return "VSTS"; }

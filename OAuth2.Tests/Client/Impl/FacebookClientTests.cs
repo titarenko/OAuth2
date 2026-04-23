@@ -21,7 +21,8 @@ namespace OAuth2.Tests.Client.Impl
     [TestFixture]
     public class FacebookClientTests
     {
-        private const string Content = /* lang=json */ "{\"email\":\"email\",\"first_name\":\"name\",\"last_name\":\"surname\",\"id\":\"id\",\"picture\":{\"data\":{\"url\":\"picture\"}}}";
+        /* lang=json */
+        private const string Content = "{\"email\":\"email\",\"first_name\":\"name\",\"last_name\":\"surname\",\"id\":\"id\",\"picture\":{\"data\":{\"url\":\"picture\"}}}";
 
         private FacebookClientDescendant _descendant;
         private IRequestFactory _factory;

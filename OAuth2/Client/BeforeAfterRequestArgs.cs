@@ -4,6 +4,9 @@ using RestSharp;
 
 namespace OAuth2.Client
 {
+    /// <summary>
+    /// Contains context passed to before/after request hooks during the OAuth authentication flow.
+    /// </summary>
     public class BeforeAfterRequestArgs
     {
         /// <summary>

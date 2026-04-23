@@ -112,6 +112,7 @@ namespace OAuth2.Client.Impl
 			return user;
 		}
 
+        /// <inheritdoc />
         public override string Name
         {
             get { return "Yandex"; }

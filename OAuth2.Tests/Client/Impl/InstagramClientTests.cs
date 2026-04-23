@@ -17,7 +17,8 @@ namespace OAuth2.Tests.Client.Impl
     [TestFixture]
     public class InstagramClientTests
     {
-        private const string AccessTokenResponseContent = /* lang=json */ "{\"access_token\":\"token\",\"user\":{\"id\":\"12345\",\"username\":\"jdoe\",\"full_name\":\"John Doe\",\"profile_picture\":\"https://instagramimages.com/photo.jpg\"}}";
+        /* lang=json */
+        private const string AccessTokenResponseContent = "{\"access_token\":\"token\",\"user\":{\"id\":\"12345\",\"username\":\"jdoe\",\"full_name\":\"John Doe\",\"profile_picture\":\"https://instagramimages.com/photo.jpg\"}}";
 
         private InstagramClientDescendant _descendant;
         private IRequestFactory _factory;

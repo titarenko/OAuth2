@@ -69,12 +69,14 @@ namespace OAuth2.Client.Impl
             }
         }
         
+        /// <inheritdoc />
         protected override void BeforeGetAccessToken(BeforeAfterRequestArgs args)
         {
             args.Request.Authenticator = new HttpBasicAuthenticator(Configuration.ClientId, Configuration.ClientSecret);
             base.BeforeGetAccessToken(args);
         }
 
+        /// <inheritdoc />
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
             args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");

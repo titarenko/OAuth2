@@ -73,6 +73,7 @@ namespace OAuth2.Client.Impl
         }
 
 
+        /// <inheritdoc />
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
             args.Request.Authenticator = null;

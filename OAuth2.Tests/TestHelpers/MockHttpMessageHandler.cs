@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -32,7 +33,7 @@ namespace OAuth2.Tests.TestHelpers
 
             var (statusCode, content) = _responses.Count > 0
                 ? _responses.Dequeue()
-                : (HttpStatusCode.OK, string.Empty);
+                : (HttpStatusCode.OK, String.Empty);
 
             var response = new HttpResponseMessage(statusCode)
             {

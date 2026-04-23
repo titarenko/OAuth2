@@ -21,7 +21,8 @@ namespace OAuth2.Tests.Client.Impl
     [TestFixture]
     public class VkClientTests
     {
-        private const string Content = /* lang=json */ "{\"response\":[{\"id\":\"1\",\"first_name\":\"Павел\",\"last_name\":\"Дуров\",\"has_photo\":1,\"photo_max_orig\":\"http:\\/\\/cs109.vkontakte.ru\\/u00001\\/c_df2abf56.jpg\"}]}";
+        /* lang=json */
+        private const string Content = "{\"response\":[{\"id\":\"1\",\"first_name\":\"Павел\",\"last_name\":\"Дуров\",\"has_photo\":1,\"photo_max_orig\":\"http:\\/\\/cs109.vkontakte.ru\\/u00001\\/c_df2abf56.jpg\"}]}";
 
         private VkClientDescendant _descendant;
         private IRequestFactory _factory;

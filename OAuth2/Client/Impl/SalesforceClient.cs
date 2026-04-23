@@ -52,6 +52,9 @@ namespace OAuth2.Client.Impl
             }
         }
 
+        /// <summary>
+        /// Gets or sets the Salesforce user profile URL returned in the token response.
+        /// </summary>
         public string SalesforceProfileUrl { get; set; }
 
         /// <summary>
@@ -78,6 +81,7 @@ namespace OAuth2.Client.Impl
             get { return "Salesforce"; }
         }
 
+        /// <inheritdoc />
         protected override string ParseTokenResponse(string content, string key)
         {
             // save the user's identity service url which is included in the response

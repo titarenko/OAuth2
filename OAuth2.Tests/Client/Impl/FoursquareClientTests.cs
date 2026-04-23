@@ -12,7 +12,8 @@ namespace OAuth2.Tests.Client.Impl
     [TestFixture]
     public class FoursquareClientTests
     {
-        private const string Content = /* lang=json */ "{\"response\":{\"user\":{\"id\":\"12345\",\"firstName\":\"Jane\",\"lastName\":\"Smith\",\"contact\":{\"email\":\"jane@example.com\"},\"photo\":{\"prefix\":\"https://img.4sqi.net/\",\"suffix\":\"/photo.jpg\"}}}}";
+        /* lang=json */
+        private const string Content = "{\"response\":{\"user\":{\"id\":\"12345\",\"firstName\":\"Jane\",\"lastName\":\"Smith\",\"contact\":{\"email\":\"jane@example.com\"},\"photo\":{\"prefix\":\"https://img.4sqi.net/\",\"suffix\":\"/photo.jpg\"}}}}";
 
         private FoursquareClientDescendant _descendant;
         private IRequestFactory _factory;

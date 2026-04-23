@@ -104,6 +104,7 @@ namespace OAuth2.Client.Impl
             return userinfo;
         }
 
+        /// <inheritdoc />
         public override string Name
         {
             get { return "WindowsLive"; }

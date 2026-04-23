@@ -13,7 +13,7 @@ namespace OAuth2.Infrastructure
         /// </summary>
         public RestClient CreateClient(string baseUrl)
         {
-            if (string.IsNullOrEmpty(baseUrl))
+            if (String.IsNullOrEmpty(baseUrl))
                 throw new ArgumentException("Value cannot be null or empty.", nameof(baseUrl));
 
             return new RestClient(baseUrl);
@@ -24,7 +24,7 @@ namespace OAuth2.Infrastructure
         /// </summary>
         public RestRequest CreateRequest(string resource)
         {
-            if (string.IsNullOrEmpty(resource))
+            if (String.IsNullOrEmpty(resource))
                 throw new ArgumentException("Value cannot be null or empty.", nameof(resource));
 
             return new RestRequest(resource);
@@ -35,7 +35,7 @@ namespace OAuth2.Infrastructure
         /// </summary>
         public RestRequest CreateRequest(string resource, Method method)
         {
-            if (string.IsNullOrEmpty(resource))
+            if (String.IsNullOrEmpty(resource))
                 throw new ArgumentException("Value cannot be null or empty.", nameof(resource));
 
             return new RestRequest(resource, method);

@@ -70,11 +70,13 @@ namespace OAuth2.Client.Impl
             }
         }
 
+        /// <inheritdoc />
         public override Task<string> GetLoginLinkUriAsync(string state = null, CancellationToken cancellationToken = default)
         {
             return base.GetLoginLinkUriAsync(state ?? Guid.NewGuid().ToString("N"), cancellationToken);
         }
 
+        /// <inheritdoc />
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
             args.Request.Authenticator = null;

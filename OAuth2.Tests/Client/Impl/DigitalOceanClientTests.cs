@@ -14,7 +14,8 @@ namespace OAuth2.Tests.Client.Impl
     [TestFixture]
     public class DigitalOceanClientTests
     {
-        private const string Content = /* lang=json */ "{\"access_token\":\"yada\",\"token_type\":\"bearer\",\"expires_in\":2592000,\"refresh_token\":\"yada\",\"scope\":\"read\",\"uid\":123456,\"info\":{\"name\":\"first.last\",\"email\":\"first.last@domain.com\"}}";
+        /* lang=json */
+        private const string Content = "{\"access_token\":\"yada\",\"token_type\":\"bearer\",\"expires_in\":2592000,\"refresh_token\":\"yada\",\"scope\":\"read\",\"uid\":123456,\"info\":{\"name\":\"first.last\",\"email\":\"first.last@domain.com\"}}";
 
         private DigitalOceanClientDescendant _descendant;
         private IRequestFactory _requestFactory;

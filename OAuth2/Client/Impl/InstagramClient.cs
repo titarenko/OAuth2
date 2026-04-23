@@ -69,6 +69,7 @@ namespace OAuth2.Client.Impl
             }
         }
         
+        /// <inheritdoc />
         protected override void AfterGetAccessToken(BeforeAfterRequestArgs args)
         {
             // Instagram returns userinfo on access_token request

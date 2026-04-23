@@ -19,6 +19,9 @@ namespace OAuth2.Client.Impl
     {
         private string _userProfileGUID;
 
+        /// <summary>
+        /// Gets the Yahoo user profile GUID obtained from the token response.
+        /// </summary>
         public string UserProfileGUID
         {
             get
