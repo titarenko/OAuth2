@@ -54,15 +54,19 @@ namespace OAuth2.Infrastructure
                 int bracketIndex = part.IndexOf('[');
                 if (bracketIndex >= 0)
                 {
+                    int closingBracketIndex = part.IndexOf(']', bracketIndex + 1);
+                    if (closingBracketIndex < 0 || closingBracketIndex != part.Length - 1)
+                        return null;
+
                     var name = part.Substring(0, bracketIndex);
-                    var indexStr = part.Substring(bracketIndex + 1, part.IndexOf(']') - bracketIndex - 1);
+                    var indexStr = part.Substring(bracketIndex + 1, closingBracketIndex - bracketIndex - 1);
                     if (!String.IsNullOrEmpty(name))
                     {
                         if (!current.TryGetProperty(name, out var arrayProp))
                             return null;
                         current = arrayProp;
                     }
-                    if (!Int32.TryParse(indexStr, out var index) || current.ValueKind != JsonValueKind.Array || current.GetArrayLength() <= index)
+                    if (!Int32.TryParse(indexStr, out var index) || index < 0 || current.ValueKind != JsonValueKind.Array || current.GetArrayLength() <= index)
                         return null;
                     current = current[index];
                 }

@@ -18,6 +18,7 @@ namespace OAuth2.Client.Impl
     /// </summary>
     public class GitHubClient : OAuth2Client
     {
+        private static readonly JsonSerializerOptions CaseInsensitiveOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         private readonly IRequestFactory _factory;
 
         /// <summary>
@@ -118,7 +119,7 @@ namespace OAuth2.Client.Impl
         /// <returns>A list of <see cref="UserEmails"/> representing the user's email addresses.</returns>
         protected virtual List<UserEmails> ParseEmailAddresses(string content)
         {
-            return JsonSerializer.Deserialize<List<UserEmails>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            return JsonSerializer.Deserialize<List<UserEmails>>(content, CaseInsensitiveOptions);
         }
 
         /// <summary>
