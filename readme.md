@@ -91,28 +91,34 @@ app.Run();
 | ExactOnline | `ExactOnlineClient` | Active | — | | | [Docs](https://developers.exactonline.com/) |
 | Fitbit | `FitbitClient` | Active | — | | | [Docs](https://dev.fitbit.com/build/reference/web-api/authorization/) |
 | Foursquare | `FoursquareClient` | **Deprecated** | v2 (deprecated) | | | [Docs](https://docs.foursquare.com/) |
-| Instagram | `InstagramClient` | **Dead** | Legacy API (shut down 2020) | | | [Docs](https://developers.facebook.com/docs/instagram-platform) |
-| LinkedIn | `LinkedInClient` | **Dead** | v1 API (shut down 2019) | | | [Docs](https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow) |
+| Instagram | `InstagramClient` | **Dead** | Basic Display API (shut down Dec 2024) | | | [Shutdown](https://developers.facebook.com/blog/post/2024/09/04/update-on-instagram-basic-display-api/) |
+| LinkedIn | `LinkedInClient` | **Needs Update** | v1 API (shut down 2019; v2 active) | | | [v2 Docs](https://learn.microsoft.com/en-us/linkedin/consumer/integrations/self-serve/sign-in-with-linkedin-v2) |
 | LoginCidadao | `LoginCidadaoClient` | Unknown | — | | | |
 | MailRu | `MailRuClient` | Active | — | | | [Docs](https://api.mail.ru/docs/guides/oauth/) |
 | Odnoklassniki | `OdnoklassnikiClient` | Active | — | | | [Docs](https://apiok.ru/en/ext/oauth/) |
 | Salesforce | `SalesforceClient` | Active | — | | | [Docs](https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_web_server_flow.htm) |
 | Spotify | `SpotifyClient` | Active | — | | | [Docs](https://developer.spotify.com/documentation/web-api/tutorials/code-flow) |
-| Todoist | `TodoistClient` | **Deprecated** | Sync API v6 (deprecated) | | | [Docs](https://developer.todoist.com/guides/#authorization) |
+| Todoist | `TodoistClient` | **Needs Update** | Sync API v6 (outdated) | | | [Docs](https://developer.todoist.com/guides/#authorization) · [Current API](https://developer.todoist.com/api/v1/) |
 | Twitter | `TwitterClient` | Active | OAuth 1.0a | | | [Docs](https://developer.x.com/en/docs/authentication/oauth-1-0a) |
 | Uber | `UberClient` | Active | — | | | [Docs](https://developer.uber.com/docs/riders/guides/authentication/introduction) |
-| VK (Vkontakte) | `VkClient` | Active | — | | | [Docs](https://dev.vk.com/en/api/access-token/authcode-flow-user) |
+| VK (Vkontakte) | `VkClient` | Active | API v5.131 (updated) | | | [Docs](https://dev.vk.com/en/api/access-token/authcode-flow-user) |
 | VSTS | `VSTSClient` | Active | Azure DevOps (rebranded) | | | [Docs](https://learn.microsoft.com/en-us/azure/devops/integrate/get-started/authentication/oauth) |
-| Windows Live | `WindowsLiveClient` | **Dead** | Live SDK (retired Nov 2018) | | | [Migration Guide](https://learn.microsoft.com/en-us/onedrive/developer/rest-api/concepts/migrating-from-live-sdk) |
-| Xing | `XingClient` | **Dead** | OAuth 1.0a (API shut down) | | | |
+| Windows Live | `WindowsLiveClient` | **Legacy (Working)** | Live SDK (retired officially, still working) | `login.live.com/oauth20_authorize.srf` | | [Migration Guide](https://learn.microsoft.com/en-us/onedrive/developer/rest-api/concepts/migrating-from-live-sdk) |
+| Xing | `XingClient` | **Dead** | OAuth 1.0a (REST API shut down) | | | [dev.xing.com](https://dev.xing.com/) (plugins only) |
 | Yahoo | `YahooClient` | Active | — | | | [Docs](https://developer.yahoo.com/oauth2/guide/) |
 | Yandex | `YandexClient` | Active | — | | | [Docs](https://yandex.com/dev/id/doc/en/codes/code-url) |
 
-> **Dead providers** (WindowsLive, Xing, LinkedIn v1, Instagram legacy): These providers' APIs have been retired or shut down. The client classes are preserved for backward compatibility but may not function. Use the replacement APIs documented in each class's XML docs.
+> **Dead providers** (Instagram, Xing): These providers' APIs have been retired or shut down. The client classes are preserved for backward compatibility but will not function.
+> - **Instagram**: Basic Display API shut down Dec 4, 2024. [Announcement](https://developers.facebook.com/blog/post/2024/09/04/update-on-instagram-basic-display-api/)
+> - **Xing**: OAuth 1.0a REST API discontinued. [dev.xing.com](https://dev.xing.com/) only hosts plugins.
 >
-> **Deprecated providers** (Foursquare v2, Todoist v6): These providers' API versions are deprecated. The client classes still function but should be updated to use current API versions.
+> **Needs Update providers** (LinkedIn, Todoist): OAuth is still active at these providers, but this library uses outdated API endpoints.
+> - **LinkedIn**: OAuth2 v2 is active at `linkedin.com/oauth/v2/`. This library's v1 endpoints (`/uas/oauth2/`, `/v1/people/~` XML) were shut down 2019. [v2 Docs](https://learn.microsoft.com/en-us/linkedin/consumer/integrations/self-serve/sign-in-with-linkedin-v2)
+> - **Todoist**: OAuth works. User info endpoint uses Sync API v6; current is API v1 (unified). [Current Docs](https://developer.todoist.com/api/v1/)
 >
-> **Note:** The `WindowsLiveClient` is preserved unchanged for backward compatibility. Use `MicrosoftClient` instead, which targets Microsoft Identity Platform v2.0 and Microsoft Graph. Be aware that user IDs differ between the two platforms.
+> **Legacy (Working)**: `WindowsLiveClient` — Microsoft officially retired the Live SDK in Nov 2018 but the endpoints continue to function in production. Confirmed working in [Exceptionless](https://github.com/exceptionless/Exceptionless). For new integrations, use `MicrosoftClient` (Microsoft Identity Platform v2.0 + Graph). User IDs differ between the two platforms.
+>
+> **Deprecated providers** (Foursquare): v2 consumer API deprecated; use Places API v3.
 
 ## Goals
 

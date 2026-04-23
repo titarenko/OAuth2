@@ -141,7 +141,7 @@ namespace OAuth2.Tests.Client.Impl
             userInfoRequest.Parameters.FirstOrDefault(p => String.Equals(p.Name, "user_ids", StringComparison.Ordinal))?.Value
                 .Should().Be("1");
             userInfoRequest.Parameters.FirstOrDefault(p => String.Equals(p.Name, "v", StringComparison.Ordinal))?.Value
-                .Should().Be("5.74");
+                .Should().Be("5.131");
         }
 
         private class VkClientDescendant : VkClient

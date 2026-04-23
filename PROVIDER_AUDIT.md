@@ -99,34 +99,25 @@ Facebook Graph API versions expire roughly every 2 years. The version should be 
 
 | Item | Current Value | Expected Value | Status |
 |------|--------------|----------------|--------|
-| **Provider Active?** | DEPRECATED (Live SDK retired Nov 2018) | Microsoft Identity Platform (v2.0) | **NEEDS FIX** |
-| **Auth Endpoint** | `https://login.live.com/oauth20_authorize.srf` | `https://login.microsoftonline.com/common/oauth2/v2.0/authorize` | **NEEDS FIX** |
-| **Token Endpoint** | `https://login.live.com/oauth20_token.srf` | `https://login.microsoftonline.com/common/oauth2/v2.0/token` | **NEEDS FIX** |
-| **UserInfo Endpoint** | `https://apis.live.net/v5.0/me` | `https://graph.microsoft.com/v1.0/me` | **NEEDS FIX** |
-| **Auth Header** | Query param `access_token` (via `BeforeGetUserInfo`) | `Authorization: Bearer <token>` (inherited from base class) | **NEEDS FIX** |
-| **Avatar URI** | `cid-{id}.users.storage.live.com` template | Microsoft Graph photo endpoint (or omit) | **NEEDS FIX** |
-| **Scope** | `wl.emails` (Live SDK scope) | `User.Read` (Microsoft Graph scope) | **NEEDS FIX** |
-| **Response Fields** | `id`, `first_name`, `last_name`, `emails.preferred` | `id`, `givenName`, `surname`, `mail` or `userPrincipalName` | **NEEDS FIX** |
-| **Docs Link** | https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow | — | Current |
+| **Provider Active?** | Legacy — officially retired but working in production | Microsoft Identity Platform (v2.0) for new apps | **Legacy (Working)** |
+| **Auth Endpoint** | `https://login.live.com/oauth20_authorize.srf` | Still functioning (confirmed in Exceptionless production) | OK |
+| **Token Endpoint** | `https://login.live.com/oauth20_token.srf` | Still functioning | OK |
+| **UserInfo Endpoint** | `https://apis.live.net/v5.0/me` | Still functioning | OK |
+| **Auth Header** | Query param `access_token` (via `BeforeGetUserInfo`) | Working as-is | OK |
+| **Scope** | `wl.emails` (Live SDK scope) | Working (confirmed: Exceptionless uses this) | OK |
+| **Docs Link** | https://learn.microsoft.com/en-us/onedrive/developer/rest-api/concepts/migrating-from-live-sdk | — | Current |
 
-### Root Cause Analysis (5 Whys) — Entirely Deprecated Platform
+### Evidence That WindowsLive Still Works
 
-1. **Why is `login.live.com` / `apis.live.net` used?** The client was written against the original Windows Live SDK (Live Connect API).
-2. **Why is this a problem?** Microsoft retired the Live SDK/Live Connect API in November 2018. The `apis.live.net/v5.0` endpoint may return errors or stop working at any time.
-3. **Why hasn't it been updated?** No one submitted a PR to migrate to Microsoft Identity Platform (v2.0) / Microsoft Graph.
-4. **Why must it change?** The replacement is Microsoft Identity Platform with Microsoft Graph API. All new and existing apps must use `login.microsoftonline.com` and `graph.microsoft.com`.
-5. **Why is this the most critical change?** Every endpoint, every scope, every response field, and the auth mechanism are all different. This is a full rewrite of the client, not just URL updates.
+1. **Exceptionless production code** uses `WindowsLiveClient` TODAY with `login.live.com/oauth20_authorize.srf` and `wl.emails` scope — confirmed working by maintainer.
+2. **Issue [#155](https://github.com/titarenko/OAuth2/issues/155)** (Jul 2024): Repository maintainer recommends `WindowsLiveClient` for OneDrive integration.
+3. **Microsoft's official position**: Live SDK was retired Nov 2018, but Microsoft has not actually shut down the endpoints. This is a common pattern where retirement announcements don't match actual shutdown dates.
 
-### Changes Required
-- [x] Rename class from `WindowsLiveClient` to `MicrosoftClient` (keep `WindowsLiveClient` as deprecated alias)
-- [x] Update auth endpoint to Microsoft Identity Platform v2.0
-- [x] Update token endpoint to Microsoft Identity Platform v2.0
-- [x] Update userinfo endpoint to Microsoft Graph v1.0
-- [x] Remove `BeforeGetUserInfo` override (base class uses Authorization: Bearer header correctly)
-- [x] Rewrite `ParseUserInfo` for Microsoft Graph response schema (`givenName`, `surname`, `mail`)
-- [x] Update avatar handling (Microsoft Graph photo endpoint or graceful absence)
-- [x] Update Name property
-- [x] Update test serialization fixtures
+### Decision: Keep WindowsLiveClient unchanged, add MicrosoftClient for new integrations
+
+- `WindowsLiveClient` is preserved **100% unchanged** — no behavior changes, no deprecation attributes
+- `MicrosoftClient` is added as a new provider for apps that want Microsoft Identity Platform v2.0 + Microsoft Graph
+- Users migrating should be aware that **user IDs differ** between the two platforms
 
 ---
 
@@ -167,38 +158,53 @@ Facebook Graph API versions expire roughly every 2 years. The version should be 
 
 ## 6. Full Deprecation Audit (All 25 Providers)
 
-| Provider | Class | Protocol | Status | Details |
-|----------|-------|----------|--------|---------|
-| Asana | `AsanaClient` | OAuth2 | **Active** | Endpoints current |
-| DigitalOcean | `DigitalOceanClient` | OAuth2 | **Active** | Endpoints current |
-| Exact Online | `ExactOnlineClient` | OAuth2 | **Active** | Endpoints current |
-| Facebook | `FacebookClient` | OAuth2 | **Active** | Updated to Graph API v25.0 |
-| Fitbit | `FitbitClient` | OAuth2 | **Active** | Endpoints current |
-| Foursquare | `FoursquareClient` | OAuth2 | **Deprecated** | v2 /users/self endpoint deprecated; use Foursquare Places API v3 |
-| GitHub | `GitHubClient` | OAuth2 | **Active** | Fixed: Bearer header instead of token |
-| Google | `GoogleClient` | OAuth2 | **Active** | Updated to v2/v3 endpoints, sub field |
-| Instagram | `InstagramClient` | OAuth2 | **Dead** | Legacy Instagram API (api.instagram.com) shut down 2020; replaced by Instagram Graph API under Meta |
-| LinkedIn | `LinkedInClient` | OAuth2 | **Dead** | v1 API (/uas/oauth2/, /v1/people/~) and XML format shut down 2019; needs v2 REST API rewrite |
-| Login Cidadão | `LoginCidadaoClient` | OAuth2 | **Unknown** | Niche Brazilian government identity provider; unable to verify current status |
-| Mail.Ru | `MailRuClient` | OAuth2 | **Active** | Endpoints current |
-| Microsoft | `MicrosoftClient` | OAuth2 | **Active** | NEW — Microsoft Identity Platform v2.0 + Graph v1.0 |
-| Odnoklassniki | `OdnoklassnikiClient` | OAuth2 | **Active** | Endpoints current |
-| Salesforce | `SalesforceClient` | OAuth2 | **Active** | Endpoints current |
-| Spotify | `SpotifyClient` | OAuth2 | **Active** | Endpoints current |
-| Todoist | `TodoistClient` | OAuth2 | **Deprecated** | Uses Sync API v6; current is Sync API v9 / REST API v2 |
-| Twitter | `TwitterClient` | OAuth1 | **Active** | Rebranded to X; OAuth 1.0a endpoints still operational; API access tiers changed |
-| Uber | `UberClient` | OAuth2 | **Active** | Endpoints current |
-| VK | `VkClient` | OAuth2 | **Active** | Endpoints current |
-| VSTS | `VSTSClient` | OAuth2 | **Active** | Rebranded to Azure DevOps; endpoints still operational |
-| Windows Live | `WindowsLiveClient` | OAuth2 | **Dead** | Live Connect API retired Nov 2018; apis.live.net no longer returns data |
-| Xing | `XingClient` | OAuth1 | **Dead** | API shut down after Xing rebranded to New Work SE |
-| Yahoo | `YahooClient` | OAuth2 | **Active** | Endpoints current |
-| Yandex | `YandexClient` | OAuth2 | **Active** | Endpoints current |
+| Provider | Class | Protocol | Status | Details | Evidence |
+|----------|-------|----------|--------|---------|----------|
+| Asana | `AsanaClient` | OAuth2 | **Active** | Endpoints current. Issue [#103](https://github.com/titarenko/OAuth2/issues/103): null photo crash (open) | [Docs](https://developers.asana.com/docs/oauth) |
+| DigitalOcean | `DigitalOceanClient` | OAuth2 | **Active** | Endpoints current | [Docs](https://docs.digitalocean.com/reference/api/oauth-api/) |
+| Exact Online | `ExactOnlineClient` | OAuth2 | **Active** | Endpoints current | [Docs](https://developers.exactonline.com/) |
+| Facebook | `FacebookClient` | OAuth2 | **Active** | Updated to Graph API v25.0 | [Docs](https://developers.facebook.com/docs/facebook-login/guides/advanced/manual-flow) |
+| Fitbit | `FitbitClient` | OAuth2 | **Active** | Endpoints current | [Docs](https://dev.fitbit.com/build/reference/web-api/authorization/) |
+| Foursquare | `FoursquareClient` | OAuth2 | **Deprecated** | v2 /users/self endpoint deprecated; Foursquare pivoted to Places API v3 | [Docs](https://docs.foursquare.com/) |
+| GitHub | `GitHubClient` | OAuth2 | **Active** | Fixed: Bearer header instead of token. Issue [#135](https://github.com/titarenko/OAuth2/issues/135) | [Docs](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps) |
+| Google | `GoogleClient` | OAuth2 | **Active** | Updated to v2/v3 endpoints, `sub` field | [Docs](https://developers.google.com/identity/protocols/oauth2/web-server) |
+| Instagram | `InstagramClient` | OAuth2 | **Dead** | Instagram Basic Display API shut down Dec 4, 2024. No consumer API exists. Issue [#129](https://github.com/titarenko/OAuth2/issues/129) | [Shutdown announcement](https://developers.facebook.com/blog/post/2024/09/04/update-on-instagram-basic-display-api/) |
+| LinkedIn | `LinkedInClient` | OAuth2 | **Needs Update** | LinkedIn OAuth2 is alive (`/oauth/v2/authorization`, `/v2/userinfo`). This client's v1 endpoints (`/uas/oauth2/`, `/v1/people/~` XML) were shut down 2019. Needs rewrite to v2 JSON. | [v2 Auth Flow](https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow) · [OpenID Connect](https://learn.microsoft.com/en-us/linkedin/consumer/integrations/self-serve/sign-in-with-linkedin-v2) |
+| Login Cidadão | `LoginCidadaoClient` | OAuth2 | **Unknown** | Niche Brazilian government identity provider; unable to verify | — |
+| Mail.Ru | `MailRuClient` | OAuth2 | **Active** | Endpoints current | [Docs](https://api.mail.ru/docs/guides/oauth/) |
+| Microsoft | `MicrosoftClient` | OAuth2 | **Active** | NEW — Microsoft Identity Platform v2.0 + Graph v1.0. Addresses issue [#145](https://github.com/titarenko/OAuth2/issues/145) | [Docs](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow) |
+| Odnoklassniki | `OdnoklassnikiClient` | OAuth2 | **Active** | Endpoints current | [Docs](https://apiok.ru/en/ext/oauth/) |
+| Salesforce | `SalesforceClient` | OAuth2 | **Active** | Endpoints current | [Docs](https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_web_server_flow.htm) |
+| Spotify | `SpotifyClient` | OAuth2 | **Active** | Endpoints current | [Docs](https://developer.spotify.com/documentation/web-api/tutorials/code-flow) |
+| Todoist | `TodoistClient` | OAuth2 | **Needs Update** | OAuth endpoints correct. User info endpoint uses deprecated Sync API v6; current is Todoist API v1 (unified) | [Current API](https://developer.todoist.com/api/v1/) |
+| Twitter | `TwitterClient` | OAuth1 | **Active** | Rebranded to X; OAuth 1.0a endpoints operational. Issue [#137](https://github.com/titarenko/OAuth2/issues/137): auth broken (open) | [Docs](https://developer.x.com/en/docs/authentication/oauth-1-0a) |
+| Uber | `UberClient` | OAuth2 | **Active** | Endpoints current | [Docs](https://developer.uber.com/docs/riders/guides/authentication/introduction) |
+| VK | `VkClient` | OAuth2 | **Active** | Fixed: API version updated from 5.74 to 5.131. Issue [#146](https://github.com/titarenko/OAuth2/issues/146) | [Docs](https://dev.vk.com/en/api/access-token/authcode-flow-user) |
+| VSTS | `VSTSClient` | OAuth2 | **Active** | Rebranded to Azure DevOps; endpoints operational | [Docs](https://learn.microsoft.com/en-us/azure/devops/integrate/get-started/authentication/oauth) |
+| Windows Live | `WindowsLiveClient` | OAuth2 | **Legacy (Working)** | Microsoft officially retired Live SDK Nov 2018, but login.live.com + apis.live.net endpoints still function. Confirmed working in production (Exceptionless). Issue [#155](https://github.com/titarenko/OAuth2/issues/155): maintainer recommends for OneDrive. For new integrations use `MicrosoftClient`. | [Migration guide](https://learn.microsoft.com/en-us/onedrive/developer/rest-api/concepts/migrating-from-live-sdk) |
+| Xing | `XingClient` | OAuth1 | **Dead** | OAuth 1.0a REST API discontinued. dev.xing.com only offers plugins (Login with XING, Share). Xing rebranded under New Work SE. | [dev.xing.com](https://dev.xing.com/) (plugins only) |
+| Yahoo | `YahooClient` | OAuth2 | **Active** | Endpoints current | [Docs](https://developer.yahoo.com/oauth2/guide/) |
+| Yandex | `YandexClient` | OAuth2 | **Active** | Endpoints current | [Docs](https://yandex.com/dev/id/doc/en/codes/code-url) |
+
+### Related Open Issues
+
+| Issue | Provider | Summary |
+|-------|----------|---------|
+| [#135](https://github.com/titarenko/OAuth2/issues/135) | GitHub | Deprecated `access_token` query parameter auth — **Fixed in this PR** |
+| [#145](https://github.com/titarenko/OAuth2/issues/145) | Microsoft | Request for Azure/Microsoft OAuth — **Addressed by new `MicrosoftClient`** |
+| [#146](https://github.com/titarenko/OAuth2/issues/146) | VK | API version 5.74 deprecated — **Fixed: updated to 5.131** |
+| [#129](https://github.com/titarenko/OAuth2/issues/129) | Instagram | `UnexpectedResponseException` — API now fully shut down |
+| [#137](https://github.com/titarenko/OAuth2/issues/137) | Twitter | Auth broken ("I can't authenticate you") — open, likely API tier changes |
+| [#103](https://github.com/titarenko/OAuth2/issues/103) | Asana | Null photo crashes `ParseUserInfo` — open |
+| [#155](https://github.com/titarenko/OAuth2/issues/155) | WindowsLive | OneDrive/Dropbox question — maintainer confirmed WindowsLiveClient for OneDrive |
 
 ### Summary
 
-- **4 Dead providers:** WindowsLive, Xing, LinkedIn (v1), Instagram (legacy)
-- **2 Deprecated providers:** Foursquare (v2), Todoist (v6)
+- **2 Dead providers:** Instagram (Basic Display API shut down Dec 2024), Xing (REST API discontinued)
+- **2 Needs Update:** LinkedIn (v1→v2 rewrite needed), Todoist (v6→v1 endpoint update needed)
+- **1 Legacy (Working):** WindowsLive (officially retired but still functional in production)
+- **1 Deprecated:** Foursquare (v2 consumer API deprecated)
 - **2 Rebranded:** Twitter → X, VSTS → Azure DevOps
+- **1 Unknown:** Login Cidadão
 - **1 Unknown:** Login Cidadão
 - **16 Active providers:** No known issues

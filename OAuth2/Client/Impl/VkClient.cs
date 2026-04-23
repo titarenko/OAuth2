@@ -10,6 +10,9 @@ namespace OAuth2.Client.Impl
     /// <summary>
     /// VK (Vkontakte) authentication client.
     /// </summary>
+    /// <remarks>
+    /// <para>Updated to VK API v5.131 (previous v5.74 was deprecated). See issue #146.</para>
+    /// </remarks>
     /// <seealso href="https://dev.vk.com/en/api/access-token/authcode-flow-user">VK OAuth Documentation</seealso>
     public class VkClient : OAuth2Client
     {
@@ -96,7 +99,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            args.Request.AddParameter("v", "5.74");
+            args.Request.AddParameter("v", "5.131");
             args.Request.AddParameter("user_ids", _userId);
             args.Request.AddParameter("fields", "first_name,last_name,has_photo,photo_max_orig");
         }

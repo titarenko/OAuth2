@@ -14,11 +14,15 @@ namespace OAuth2.Client.Impl
     /// LinkedIn authentication client.
     /// </summary>
     /// <remarks>
-    /// <para>Warning: This client uses LinkedIn's deprecated v1 API endpoints (/uas/oauth2/ and /v1/people/~)
-    /// and XML response format. LinkedIn shut down the v1 API in 2019.
-    /// A new implementation using LinkedIn's v2 REST API is needed.</para>
+    /// <para>This client uses LinkedIn's deprecated v1 API endpoints (<c>/uas/oauth2/</c> and
+    /// <c>/v1/people/~</c>) with XML response format. LinkedIn shut down the v1 API in 2019.</para>
+    /// <para>LinkedIn's OAuth2 service is still fully active using v2 endpoints:
+    /// <c>https://www.linkedin.com/oauth/v2/authorization</c> for auth,
+    /// <c>https://api.linkedin.com/v2/userinfo</c> for user info (OpenID Connect).
+    /// This client needs to be updated to use the v2 endpoints with JSON responses.</para>
     /// </remarks>
-    /// <seealso href="https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow">LinkedIn OAuth 2.0 Documentation</seealso>
+    /// <seealso href="https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow">LinkedIn OAuth 2.0 Authorization Code Flow</seealso>
+    /// <seealso href="https://learn.microsoft.com/en-us/linkedin/consumer/integrations/self-serve/sign-in-with-linkedin-v2">Sign In with LinkedIn using OpenID Connect</seealso>
     public class LinkedInClient : OAuth2Client
     {
         /// <summary>

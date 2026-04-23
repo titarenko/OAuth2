@@ -11,10 +11,12 @@ namespace OAuth2.Client.Impl
     /// Todoist authentication client.
     /// </summary>
     /// <remarks>
-    /// <para>Warning: This client uses Todoist's deprecated Sync API v6. The current API versions
-    /// are Sync API v9 and REST API v2.</para>
+    /// <para>This client uses Todoist's deprecated Sync API v6 (<c>API/v6/sync</c>).
+    /// The current API is Todoist API v1 (unified), which replaced Sync API v9 and REST API v2.
+    /// The OAuth endpoints are still correct; only the user info endpoint needs updating.</para>
     /// </remarks>
     /// <seealso href="https://developer.todoist.com/guides/#authorization">Todoist OAuth Documentation</seealso>
+    /// <seealso href="https://developer.todoist.com/api/v1/">Todoist API v1 Documentation</seealso>
     public class TodoistClient : OAuth2Client
     {
         /// <summary>

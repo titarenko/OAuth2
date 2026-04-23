@@ -12,10 +12,13 @@ namespace OAuth2.Client.Impl
     /// Instagram authentication client.
     /// </summary>
     /// <remarks>
-    /// <para>Warning: This client uses the legacy Instagram API (api.instagram.com) which was
-    /// deprecated and shut down in 2020. The replacement is the Instagram Graph API
-    /// under the Meta/Facebook platform, which uses different endpoints and authentication.</para>
+    /// <para>This client uses the legacy Instagram API (<c>api.instagram.com</c>) which is no longer
+    /// available. The Instagram Basic Display API was shut down on December 4, 2024.</para>
+    /// <para>Meta's official announcement states: "After December 4th, 2024, there will no longer
+    /// be a set of Instagram APIs for consumer developer apps." Only business/creator APIs
+    /// remain (Instagram API with Facebook Login or Instagram Login).</para>
     /// </remarks>
+    /// <seealso href="https://developers.facebook.com/blog/post/2024/09/04/update-on-instagram-basic-display-api/">Instagram Basic Display API Shutdown Announcement (Sep 2024)</seealso>
     /// <seealso href="https://developers.facebook.com/docs/instagram-platform">Instagram Platform Documentation (Meta)</seealso>
     public class InstagramClient : OAuth2Client
     {

@@ -11,10 +11,12 @@ namespace OAuth2.Client.Impl
     /// Xing authentication client.
     /// </summary>
     /// <remarks>
-    /// <para>Warning: The Xing API (api.xing.com) has been shut down following Xing's rebranding
-    /// to New Work SE. This client may no longer function.</para>
+    /// <para>The Xing REST API (<c>api.xing.com/v1/</c>) used by this client has been discontinued.
+    /// While <c>dev.xing.com</c> still hosts "Login with XING" and "Share on XING" plugins,
+    /// the OAuth 1.0a REST API for user profile data is no longer available. Xing was
+    /// rebranded under New Work SE.</para>
     /// </remarks>
-    /// <seealso href="https://dev.xing.com/">Xing Developer Portal (discontinued)</seealso>
+    /// <seealso href="https://dev.xing.com/">Xing Developer Portal (plugins only)</seealso>
     public class XingClient : OAuthClient
     {
         private const string BaseApiUrl = "https://api.xing.com";
