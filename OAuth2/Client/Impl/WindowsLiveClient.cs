@@ -1,7 +1,8 @@
 using System;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
+using OAuth2.Extensions;
 using OAuth2.Models;
 using RestSharp;
 
@@ -82,24 +83,26 @@ namespace OAuth2.Client.Impl
         /// <param name="content">The content which is received from third-party service.</param>
         protected override UserInfo ParseUserInfo(string content)
         {
-            var response = JObject.Parse(content);
+            using var doc = JsonDocument.Parse(content);
+            var response = doc.RootElement;
             const string avatarUriTemplate = @"https://cid-{0}.users.storage.live.com/users/0x{0}/myprofile/expressionprofile/profilephoto:Win8Static,{1},UserTileStatic/MeControlXXLUserTile?ck=2&ex=24";
+            var id = response.GetProperty("id").GetStringValue();
             var userinfo =  new UserInfo
             {
-                Id = response["id"].Value<string>(),
-                FirstName = response["first_name"].Value<string>(),
-                LastName = response["last_name"].Value<string>(),
+                Id = id,
+                FirstName = response.GetProperty("first_name").GetString(),
+                LastName = response.GetProperty("last_name").GetString(),
                 AvatarUri =
                     {
-                        Small = String.Format(avatarUriTemplate, response["id"].Value<string>(), "UserTileSmall"),
-                        Normal = String.Format(avatarUriTemplate, response["id"].Value<string>(), "UserTileSmall"),
-                        Large = String.Format(avatarUriTemplate, response["id"].Value<string>(), "UserTileLarge")
+                        Small = String.Format(avatarUriTemplate, id, "UserTileSmall"),
+                        Normal = String.Format(avatarUriTemplate, id, "UserTileSmall"),
+                        Large = String.Format(avatarUriTemplate, id, "UserTileLarge")
                     }
             };
 
             if (Configuration.Scope != null && Configuration.Scope.ToUpperInvariant().Contains("WL.EMAILS"))
             {
-                userinfo.Email = response["emails"]["preferred"].SafeGet(x => x.Value<string>());
+                userinfo.Email = response.GetProperty("emails").GetStringOrDefault("preferred");
             }
 
             return userinfo;

@@ -1,6 +1,7 @@
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
+using OAuth2.Extensions;
 using OAuth2.Models;
 
 namespace OAuth2.Client.Impl
@@ -93,9 +94,10 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override UserInfo ParseUserInfo(string content)
         {
-            var response = JObject.Parse(content);
+            using var doc = JsonDocument.Parse(content);
+            var response = doc.RootElement;
 
-            var name = response["name"].Value<string>();
+            var name = response.GetProperty("name").GetString();
             var index = name.IndexOf(' ');
 
             string firstName;
@@ -110,10 +112,10 @@ namespace OAuth2.Client.Impl
                 firstName = name.Substring(0, index);
                 lastName = name.Substring(index + 1);
             }
-            var avatarUri = response["profile_image_url"].Value<string>();
+            var avatarUri = response.GetProperty("profile_image_url").GetString();
             return new UserInfo
             {
-                Id = response["id"].Value<string>(),
+                Id = response.GetProperty("id").GetStringValue(),
                 Email = null,
                 FirstName = firstName,
                 LastName = lastName,

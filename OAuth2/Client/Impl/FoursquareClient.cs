@@ -1,7 +1,8 @@
 using System;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
+using OAuth2.Extensions;
 using OAuth2.Models;
 using RestSharp;
 
@@ -85,18 +86,20 @@ namespace OAuth2.Client.Impl
         /// <param name="content">The content which is received from third-party service.</param>
         protected override UserInfo ParseUserInfo(string content)
         {
-            var response = JObject.Parse(content);
-            var prefix = response["response"]["user"]["photo"]["prefix"].Value<string>();
-            var suffix = response["response"]["user"]["photo"]["suffix"].Value<string>();
+            using var doc = JsonDocument.Parse(content);
+            var user = doc.RootElement.GetProperty("response").GetProperty("user");
+            var photo = user.GetProperty("photo");
+            var prefix = photo.GetProperty("prefix").GetString();
+            var suffix = photo.GetProperty("suffix").GetString();
             const string avatarUriTemplate = "{0}{1}{2}";
             const string avatarSizeTemplate = "{0}x{0}";
             return new UserInfo
             {
 
-                Id = response["response"]["user"]["id"].Value<string>(),
-                FirstName = response["response"]["user"]["firstName"].Value<string>(),
-                LastName = response["response"]["user"]["lastName"].Value<string>(),
-                Email = response["response"]["user"]["contact"]["email"].SafeGet(x => x.Value<string>()),
+                Id = user.GetProperty("id").GetStringValue(),
+                FirstName = user.GetProperty("firstName").GetString(),
+                LastName = user.GetProperty("lastName").GetString(),
+                Email = user.GetProperty("contact").GetStringOrDefault("email"),
                 AvatarUri =
                 {
                     // Defined photo sizes https://developer.foursquare.com/docs/responses/photo

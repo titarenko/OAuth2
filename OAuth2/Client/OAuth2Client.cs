@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Specialized;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
+using OAuth2.Extensions;
 using OAuth2.Models;
 using RestSharp;
 using RestSharp.Authenticators;
@@ -238,10 +238,11 @@ namespace OAuth2.Client
             try
             {
                 // response can be sent in JSON format
-                var token = JObject.Parse(content).SelectToken(key);
-                return token?.ToString();
+                using var doc = JsonDocument.Parse(content);
+                var token = doc.RootElement.SelectToken(key);
+                return token?.GetStringValue();
             }
-            catch (JsonReaderException)
+            catch (JsonException)
             {
                 // or it can be in "query string" format (param1=val1&param2=val2)
                 var collection = HttpUtility.ParseQueryString(content);

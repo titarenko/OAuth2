@@ -16,6 +16,7 @@
     <Authors>Constantin Titarenko, Andrew Semack, Blake Niemyjski and others</Authors>
     <PackageTags>OAuth2, OAuth, DigitalOcean, Facebook, Foursquare, GitHub, Google, Instagram, LinkedIn, MailRu, Odnoklassniki, Twitter, VK (Vkontakte), Windows Live, Yandex</PackageTags>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <LangVersion>latest</LangVersion>
     <DebugType>portable</DebugType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageOutputPath>$(SolutionDir)artifacts\</PackageOutputPath>

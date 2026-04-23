@@ -115,7 +115,6 @@ app.Run();
 ## Dependencies
 
 - [RestSharp](https://restsharp.dev)
-- [Newtonsoft.Json](https://www.newtonsoft.com/json)
 
 ## Contributors
 

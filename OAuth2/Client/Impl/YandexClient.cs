@@ -1,8 +1,9 @@
 using System;
 using System.Linq;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
+using OAuth2.Extensions;
 using OAuth2.Models;
 
 namespace OAuth2.Client.Impl
@@ -88,16 +89,17 @@ namespace OAuth2.Client.Impl
         /// <param name="content">The content which is received from third-party service.</param>
         protected override UserInfo ParseUserInfo(string content)
         {
-            var response = JObject.Parse(content);
-            var names = response["real_name"].Value<string>().Split(' ');
-			var avatar = response["default_avatar_id"].Value<string>();
+            using var doc = JsonDocument.Parse(content);
+            var response = doc.RootElement;
+            var names = response.GetProperty("real_name").GetString().Split(' ');
+			var avatar = response.GetProperty("default_avatar_id").GetString();
 
 			var user = new UserInfo
             {
-                Id = response["id"].Value<string>(),
-                FirstName = names.Any() ? names.First() : response["display_name"].Value<string>(),
+                Id = response.GetProperty("id").GetStringValue(),
+                FirstName = names.Any() ? names.First() : response.GetProperty("display_name").GetString(),
                 LastName = names.Count() > 1 ? names.Last() : String.Empty,
-                Email = response["default_email"].SafeGet(x => x.Value<string>()),
+                Email = response.GetStringOrDefault("default_email"),
             };
 
 			if (!String.IsNullOrEmpty(avatar))

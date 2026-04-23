@@ -8,7 +8,6 @@
     <None Include="..\readme.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="RestSharp" Version="114.0.0" />
   </ItemGroup>
 </Project>

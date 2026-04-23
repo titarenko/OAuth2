@@ -1,8 +1,9 @@
 using System;
 using System.Linq;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
+using OAuth2.Extensions;
 using OAuth2.Models;
 using RestSharp.Authenticators;
 using RestSharp.Authenticators.OAuth2;
@@ -89,13 +90,14 @@ namespace OAuth2.Client.Impl
         /// <param name="content">The content which is received from third-party service.</param>
         protected override UserInfo ParseUserInfo(string content)
         {
-            var response = JObject.Parse(content);
-            var names = response["user"]["fullName"].Value<string>().Split(' ');
-            var avatarUri = response["user"]["avatar"].Value<string>();
+            using var doc = JsonDocument.Parse(content);
+            var user = doc.RootElement.GetProperty("user");
+            var names = user.GetProperty("fullName").GetString().Split(' ');
+            var avatarUri = user.GetProperty("avatar").GetString();
             return new UserInfo
             {
-                Id = response["user"]["encodedId"].Value<string>(),
-                FirstName = names.Any() ? names.First() : response["user"]["displayName"].Value<string>(),
+                Id = user.GetProperty("encodedId").GetStringValue(),
+                FirstName = names.Any() ? names.First() : user.GetProperty("displayName").GetString(),
                 LastName = names.Count() > 1 ? names.Last() : String.Empty,
                 AvatarUri =
                     {
