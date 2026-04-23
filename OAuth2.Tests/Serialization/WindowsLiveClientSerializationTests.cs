@@ -90,6 +90,52 @@ namespace OAuth2.Tests.Serialization
         }
 
         [Test]
+        public void ParseUserInfo_ValidContent_SmallAndNormalAvatarBothContainUserTileSmall()
+        {
+            // arrange
+            _configuration.Scope.Returns("WL.BASIC");
+            /* lang=json */
+            const string content = @"{""id"":""wl-123"",""first_name"":""A"",""last_name"":""B"",""emails"":{}}";
+
+            // act
+            var info = _client.ParseUserInfo(content);
+
+            // assert
+            info.AvatarUri.Small.Should().Contain("UserTileSmall");
+            info.AvatarUri.Normal.Should().Contain("UserTileSmall");
+        }
+
+        [Test]
+        public void ParseUserInfo_LowercaseScope_StillParsesEmail()
+        {
+            // arrange
+            _configuration.Scope.Returns("wl.emails");
+            /* lang=json */
+            const string content = @"{""id"":""1"",""first_name"":""A"",""last_name"":""B"",""emails"":{""preferred"":""a@live.com""}}";
+
+            // act
+            var info = _client.ParseUserInfo(content);
+
+            // assert
+            info.Email.Should().Be("a@live.com");
+        }
+
+        [Test]
+        public void ParseUserInfo_NullScope_EmailIsNull()
+        {
+            // arrange
+            _configuration.Scope.Returns((string)null);
+            /* lang=json */
+            const string content = @"{""id"":""1"",""first_name"":""A"",""last_name"":""B"",""emails"":{""preferred"":""a@live.com""}}";
+
+            // act
+            var info = _client.ParseUserInfo(content);
+
+            // assert
+            info.Email.Should().BeNull();
+        }
+
+        [Test]
         public void ParseUserInfo_ValidContent_LargeAvatarContainsUserTileLarge()
         {
             // arrange

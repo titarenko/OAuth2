@@ -74,6 +74,33 @@ namespace OAuth2.Tests.Serialization
         }
 
         [Test]
+        public void ParseUserInfo_WithPictureUrl_FormatsLargeAvatarWithUnderscoreSize()
+        {
+            // arrange
+            const string content = @"<?xml version=""1.0"" encoding=""UTF-8""?><person><id>1</id><first-name>A</first-name><last-name>B</last-name><picture-url>https://linkedin.com/photo_80_80.jpg</picture-url></person>";
+
+            // act
+            var info = _client.ParseUserInfo(content);
+
+            // assert
+            info.AvatarUri.Large.Should().Contain("300_300");
+        }
+
+        [Test]
+        public void ParseUserInfo_MissingPictureUrl_GhostAvatarUsesXSizeFormat()
+        {
+            // arrange
+            const string content = @"<?xml version=""1.0"" encoding=""UTF-8""?><person><id>1</id><first-name>A</first-name><last-name>B</last-name></person>";
+
+            // act
+            var info = _client.ParseUserInfo(content);
+
+            // assert
+            info.AvatarUri.Small.Should().Contain("36x36");
+            info.AvatarUri.Large.Should().Contain("300x300");
+        }
+
+        [Test]
         public void ParseUserInfo_MissingPictureUrl_UsesDefaultGhostAvatar()
         {
             // arrange

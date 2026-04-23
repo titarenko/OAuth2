@@ -71,6 +71,20 @@ namespace OAuth2.Tests.Serialization
         }
 
         [Test]
+        public void ParseUserInfo_ValidContent_LastNameIsNull()
+        {
+            // arrange
+            /* lang=json */
+            const string content = @"{""id"":""guid-123"",""displayName"":""Dev User"",""emailAddress"":""dev@v.com""}";
+
+            // act
+            var info = _client.ParseUserInfo(content);
+
+            // assert
+            info.LastName.Should().BeNull();
+        }
+
+        [Test]
         public void ParseUserInfo_ValidContent_SerializesToValidJson()
         {
             // arrange

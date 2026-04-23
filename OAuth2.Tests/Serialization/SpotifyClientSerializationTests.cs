@@ -87,6 +87,20 @@ namespace OAuth2.Tests.Serialization
         }
 
         [Test]
+        public void ParseUserInfo_NumericId_ConvertsToString()
+        {
+            // arrange
+            /* lang=json */
+            const string content = @"{""id"":99999,""display_name"":""A"",""email"":""a@s.com"",""images"":[{""url"":""pic.jpg""}]}";
+
+            // act
+            var info = _client.ParseUserInfo(content);
+
+            // assert
+            info.Id.Should().Be("99999");
+        }
+
+        [Test]
         public void ParseUserInfo_ValidContent_SerializesToValidJson()
         {
             // arrange
