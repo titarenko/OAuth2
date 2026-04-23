@@ -6,7 +6,7 @@ namespace OAuth2.Extensions
     /// <summary>
     /// Extension methods for <see cref="JsonElement"/> to simplify JSON navigation and value extraction.
     /// </summary>
-    internal static class JsonElementExtensions
+    internal static class SerializerExtensions
     {
         /// <summary>
         /// Converts a <see cref="JsonElement"/> of any type to its string representation.
@@ -22,10 +22,8 @@ namespace OAuth2.Extensions
                     return element.GetRawText();
 
                 case JsonValueKind.True:
-                    return "True";
-
                 case JsonValueKind.False:
-                    return "False";
+                    return element.GetRawText();
 
                 case JsonValueKind.Null:
                 case JsonValueKind.Undefined:
