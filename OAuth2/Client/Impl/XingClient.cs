@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using OAuth2.Configuration;
-using RestSharp;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 

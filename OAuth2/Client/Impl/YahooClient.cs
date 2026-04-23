@@ -2,7 +2,6 @@ using System;
 
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
-using RestSharp;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp.Authenticators;
@@ -106,7 +105,7 @@ namespace OAuth2.Client.Impl
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
             args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
-            args.Request.Resource = string.Format(this.UserInfoServiceEndpoint.Resource, this._userProfileGUID);
+            args.Request.Resource = String.Format(this.UserInfoServiceEndpoint.Resource, this._userProfileGUID);
         }
 
         /// <summary>

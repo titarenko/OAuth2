@@ -1,7 +1,7 @@
+using System;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
-using RestSharp;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 
@@ -91,7 +91,7 @@ namespace OAuth2.Client.Impl
             {
                 Id = response["user"]["id"].Value<string>(),
                 FirstName = names.Any() ? names.First() : response["user"]["username"].Value<string>(),
-                LastName = names.Count() > 1 ? names.Last() : string.Empty,
+                LastName = names.Count() > 1 ? names.Last() : String.Empty,
                 AvatarUri =
                     {
                         Small = null,

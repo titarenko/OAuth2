@@ -1,3 +1,4 @@
+using System;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using RestSharp;
@@ -92,9 +93,9 @@ namespace OAuth2.Client.Impl
                 Email = response["email"].SafeGet(x => x.Value<string>()),
                 AvatarUri =
                 {
-                    Small = !string.IsNullOrWhiteSpace(avatarUri) ? string.Format(avatarUriTemplate, avatarUri, "small") : string.Empty,
-                    Normal = !string.IsNullOrWhiteSpace(avatarUri) ? string.Format(avatarUriTemplate, avatarUri, "normal") : string.Empty,
-                    Large = !string.IsNullOrWhiteSpace(avatarUri) ? string.Format(avatarUriTemplate, avatarUri, "large") : string.Empty
+                    Small = !String.IsNullOrWhiteSpace(avatarUri) ? String.Format(avatarUriTemplate, avatarUri, "small") : String.Empty,
+                    Normal = !String.IsNullOrWhiteSpace(avatarUri) ? String.Format(avatarUriTemplate, avatarUri, "normal") : String.Empty,
+                    Large = !String.IsNullOrWhiteSpace(avatarUri) ? String.Format(avatarUriTemplate, avatarUri, "large") : String.Empty
                 }
             };
         }

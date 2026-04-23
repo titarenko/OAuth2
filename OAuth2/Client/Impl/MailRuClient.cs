@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
@@ -89,7 +90,7 @@ namespace OAuth2.Client.Impl
             args.Request.AddParameter(fakeParam);
 
             //sign=hex_md5('app_id={client_id}method=users.getInfosecure=1session_key={access_token}{secret_key}')
-            string signature = string.Concat(args.Request.Parameters.OrderBy(x => x.Name).Select(x => string.Format("{0}={1}", x.Name, x.Value)).ToList());            
+            string signature = String.Concat(args.Request.Parameters.OrderBy(x => x.Name).Select(x => String.Format("{0}={1}", x.Name, x.Value)).ToList());            
             signature = (signature+_configuration.ClientSecret).GetMd5Hash();
 
             args.Request.Parameters.RemoveParameter(fakeParam);

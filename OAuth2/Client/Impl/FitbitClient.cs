@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
@@ -96,7 +97,7 @@ namespace OAuth2.Client.Impl
             {
                 Id = response["user"]["encodedId"].Value<string>(),
                 FirstName = names.Any() ? names.First() : response["user"]["displayName"].Value<string>(),
-                LastName = names.Count() > 1 ? names.Last() : string.Empty,
+                LastName = names.Count() > 1 ? names.Last() : String.Empty,
                 AvatarUri =
                     {
                         Small = null,

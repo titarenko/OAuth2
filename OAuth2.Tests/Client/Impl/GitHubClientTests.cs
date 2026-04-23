@@ -1,3 +1,4 @@
+using System;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
@@ -65,7 +66,7 @@ namespace OAuth2.Tests.Client.Impl
             //  assert
             info.Id.Should().Be("123456");
             info.FirstName.Should().Be("id");
-            info.LastName.Should().Be(string.Empty);
+            info.LastName.Should().Be(String.Empty);
             info.Email.Should().Be(null);
             info.PhotoUri.Should().Be("https://avatars.githubusercontent.com/u/123456?v=3");
         }

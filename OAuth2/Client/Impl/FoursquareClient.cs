@@ -1,3 +1,4 @@
+using System;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using RestSharp;
@@ -99,9 +100,9 @@ namespace OAuth2.Client.Impl
                 AvatarUri =
                 {
                     // Defined photo sizes https://developer.foursquare.com/docs/responses/photo
-                    Small = !string.IsNullOrWhiteSpace(prefix) ? string.Format(avatarUriTemplate, prefix, string.Format(avatarSizeTemplate, AvatarInfo.SmallSize), suffix) : string.Empty,
-                    Normal = !string.IsNullOrWhiteSpace(prefix) ? string.Format(avatarUriTemplate, prefix, string.Empty, suffix) : string.Empty,
-                    Large = !string.IsNullOrWhiteSpace(prefix) ? string.Format(avatarUriTemplate, prefix, string.Format(avatarSizeTemplate, AvatarInfo.LargeSize), suffix) : string.Empty
+                    Small = !String.IsNullOrWhiteSpace(prefix) ? String.Format(avatarUriTemplate, prefix, String.Format(avatarSizeTemplate, AvatarInfo.SmallSize), suffix) : String.Empty,
+                    Normal = !String.IsNullOrWhiteSpace(prefix) ? String.Format(avatarUriTemplate, prefix, String.Empty, suffix) : String.Empty,
+                    Large = !String.IsNullOrWhiteSpace(prefix) ? String.Format(avatarUriTemplate, prefix, String.Format(avatarSizeTemplate, AvatarInfo.LargeSize), suffix) : String.Empty
                 }
             };
         }

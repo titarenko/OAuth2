@@ -31,9 +31,14 @@ namespace OAuth2.Tests.TestHelpers
         {
             SentRequests.Add(request);
 
-            var (statusCode, content) = _responses.Count > 0
-                ? _responses.Dequeue()
-                : (HttpStatusCode.OK, String.Empty);
+            if (_responses.Count == 0)
+            {
+                throw new InvalidOperationException(
+                    "No queued mock HTTP response is available for the incoming request. " +
+                    "Ensure EnqueueResponse is called for each expected request.");
+            }
+
+            var (statusCode, content) = _responses.Dequeue();
 
             var response = new HttpResponseMessage(statusCode)
             {

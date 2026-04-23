@@ -1,3 +1,4 @@
+using System;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using RestSharp;
@@ -90,9 +91,9 @@ namespace OAuth2.Client.Impl
                 LastName = response["last_name"].Value<string>(),
                 AvatarUri =
                     {
-                        Small = string.Format(avatarUriTemplate, response["id"].Value<string>(), "UserTileSmall"),
-                        Normal = string.Format(avatarUriTemplate, response["id"].Value<string>(), "UserTileSmall"),
-                        Large = string.Format(avatarUriTemplate, response["id"].Value<string>(), "UserTileLarge")
+                        Small = String.Format(avatarUriTemplate, response["id"].Value<string>(), "UserTileSmall"),
+                        Normal = String.Format(avatarUriTemplate, response["id"].Value<string>(), "UserTileSmall"),
+                        Large = String.Format(avatarUriTemplate, response["id"].Value<string>(), "UserTileLarge")
                     }
             };
 

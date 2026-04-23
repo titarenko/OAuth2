@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
@@ -92,7 +93,7 @@ namespace OAuth2.Client.Impl
             // http://dev.odnoklassniki.ru/wiki/display/ok/Authentication+and+Authorization
             // sig = md5( request_params_composed_string+ md5(access_token + application_secret_key)  )
             // Don't include access_token into request_params_composed_string
-            string signature = string.Concat(args.Request.Parameters.OrderBy(x => x.Name).Select(x => string.Format("{0}={1}", x.Name, x.Value)).ToList());
+            string signature = String.Concat(args.Request.Parameters.OrderBy(x => x.Name).Select(x => String.Format("{0}={1}", x.Name, x.Value)).ToList());
             signature = (signature + (AccessToken + _configuration.ClientSecret).GetMd5Hash()).GetMd5Hash();
 
             // Removing fake param to prevent dups

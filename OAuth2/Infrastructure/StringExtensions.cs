@@ -17,7 +17,7 @@ namespace OAuth2.Infrastructure
         /// <param name="args">The args.</param>
         public static string Fill(this string format, params object[] args)
         {
-            return string.Format(format, args);
+            return String.Format(format, args);
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace OAuth2.Infrastructure
         /// <param name="separator">The separator.</param>
         public static string Join<T>(this IEnumerable<T> enumerable, string separator)
         {
-            return string.Join(separator, enumerable);
+            return String.Join(separator, enumerable);
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace OAuth2.Infrastructure
         /// <param name="line">The line.</param>
         public static bool IsEmpty(this string line)
         {
-            return string.IsNullOrWhiteSpace(line);
+            return String.IsNullOrWhiteSpace(line);
         }
 
 

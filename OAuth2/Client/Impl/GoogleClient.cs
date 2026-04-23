@@ -1,6 +1,6 @@
+using System;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
-using RestSharp;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 
@@ -92,9 +92,9 @@ namespace OAuth2.Client.Impl
                 LastName = response["family_name"].Value<string>(),
                 AvatarUri =
                     {
-                        Small = !string.IsNullOrWhiteSpace(avatarUri) ? string.Format(avatarUriTemplate, avatarUri, AvatarInfo.SmallSize) : string.Empty,
+                        Small = !String.IsNullOrWhiteSpace(avatarUri) ? String.Format(avatarUriTemplate, avatarUri, AvatarInfo.SmallSize) : String.Empty,
                         Normal = avatarUri,
-                        Large = !string.IsNullOrWhiteSpace(avatarUri) ? string.Format(avatarUriTemplate, avatarUri, AvatarInfo.LargeSize): string.Empty
+                        Large = !String.IsNullOrWhiteSpace(avatarUri) ? String.Format(avatarUriTemplate, avatarUri, AvatarInfo.LargeSize): String.Empty
                     }
             };
         }

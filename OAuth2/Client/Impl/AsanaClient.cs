@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
@@ -108,9 +109,9 @@ namespace OAuth2.Client.Impl
                 Email = response["data"]["email"].SafeGet(x => x.Value<string>()),
                 AvatarUri =
                 {
-                    Small = !string.IsNullOrWhiteSpace(avatarSmallUri) ? avatarSmallUri : string.Empty,
-                    Normal = !string.IsNullOrWhiteSpace(avatarNormalUri) ? avatarNormalUri : string.Empty,
-                    Large = !string.IsNullOrWhiteSpace(avatarLargeUri) ? avatarLargeUri : string.Empty
+                    Small = !String.IsNullOrWhiteSpace(avatarSmallUri) ? avatarSmallUri : String.Empty,
+                    Normal = !String.IsNullOrWhiteSpace(avatarNormalUri) ? avatarNormalUri : String.Empty,
+                    Large = !String.IsNullOrWhiteSpace(avatarLargeUri) ? avatarLargeUri : String.Empty
                 }
             };
         }

@@ -52,7 +52,7 @@ namespace OAuth2.Client.Impl
         protected override UserInfo ParseUserInfo(string content)
         {
             var cnt = JObject.Parse(content);
-            var names = (cnt["name"].SafeGet(x => x.Value<string>()) ?? string.Empty).Split(new []{ " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            var names = (cnt["name"].SafeGet(x => x.Value<string>()) ?? String.Empty).Split(new []{ " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
             const string avatarUriTemplate = "{0}&s={1}";
             var avatarUri = cnt["avatar_url"].Value<string>();
             var result = new UserInfo
@@ -61,12 +61,12 @@ namespace OAuth2.Client.Impl
                     ProviderName = this.Name,
                     Id = cnt["id"].Value<string>(),
                     FirstName = names.Count > 0 ? names.First() : cnt["login"].Value<string>(),
-                    LastName = names.Count > 1 ? names.Last() : string.Empty,
+                    LastName = names.Count > 1 ? names.Last() : String.Empty,
                     AvatarUri =
                         {
-                            Small = !string.IsNullOrWhiteSpace(avatarUri) ? string.Format(avatarUriTemplate, avatarUri, AvatarInfo.SmallSize) : string.Empty,
+                            Small = !String.IsNullOrWhiteSpace(avatarUri) ? String.Format(avatarUriTemplate, avatarUri, AvatarInfo.SmallSize) : String.Empty,
                             Normal = avatarUri,
-                            Large = !string.IsNullOrWhiteSpace(avatarUri) ? string.Format(avatarUriTemplate, avatarUri, AvatarInfo.LargeSize) : string.Empty
+                            Large = !String.IsNullOrWhiteSpace(avatarUri) ? String.Format(avatarUriTemplate, avatarUri, AvatarInfo.LargeSize) : String.Empty
                         }
                 };
 

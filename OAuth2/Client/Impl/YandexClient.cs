@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
-using RestSharp;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 
@@ -97,11 +96,11 @@ namespace OAuth2.Client.Impl
             {
                 Id = response["id"].Value<string>(),
                 FirstName = names.Any() ? names.First() : response["display_name"].Value<string>(),
-                LastName = names.Count() > 1 ? names.Last() : string.Empty,
+                LastName = names.Count() > 1 ? names.Last() : String.Empty,
                 Email = response["default_email"].SafeGet(x => x.Value<string>()),
             };
 
-			if (!string.IsNullOrEmpty(avatar))
+			if (!String.IsNullOrEmpty(avatar))
 			{
 				avatar = _avatarBaseUri + avatar + "/";
 				user.AvatarUri.Small = avatar+_small;
