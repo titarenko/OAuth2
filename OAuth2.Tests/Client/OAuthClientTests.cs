@@ -46,9 +46,9 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public void Should_ThrowNotSupported_When_UserWantsToTransmitState()
+        public async Task Should_ThrowNotSupported_When_UserWantsToTransmitState()
         {
-            _descendant.Awaiting(x => x.GetLoginLinkUriAsync("any state")).Should().Throw<NotSupportedException>();
+            await _descendant.Awaiting(x => x.GetLoginLinkUriAsync("any state")).Should().ThrowAsync<NotSupportedException>();
         }
 
         [Test]

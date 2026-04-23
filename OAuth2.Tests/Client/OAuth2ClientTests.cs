@@ -53,24 +53,24 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public void Should_ThrowUnexpectedResponse_When_CodeIsNotOk()
+        public async Task Should_ThrowUnexpectedResponse_When_CodeIsNotOk()
         {
             _restResponse.StatusCode = HttpStatusCode.InternalServerError;
 
-            _descendant
+            await _descendant
                 .Awaiting(x => x.GetUserInfoAsync(new NameValueCollection()))
-                .Should().Throw<UnexpectedResponseException>();
+                .Should().ThrowAsync<UnexpectedResponseException>();
         }
 
         [Test]
-        public void Should_ThrowUnexpectedResponse_When_ResponseIsEmpty()
+        public async Task Should_ThrowUnexpectedResponse_When_ResponseIsEmpty()
         {
             _restResponse.StatusCode = HttpStatusCode.OK;
             _restResponse.Content.Returns("");
             
-            _descendant
+            await _descendant
                 .Awaiting(x => x.GetUserInfoAsync(new NameValueCollection()))
-                .Should().Throw<UnexpectedResponseException>();
+                .Should().ThrowAsync<UnexpectedResponseException>();
         }
 
         [Test]
@@ -106,34 +106,34 @@ namespace OAuth2.Tests.Client
         }
         
         [Test]
-        public void Should_ThrowException_WhenParametersForGetUserInfoContainError()
+        public async Task Should_ThrowException_WhenParametersForGetUserInfoContainError()
         {
             // arrange
             var parameters = new NameValueCollection {{"error", "error2"}};
 
             // act & assert
-            _descendant
+            var ex = await _descendant
                 .Awaiting(x => x.GetUserInfoAsync(parameters))
-                .Should().Throw<UnexpectedResponseException>()
-                .And.FieldName.Should().Be("error");
+                .Should().ThrowAsync<UnexpectedResponseException>();
+            ex.And.FieldName.Should().Be("error");
         }
 
         [Test]
         [TestCase("")]
         [TestCase(null)]
-        public void ShouldNot_ThrowException_When_ParametersForGetUserInfoContainEmptyError(string error)
+        public async Task ShouldNot_ThrowException_When_ParametersForGetUserInfoContainEmptyError(string error)
         {
             // arrange
             _restResponse.Content.Returns("access_token=token");
 
             // act & assert
-            _descendant
+            await _descendant
                 .Awaiting(x => x.GetUserInfoAsync(new NameValueCollection
                 {
                     {"error", error},
                     {"code", "code"}
                 }))
-                .Should().NotThrow();
+                .Should().NotThrowAsync();
         }
 
         [Test]
