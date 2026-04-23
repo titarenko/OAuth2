@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
@@ -116,7 +117,7 @@ namespace OAuth2.Tests.Client.Impl
 
             // assert
             var userInfoRequest = _capturedRequests.Last();
-            userInfoRequest.Parameters.FirstOrDefault(p => p.Name == "user_ids")?.Value
+            userInfoRequest.Parameters.FirstOrDefault(p => String.Equals(p.Name, "user_ids", StringComparison.Ordinal))?.Value
                 .Should().Be("1");
         }
 
@@ -135,11 +136,11 @@ namespace OAuth2.Tests.Client.Impl
 
             // assert
             var userInfoRequest = _capturedRequests.Last();
-            userInfoRequest.Parameters.FirstOrDefault(p => p.Name == "fields")?.Value
+            userInfoRequest.Parameters.FirstOrDefault(p => String.Equals(p.Name, "fields", StringComparison.Ordinal))?.Value
                 .Should().Be("first_name,last_name,has_photo,photo_max_orig");
-            userInfoRequest.Parameters.FirstOrDefault(p => p.Name == "user_ids")?.Value
+            userInfoRequest.Parameters.FirstOrDefault(p => String.Equals(p.Name, "user_ids", StringComparison.Ordinal))?.Value
                 .Should().Be("1");
-            userInfoRequest.Parameters.FirstOrDefault(p => p.Name == "v")?.Value
+            userInfoRequest.Parameters.FirstOrDefault(p => String.Equals(p.Name, "v", StringComparison.Ordinal))?.Value
                 .Should().Be("5.74");
         }
 

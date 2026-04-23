@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -86,7 +87,7 @@ namespace OAuth2.Tests.Client.Impl
             endpoint.BaseUri.Should().Be("https://graph.facebook.com");
             endpoint.Resource.Should().Be("/me");
         }
-        
+
         [Test]
         public void Should_ParseAllFieldsOfUserInfo_WhenCorrectContentIsPassed()
         {
@@ -116,7 +117,7 @@ namespace OAuth2.Tests.Client.Impl
 
             // assert
             var userInfoRequest = _capturedRequests.Last();
-            userInfoRequest.Parameters.FirstOrDefault(p => p.Name == "fields")?.Value
+            userInfoRequest.Parameters.FirstOrDefault(p => String.Equals(p.Name, "fields", StringComparison.Ordinal))?.Value
                 .Should().Be("id,first_name,last_name,email,picture");
         }
 

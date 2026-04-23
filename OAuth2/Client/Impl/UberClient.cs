@@ -41,7 +41,7 @@ namespace OAuth2.Client.Impl
         protected override Endpoint AccessCodeServiceEndpoint
         {
             get
-            { 
+            {
                 return new Endpoint
                 {
                     BaseUri = "https://login.uber.com",

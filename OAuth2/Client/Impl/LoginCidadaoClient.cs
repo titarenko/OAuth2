@@ -24,7 +24,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        public LoginCidadaoClient(IRequestFactory factory, 
+        public LoginCidadaoClient(IRequestFactory factory,
             IClientConfiguration configuration)
             : base(factory, configuration)
         {

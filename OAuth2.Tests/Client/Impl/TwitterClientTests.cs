@@ -76,7 +76,7 @@ namespace OAuth2.Tests.Client.Impl
             endpoint.BaseUri.Should().Be("https://api.twitter.com");
             endpoint.Resource.Should().Be("/1.1/account/verify_credentials.json");
         }
-        
+
         [Test]
         public void Should_ParseAllFieldsOfUserInfo_WhenCorrectContentIsPassed()
         {
@@ -104,7 +104,7 @@ namespace OAuth2.Tests.Client.Impl
 
         class TwitterClientDescendant : TwitterClient
         {
-            public TwitterClientDescendant(IRequestFactory factory, IClientConfiguration configuration) 
+            public TwitterClientDescendant(IRequestFactory factory, IClientConfiguration configuration)
                 : base(factory, configuration)
             {
             }
@@ -133,6 +133,6 @@ namespace OAuth2.Tests.Client.Impl
             {
                 return base.ParseUserInfo(content);
             }
-        }  
+        }
     }
 }

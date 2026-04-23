@@ -10,7 +10,7 @@ using RestSharp.Authenticators.OAuth2;
 namespace OAuth2.Client.Impl
 {
     /// <summary>
-    /// Spotify client 
+    /// Spotify client
     /// https://developer.spotify.com/web-api/authorization-guide/
     /// https://developer.spotify.com/web-api/endpoint-reference/
     /// </summary>
@@ -99,8 +99,8 @@ namespace OAuth2.Client.Impl
         {
             var response = JObject.Parse(content);
             var userInfo = new UserInfo();
-            userInfo.AvatarUri.Normal = 
-                userInfo.AvatarUri.Large = 
+            userInfo.AvatarUri.Normal =
+                userInfo.AvatarUri.Large =
                 userInfo.AvatarUri.Small = response.SelectToken("images[0].url")?.ToString();
 
             userInfo.FirstName = response.SelectToken("display_name")?.ToString();

@@ -167,7 +167,7 @@ namespace OAuth2.Client
         protected abstract Endpoint AccessTokenServiceEndpoint { get; }
 
         /// <summary>
-        /// Defines URI of service which allows to obtain information about user 
+        /// Defines URI of service which allows to obtain information about user
         /// who is currently logged in.
         /// </summary>
         protected abstract Endpoint UserInfoServiceEndpoint { get; }

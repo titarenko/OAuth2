@@ -29,7 +29,7 @@ namespace OAuth2.Infrastructure
         /// <param name="request">The request to execute.</param>
         /// <param name="cancellationToken">A token to cancel the operation.</param>
         /// <returns>The verified <see cref="RestResponse"/>.</returns>
-        /// <exception cref="Client.UnexpectedResponseException">Thrown when the response is empty or has a non-success status code.</exception>
+        /// <exception cref="OAuth2.Client.UnexpectedResponseException">Thrown when the response is empty or has a non-success status code.</exception>
         public static async Task<RestResponse> ExecuteAndVerifyAsync(this RestClient client, RestRequest request, CancellationToken cancellationToken = default)
         {
             return VerifyResponse(await client.ExecuteAsync(request, cancellationToken).ConfigureAwait(false));

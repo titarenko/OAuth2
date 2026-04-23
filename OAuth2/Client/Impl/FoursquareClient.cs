@@ -17,7 +17,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        public FoursquareClient(IRequestFactory factory, IClientConfiguration configuration) 
+        public FoursquareClient(IRequestFactory factory, IClientConfiguration configuration)
             : base(factory, configuration)
         {
         }
@@ -73,7 +73,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            // Source documents 
+            // Source documents
             // https://developer.foursquare.com/overview/auth.html
             // https://developer.foursquare.com/overview/versioning
             args.Request.AddParameter("v", System.DateTime.Now.ToString("yyyyMMdd"));
@@ -96,7 +96,7 @@ namespace OAuth2.Client.Impl
                 Id = response["response"]["user"]["id"].Value<string>(),
                 FirstName = response["response"]["user"]["firstName"].Value<string>(),
                 LastName = response["response"]["user"]["lastName"].Value<string>(),
-                Email = response["response"]["user"]["contact"]["email"].SafeGet(x => x.Value<string>()),                
+                Email = response["response"]["user"]["contact"]["email"].SafeGet(x => x.Value<string>()),
                 AvatarUri =
                 {
                     // Defined photo sizes https://developer.foursquare.com/docs/responses/photo

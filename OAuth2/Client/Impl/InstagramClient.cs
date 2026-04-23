@@ -19,7 +19,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        public InstagramClient(IRequestFactory factory, IClientConfiguration configuration) 
+        public InstagramClient(IRequestFactory factory, IClientConfiguration configuration)
             : base(factory, configuration)
         {
         }
@@ -68,16 +68,16 @@ namespace OAuth2.Client.Impl
                 };
             }
         }
-        
+
         /// <inheritdoc />
         protected override void AfterGetAccessToken(BeforeAfterRequestArgs args)
         {
             // Instagram returns userinfo on access_token request
-            // Source document 
+            // Source document
             // http://instagram.com/developer/authentication/
             _accessTokenResponseContent = args.Response.Content;
         }
-        
+
         /// <summary>
         /// Should return parsed <see cref="UserInfo"/> from content received from third-party service.
         /// </summary>

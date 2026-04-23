@@ -10,7 +10,7 @@ using RestSharp.Authenticators.OAuth2;
 namespace OAuth2.Client.Impl
 {
     /// <summary>
-    /// Yahoo client 
+    /// Yahoo client
     /// Right now only Yahoo Gemini and Yahoo Social support OAuth2
     /// https://developer.yahoo.com/oauth2/guide/
     /// </summary>
@@ -31,7 +31,7 @@ namespace OAuth2.Client.Impl
             {
                 _userProfileGUID = value;
             }
-        }        
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="YahooClient"/> class.
@@ -98,7 +98,7 @@ namespace OAuth2.Client.Impl
         /// <summary>
         /// Called just before issuing request to third-party service when everything is ready.
         /// Allows to add extra parameters to request or do any other needed preparations.
-        /// 
+        ///
         /// We have to reformat the Url adding the user guid for accessing their information
         /// https://developer.yahoo.com/oauth2/guide/apirequests/
         /// </summary>

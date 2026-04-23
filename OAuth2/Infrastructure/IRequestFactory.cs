@@ -11,7 +11,7 @@ namespace OAuth2.Infrastructure
         /// Returns new REST client instance with the specified base URL.
         /// </summary>
         RestClient CreateClient(string baseUrl);
-        
+
         /// <summary>
         /// Returns new REST request instance.
         /// </summary>

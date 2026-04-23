@@ -97,6 +97,6 @@ namespace OAuth2.Tests.Client.Impl
             {
                 return base.ParseUserInfo(content);
             }
-        } 
+        }
     }
 }

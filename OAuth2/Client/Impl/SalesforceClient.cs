@@ -86,7 +86,7 @@ namespace OAuth2.Client.Impl
         {
             // save the user's identity service url which is included in the response
             SalesforceProfileUrl = base.ParseTokenResponse(content, "id");
-                
+
             return base.ParseTokenResponse(content, key);
         }
 

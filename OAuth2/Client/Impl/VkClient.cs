@@ -23,7 +23,7 @@ namespace OAuth2.Client.Impl
             : base(factory, configuration)
         {
         }
-        
+
         /// <summary>
         /// Defines URI of service which issues access code.
         /// </summary>

@@ -150,11 +150,11 @@ namespace OAuth2.Tests.Client
 
             var accessTokenRequest = _capturedRequests.First(r => r.Method == Method.Post);
             var parameters = accessTokenRequest.Parameters;
-            parameters.FirstOrDefault(p => p.Name == "code")?.Value.Should().Be("code");
-            parameters.FirstOrDefault(p => p.Name == "client_id")?.Value.Should().Be("client_id");
-            parameters.FirstOrDefault(p => p.Name == "client_secret")?.Value.Should().Be("client_secret");
-            parameters.FirstOrDefault(p => p.Name == "redirect_uri")?.Value.Should().Be("http://redirect-uri.net");
-            parameters.FirstOrDefault(p => p.Name == "grant_type")?.Value.Should().Be("authorization_code");
+            parameters.FirstOrDefault(p => String.Equals(p.Name, "code", StringComparison.Ordinal))?.Value.Should().Be("code");
+            parameters.FirstOrDefault(p => String.Equals(p.Name, "client_id", StringComparison.Ordinal))?.Value.Should().Be("client_id");
+            parameters.FirstOrDefault(p => String.Equals(p.Name, "client_secret", StringComparison.Ordinal))?.Value.Should().Be("client_secret");
+            parameters.FirstOrDefault(p => String.Equals(p.Name, "redirect_uri", StringComparison.Ordinal))?.Value.Should().Be("http://redirect-uri.net");
+            parameters.FirstOrDefault(p => String.Equals(p.Name, "grant_type", StringComparison.Ordinal))?.Value.Should().Be("authorization_code");
         }
 
         [Test]

@@ -99,8 +99,8 @@ namespace OAuth2.Client.Impl
         {
             var response = JObject.Parse(content);
             var userInfo = new UserInfo();
-            userInfo.AvatarUri.Normal = 
-                userInfo.AvatarUri.Large = 
+            userInfo.AvatarUri.Normal =
+                userInfo.AvatarUri.Large =
                 userInfo.AvatarUri.Small = response.SelectToken("images[0].url")?.ToString();
 
             userInfo.FirstName = response.SelectToken("display_name")?.ToString();

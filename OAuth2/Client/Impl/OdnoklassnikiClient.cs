@@ -70,7 +70,7 @@ namespace OAuth2.Client.Impl
                 };
             }
         }
-        
+
         /// <summary>
         /// Called just before issuing request to third-party service when everything is ready.
         /// Allows to add extra parameters to request or do any other needed preparations.
@@ -83,9 +83,9 @@ namespace OAuth2.Client.Impl
             args.Request.AddParameter("application_key", _configuration.ClientPublic);
             args.Request.AddParameter("method", "users.getCurrentUser");
 
-            // workaround for current design, oauth_token is always present in URL, so we need emulate it for correct request signing 
+            // workaround for current design, oauth_token is always present in URL, so we need emulate it for correct request signing
             var fakeParam = new QueryParameter("oauth_token", AccessToken);
-            args.Request.AddParameter("oauth_token", AccessToken, ParameterType.QueryString);
+            args.Request.AddParameter(fakeParam);
 
             // Signing.
             // Call API methods using access_token instead of session_key parameter
@@ -115,13 +115,13 @@ namespace OAuth2.Client.Impl
             {
                 Id = response["uid"].Value<string>(),
                 FirstName = response["first_name"].Value<string>(),
-                LastName = response["last_name"].Value<string>(),                
+                LastName = response["last_name"].Value<string>(),
                 AvatarUri =
                     {
                         Small = null,
                         Normal = avatarUri,
                         Large = avatarUri.Replace("&photoType=4", "&photoType=6")
-                    }                
+                    }
             };
         }
         /// <summary>

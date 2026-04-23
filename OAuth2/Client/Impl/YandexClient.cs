@@ -78,7 +78,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            // Source document 
+            // Source document
             // http://api.yandex.com/oauth/doc/dg/yandex-oauth-dg.pdf
         }
 

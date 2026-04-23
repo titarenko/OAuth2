@@ -71,7 +71,7 @@ namespace OAuth2.Tests.Client.Impl
             info.LastName.Should().Be("Smith");
             info.Email.Should().Be("jane@example.com");
         }
-        
+
         private class FoursquareClientDescendant : FoursquareClient
         {
             public FoursquareClientDescendant(IRequestFactory factory, IClientConfiguration configuration)

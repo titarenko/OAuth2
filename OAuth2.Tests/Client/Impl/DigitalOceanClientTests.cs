@@ -55,7 +55,7 @@ namespace OAuth2.Tests.Client.Impl
         {
             Assert.Throws<NotImplementedException>(() => _descendant.GetUserInfoServiceEndpoint());
         }
-        
+
         [Test]
         public void Should_ParseAllFieldsOfUserInfo_WhenCorrectContentIsPassed()
         {
