@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
@@ -51,16 +50,17 @@ namespace OAuth2.Client.Impl
         /// <param name="content">The content which is received from third-party service.</param>
         protected override UserInfo ParseUserInfo(string content)
         {
-            var cnt = JObject.Parse(content);
-            var names = (cnt["name"].SafeGet(x => x.Value<string>()) ?? String.Empty).Split(new []{ " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            using var doc = JsonDocument.Parse(content);
+            var cnt = doc.RootElement;
+            var names = (cnt.GetStringOrDefault("name") ?? String.Empty).Split(new []{ " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
             const string avatarUriTemplate = "{0}&s={1}";
-            var avatarUri = cnt["avatar_url"].Value<string>();
+            var avatarUri = cnt.GetProperty("avatar_url").GetString();
             var result = new UserInfo
                 {
-                    Email = cnt["email"].SafeGet(x => x.Value<string>()),
+                    Email = cnt.GetStringOrDefault("email"),
                     ProviderName = this.Name,
-                    Id = cnt["id"].Value<string>(),
-                    FirstName = names.Count > 0 ? names.First() : cnt["login"].Value<string>(),
+                    Id = cnt.GetProperty("id").GetStringValue(),
+                    FirstName = names.Count > 0 ? names.First() : cnt.GetProperty("login").GetString(),
                     LastName = names.Count > 1 ? names.Last() : String.Empty,
                     AvatarUri =
                         {
@@ -118,7 +118,7 @@ namespace OAuth2.Client.Impl
         /// <returns>A list of <see cref="UserEmails"/> representing the user's email addresses.</returns>
         protected virtual List<UserEmails> ParseEmailAddresses(string content)
         {
-            return JsonConvert.DeserializeObject<List<UserEmails>>(content);
+            return JsonSerializer.Deserialize<List<UserEmails>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
         /// <summary>

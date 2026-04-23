@@ -1,6 +1,5 @@
 using System;
-
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
@@ -95,26 +94,27 @@ namespace OAuth2.Client.Impl
         /// <param name="content">The content which is received from third-party service.</param>
         protected override UserInfo ParseUserInfo(string content)
         {
-            var response = JObject.Parse(content);
+            using var doc = JsonDocument.Parse(content);
+            var response = doc.RootElement;
             var userInfo = new UserInfo();
-            if (response.TryGetValue("first_name", StringComparison.OrdinalIgnoreCase, out JToken firstName))
+            if (response.TryGetPropertyIgnoreCase("first_name", out var firstName))
             {
-                userInfo.FirstName = firstName.ToString();
+                userInfo.FirstName = firstName.GetString();
             }
 
-            if (response.TryGetValue("last_name", StringComparison.OrdinalIgnoreCase, out JToken lastName))
+            if (response.TryGetPropertyIgnoreCase("last_name", out var lastName))
             {
-                userInfo.LastName = lastName.ToString();
+                userInfo.LastName = lastName.GetString();
             }
 
-            if (response.TryGetValue("email", StringComparison.OrdinalIgnoreCase, out JToken email))
+            if (response.TryGetPropertyIgnoreCase("email", out var email))
             {
-                userInfo.Email = email.ToString();
+                userInfo.Email = email.GetString();
             }
 
-            if (response.TryGetValue("picture", StringComparison.OrdinalIgnoreCase, out JToken picture))
+            if (response.TryGetPropertyIgnoreCase("picture", out var picture))
             {
-                var pictureUri = picture.ToString();
+                var pictureUri = picture.GetString();
                 userInfo.AvatarUri.Small = pictureUri;
                 userInfo.AvatarUri.Normal = pictureUri;
                 userInfo.AvatarUri.Large = pictureUri;

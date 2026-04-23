@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OAuth2.Client;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
@@ -114,13 +114,14 @@ namespace OAuth2.Client.Impl
         /// <param name="content">The content which is received from third-party service.</param>
         protected override UserInfo ParseUserInfo(string content)
         {
-            var response = JObject.Parse(content);
+            using var doc = JsonDocument.Parse(content);
+            var response = doc.RootElement;
             return new Cidadao
             {
-                FirstName = response["first_name"].Value<string>(),
-                LastName = response["last_name"].Value<string>(),
-                Cpf = response["cpf"].Value<string>(),
-                Email = response["email"].SafeGet(x => x.Value<string>()),
+                FirstName = response.GetProperty("first_name").GetString(),
+                LastName = response.GetProperty("last_name").GetString(),
+                Cpf = response.GetProperty("cpf").GetString(),
+                Email = response.GetStringOrDefault("email"),
             };
         }
 

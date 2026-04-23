@@ -1,4 +1,4 @@
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
@@ -81,11 +81,11 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override void AfterGetAccessToken(BeforeAfterRequestArgs args)
         {
-            var instance = JObject.Parse(args.Response.Content);
-            _userId = instance["user_id"].Value<string>();
-            var email = instance["email"];
-            if (email != null)
-                _email = email.Value<string>();
+            using var doc = JsonDocument.Parse(args.Response.Content);
+            var instance = doc.RootElement;
+            _userId = instance.GetProperty("user_id").GetStringValue();
+            if (instance.TryGetProperty("email", out var email) && email.ValueKind != JsonValueKind.Null)
+                _email = email.GetString();
         }
 
         /// <summary>
@@ -105,15 +105,18 @@ namespace OAuth2.Client.Impl
         /// <param name="content">The content which is received from third-party service.</param>
         protected override UserInfo ParseUserInfo(string content)
         {
-            var response = JObject.Parse(content)["response"][0];
-            var hasPhoto = response["has_photo"].Value<bool>();
-            var avatarUri = hasPhoto ? response["photo_max_orig"].Value<string>() : null;
+            using var doc = JsonDocument.Parse(content);
+            var response = doc.RootElement.GetProperty("response")[0];
+            var hasPhotoElement = response.GetProperty("has_photo");
+            var hasPhoto = hasPhotoElement.ValueKind == JsonValueKind.True
+                || (hasPhotoElement.ValueKind == JsonValueKind.Number && hasPhotoElement.GetInt32() != 0);
+            var avatarUri = hasPhoto ? response.GetProperty("photo_max_orig").GetString() : null;
             return new UserInfo
             {
                 Email = _email,
-                FirstName = response["first_name"].Value<string>(),
-                LastName = response["last_name"].Value<string>(),
-                Id = response["id"].Value<string>(),
+                FirstName = response.GetProperty("first_name").GetString(),
+                LastName = response.GetProperty("last_name").GetString(),
+                Id = response.GetProperty("id").GetStringValue(),
                 AvatarUri =
                 {
                     Small = null,

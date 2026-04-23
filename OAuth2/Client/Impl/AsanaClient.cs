@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
@@ -88,25 +88,26 @@ namespace OAuth2.Client.Impl
         /// <param name="content">The content which is received from third-party service.</param>
         protected override UserInfo ParseUserInfo(string content)
         {
-            var response = JObject.Parse(content);
-            if (!response.TryGetValue("data", out JToken dataExists))
+            using var doc = JsonDocument.Parse(content);
+            var response = doc.RootElement;
+            if (!response.TryGetProperty("data", out var data))
                 return new UserInfo();
 
-            //const string avatarUriTemplate = "{0}?type={1}";
-            var avatarSmallUri = response["data"]["photo"]["image_36x36"].Value<string>();
-            var avatarNormalUri = response["data"]["photo"]["image_60x60"].Value<string>();
-            var avatarLargeUri = response["data"]["photo"]["image_128x128"].Value<string>();
-            var splitName = new List<string>(response["data"]["name"].Value<string>().Split(' '));
+            var photo = data.GetProperty("photo");
+            var avatarSmallUri = photo.GetProperty("image_36x36").GetString();
+            var avatarNormalUri = photo.GetProperty("image_60x60").GetString();
+            var avatarLargeUri = photo.GetProperty("image_128x128").GetString();
+            var splitName = new List<string>(data.GetProperty("name").GetString().Split(' '));
             var firstName = splitName.FirstOrDefault();
             splitName.RemoveAt(0);
             var lastName = splitName.Join(" ");
 
             return new UserInfo
             {
-                Id = response["data"]["id"].Value<string>(),
+                Id = data.GetProperty("id").GetStringValue(),
                 FirstName = firstName,
                 LastName = lastName,
-                Email = response["data"]["email"].SafeGet(x => x.Value<string>()),
+                Email = data.GetStringOrDefault("email"),
                 AvatarUri =
                 {
                     Small = !String.IsNullOrWhiteSpace(avatarSmallUri) ? avatarSmallUri : String.Empty,

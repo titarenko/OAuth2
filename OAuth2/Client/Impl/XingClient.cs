@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
@@ -84,7 +85,7 @@ namespace OAuth2.Client.Impl
         /// <inheritdoc cref="OAuthClient.ParseUserInfo" />
         protected override UserInfo ParseUserInfo(string content)
         {
-            var users = JsonConvert.DeserializeObject<UserContainer>(content);
+            var users = JsonSerializer.Deserialize<UserContainer>(content);
             var userInfo = new UserInfo();
 
             if (users != null && users.Users != null && users.Users.Count > 0)
@@ -106,37 +107,37 @@ namespace OAuth2.Client.Impl
 
         private class UserContainer
         {
-            [JsonProperty(PropertyName = "users")]
+            [JsonPropertyName("users")]
             public List<User> Users { get; set; }
         }
 
         private class User
         {
-            [JsonProperty(PropertyName = "id")]
+            [JsonPropertyName("id")]
             public string Id { get; set; }
 
-            [JsonProperty(PropertyName = "first_name")]
+            [JsonPropertyName("first_name")]
             public string FirstName { get; set; }
 
-            [JsonProperty(PropertyName = "last_name")]
+            [JsonPropertyName("last_name")]
             public string LastName { get; set; }
 
-            [JsonProperty(PropertyName = "active_email")]
+            [JsonPropertyName("active_email")]
             public string Email { get; set; }
 
-            [JsonProperty(PropertyName = "photo_urls")]
+            [JsonPropertyName("photo_urls")]
             public PhotoUrls PhotoUrls { get; set; }
         }
 
         private class PhotoUrls
         {
-            [JsonProperty(PropertyName = "size_48x48")]
+            [JsonPropertyName("size_48x48")]
             public string Small { get; set; }
 
-            [JsonProperty(PropertyName = "size_128x128")]
+            [JsonPropertyName("size_128x128")]
             public string Normal { get; set; }
 
-            [JsonProperty(PropertyName = "size_256x256")]
+            [JsonPropertyName("size_256x256")]
             public string Large { get; set; }
         }
     }

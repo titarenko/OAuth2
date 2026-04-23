@@ -1,5 +1,5 @@
 using System;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
@@ -102,18 +102,20 @@ namespace OAuth2.Client.Impl
         {
             string avatarUriTemplate = @"https://app.vssps.visualstudio.com/_apis/Profile/Profiles/{0}/Avatar?size={1}&format=png";
 
-            var response = JObject.Parse(content);
+            using var doc = JsonDocument.Parse(content);
+            var response = doc.RootElement;
+            var id = response.GetProperty("id").GetStringValue();
             var userinfo =  new UserInfo
             {
-                Id = response["id"].Value<string>(),
-                FirstName = response["displayName"].Value<string>(),
+                Id = id,
+                FirstName = response.GetProperty("displayName").GetString(),
                 AvatarUri =
                     {
-                        Small = String.Format(avatarUriTemplate, response["id"].Value<string>(), "small"),
-                        Normal = String.Format(avatarUriTemplate, response["id"].Value<string>(), "medium"),
-                        Large = String.Format(avatarUriTemplate, response["id"].Value<string>(), "large")
+                        Small = String.Format(avatarUriTemplate, id, "small"),
+                        Normal = String.Format(avatarUriTemplate, id, "medium"),
+                        Large = String.Format(avatarUriTemplate, id, "large")
                     },
-                Email = response["emailAddress"].Value<string>()
+                Email = response.GetProperty("emailAddress").GetString()
             };
             return userinfo;
         }
