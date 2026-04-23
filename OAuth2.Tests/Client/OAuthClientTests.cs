@@ -79,21 +79,23 @@ namespace OAuth2.Tests.Client
         }
 
         [Test]
-        public Task Should_ThrowUnexpectedResponse_When_OAuthTokenIsEmpty()
+        public async Task Should_ThrowUnexpectedResponse_When_OAuthTokenIsEmpty()
         {
             _handler.EnqueueResponse("something=something_other");
-            return _descendant
+            var ex = await _descendant
                 .Awaiting(x => x.GetLoginLinkUriAsync())
                 .Should().ThrowAsync<UnexpectedResponseException>();
+            ex.And.FieldName.Should().Be("oauth_token");
         }
 
         [Test]
-        public Task Should_ThrowUnexpectedResponse_When_OAuthSecretIsEmpty()
+        public async Task Should_ThrowUnexpectedResponse_When_OAuthSecretIsEmpty()
         {
             _handler.EnqueueResponse("oauth_token=token");
-            return _descendant
+            var ex = await _descendant
                 .Awaiting(x => x.GetLoginLinkUriAsync())
                 .Should().ThrowAsync<UnexpectedResponseException>();
+            ex.And.FieldName.Should().Be("oauth_token_secret");
         }
 
         [Test]
