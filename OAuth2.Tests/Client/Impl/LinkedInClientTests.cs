@@ -16,7 +16,7 @@ namespace OAuth2.Tests.Client.Impl
         /* lang=json */
         private const string Content = @"{""sub"":""id"",""given_name"":""firstname"",""family_name"":""lastname"",""email"":""user@linkedin.com"",""picture"":""https://media.licdn.com/photo.jpg""}";
 
-        private LinkedInClientDescendant _descendant;
+        private LinkedInClientDescendant _descendant = null!;
 
         [SetUp]
         public void SetUp()

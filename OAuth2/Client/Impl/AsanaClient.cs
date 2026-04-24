@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using OAuth2.Configuration;
@@ -80,7 +79,7 @@ namespace OAuth2.Client.Impl
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
             args.Request.AddParameter("opt_fields", "id,name,photo.image_128x128,photo.image_60x60,photo.image_36x36,email");
-            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken, "Bearer");
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken!, "Bearer");
         }
 
         /// <summary>
@@ -94,14 +93,18 @@ namespace OAuth2.Client.Impl
             if (!response.TryGetProperty("data", out var data))
                 return new UserInfo();
 
-            var photo = data.GetProperty("photo");
-            var avatarSmallUri = photo.GetProperty("image_36x36").GetString();
-            var avatarNormalUri = photo.GetProperty("image_60x60").GetString();
-            var avatarLargeUri = photo.GetProperty("image_128x128").GetString();
-            var splitName = new List<string>(data.GetProperty("name").GetString().Split(' '));
-            var firstName = splitName.FirstOrDefault();
-            splitName.RemoveAt(0);
-            var lastName = splitName.Join(" ");
+            string? avatarSmallUri = null;
+            string? avatarNormalUri = null;
+            string? avatarLargeUri = null;
+            if (data.TryGetProperty("photo", out var photo) && photo.ValueKind == JsonValueKind.Object)
+            {
+                avatarSmallUri = photo.GetProperty("image_36x36").GetString();
+                avatarNormalUri = photo.GetProperty("image_60x60").GetString();
+                avatarLargeUri = photo.GetProperty("image_128x128").GetString();
+            }
+            var names = data.GetProperty("name").GetString()?.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries) ?? [];
+            var firstName = names.Length > 0 ? names[0] : null;
+            var lastName = names.Length > 1 ? names.Skip(1).Join(" ") : String.Empty;
 
             return new UserInfo
             {

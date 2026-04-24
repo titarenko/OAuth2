@@ -12,9 +12,9 @@ namespace OAuth2.Tests.Serialization
     [TestFixture]
     public class DigitalOceanClientSerializationTests
     {
-        private IRequestFactory _factory;
-        private IClientConfiguration _configuration;
-        private TestableDigitalOceanClient _client;
+        private IRequestFactory _factory = null!;
+        private IClientConfiguration _configuration = null!;
+        private TestableDigitalOceanClient _client = null!;
 
         [SetUp]
         public void SetUp()

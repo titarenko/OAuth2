@@ -8,12 +8,12 @@ namespace OAuth2.Client
         /// <summary>
         /// Base URI (service host address).
         /// </summary>
-        public string BaseUri { get; set; }
+        public string BaseUri { get; set; } = null!;
 
         /// <summary>
         /// Resource URI (service method).
         /// </summary>
-        public string Resource { get; set; }
+        public string Resource { get; set; } = null!;
 
         /// <summary>
         /// Complete URI of endpoint (base URI combined with resource URI).

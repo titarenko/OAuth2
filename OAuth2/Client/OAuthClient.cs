@@ -35,17 +35,17 @@ namespace OAuth2.Client
         /// State which was posted as additional parameter
         /// to service and then received along with main answer.
         /// </summary>
-        public string State { get { return null; } }
+        public string? State { get { return null; } }
 
         /// <summary>
         /// Access token received from service. Can be used for further service API calls.
         /// </summary>
-        public string AccessToken { get; private set; }
+        public string? AccessToken { get; private set; }
 
         /// <summary>
         /// Access token secret received from service. Can be used for further service API calls.
         /// </summary>
-        public string AccessTokenSecret { get; private set; }
+        public string? AccessTokenSecret { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OAuthClient" /> class.
@@ -65,7 +65,7 @@ namespace OAuth2.Client
         /// <param name="state">Any additional information needed by application.</param>
         /// <param name="cancellationToken">Optional cancellation token</param>
         /// <returns>Login link URI.</returns>
-        public async Task<string> GetLoginLinkUriAsync(string state = null, CancellationToken cancellationToken = default)
+        public async Task<string> GetLoginLinkUriAsync(string? state = null, CancellationToken cancellationToken = default)
         {
             if (!state.IsEmpty())
             {
@@ -125,7 +125,7 @@ namespace OAuth2.Client
                 Response = response,
             });
 
-            var collection = HttpUtility.ParseQueryString(response.Content);
+            var collection = HttpUtility.ParseQueryString(response.Content!); // Non-null: ExecuteAndVerifyAsync guarantees non-empty content
 
             AccessToken = collection.GetOrThrowUnexpectedResponse(OAuthTokenKey);
             AccessTokenSecret = collection.GetOrThrowUnexpectedResponse(OAuthTokenSecretKey);
@@ -135,7 +135,7 @@ namespace OAuth2.Client
         /// Composes login link URI.
         /// </summary>
         /// <param name="state">Any additional information needed by application.</param>
-        private string GetLoginRequestUri(string state = null)
+        private string GetLoginRequestUri(string? state = null)
         {
             var client = _factory.CreateClient(LoginServiceEndpoint);
             var request = _factory.CreateRequest(LoginServiceEndpoint);
@@ -160,11 +160,10 @@ namespace OAuth2.Client
             var client = _factory.CreateClient(AccessTokenServiceEndpoint);
             var request = _factory.CreateRequest(AccessTokenServiceEndpoint, Method.Post);
             request.Authenticator = OAuth1Authenticator.ForAccessToken(
-                Configuration.ClientId, Configuration.ClientSecret, AccessToken, AccessTokenSecret, verifier);
+                Configuration.ClientId, Configuration.ClientSecret, AccessToken!, AccessTokenSecret!, verifier); // Non-null: set by preceding QueryRequestTokenAsync call
 
             var response = await client.ExecuteAndVerifyAsync(request, cancellationToken).ConfigureAwait(false);
-            var content = response.Content;
-            var collection = HttpUtility.ParseQueryString(content);
+            var collection = HttpUtility.ParseQueryString(response.Content!); // Non-null: ExecuteAndVerifyAsync guarantees non-empty content
 
             AccessToken = collection.GetOrThrowUnexpectedResponse(OAuthTokenKey);
             AccessTokenSecret = collection.GetOrThrowUnexpectedResponse(OAuthTokenSecretKey);
@@ -204,7 +203,7 @@ namespace OAuth2.Client
             var client = _factory.CreateClient(UserInfoServiceEndpoint);
             var request = _factory.CreateRequest(UserInfoServiceEndpoint);
             request.Authenticator = OAuth1Authenticator.ForProtectedResource(
-                Configuration.ClientId, Configuration.ClientSecret, AccessToken, AccessTokenSecret);
+                Configuration.ClientId, Configuration.ClientSecret, AccessToken!, AccessTokenSecret!); // Non-null: set by preceding QueryAccessTokenAsync call
 
             BeforeGetUserInfo(new BeforeAfterRequestArgs
             {
@@ -214,7 +213,7 @@ namespace OAuth2.Client
             });
 
             var response = await client.ExecuteAndVerifyAsync(request, cancellationToken).ConfigureAwait(false);
-            return response.Content;
+            return response.Content!; // Non-null: ExecuteAndVerifyAsync guarantees non-empty content
         }
 
         /// <inheritdoc />

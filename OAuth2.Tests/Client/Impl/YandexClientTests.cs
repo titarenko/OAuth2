@@ -16,8 +16,8 @@ namespace OAuth2.Tests.Client.Impl
         /* lang=json */
         private const string ContentWithAvatar = "{\"id\": \"349\", \"login\": \"mylogin\", \"client_id\": \"e0000000000000000000191f3280bb\", \"display_name\": \"My Name\", \"real_name\": \"Real Name\", \"first_name\": \"Real\", \"last_name\": \"Name\", \"default_email\": \"mymail@yandex.ru\", \"emails\": [\"mymail@yandex.ru\"], \"default_avatar_id\": \"1111/enc-000\", \"is_avatar_empty\": false, \"psuid\": \"1.AA.XXXXXXXXXXXXXXXXXXXXXXX.YYYYYYYYYYYYYYYYYYYYYYYYY\"}";
 
-        private YandexClientDescendant _descendant;
-        private IRequestFactory _factory;
+        private YandexClientDescendant _descendant = null!;
+        private IRequestFactory _factory = null!;
 
         [SetUp]
         public void SetUp()

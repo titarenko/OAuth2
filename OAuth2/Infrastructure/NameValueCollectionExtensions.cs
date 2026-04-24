@@ -22,7 +22,7 @@ namespace OAuth2.Infrastructure
             {
                 throw new UnexpectedResponseException(key);
             }
-            return value;
+            return value!; // Non-null: IsEmpty check above guarantees value is non-null and non-whitespace
         }
     }
 }

@@ -12,9 +12,9 @@ namespace OAuth2.Tests.Serialization
     [TestFixture]
     public class YandexClientSerializationTests
     {
-        private IRequestFactory _factory;
-        private IClientConfiguration _configuration;
-        private TestableYandexClient _client;
+        private IRequestFactory _factory = null!;
+        private IClientConfiguration _configuration = null!;
+        private TestableYandexClient _client = null!;
 
         [SetUp]
         public void SetUp()

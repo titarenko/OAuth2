@@ -15,7 +15,7 @@ namespace OAuth2.Client.Impl
     /// <seealso href="https://docs.digitalocean.com/reference/api/oauth-api/">DigitalOcean OAuth Documentation</seealso>
     public class DigitalOceanClient : OAuth2Client
     {
-        private string _accessToken;
+        private string? _accessToken;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DigitalOceanClient"/> class.
@@ -87,7 +87,7 @@ namespace OAuth2.Client.Impl
         /// <inheritdoc />
         protected override Task<UserInfo> GetUserInfoAsync(CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(ParseUserInfo(_accessToken));
+            return Task.FromResult(ParseUserInfo(_accessToken!)); // Non-null: set by AfterGetAccessToken before this is called
         }
 
         /// <summary>

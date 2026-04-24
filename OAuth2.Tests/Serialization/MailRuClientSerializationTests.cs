@@ -12,9 +12,9 @@ namespace OAuth2.Tests.Serialization
     [TestFixture]
     public class MailRuClientSerializationTests
     {
-        private IRequestFactory _factory;
-        private IClientConfiguration _configuration;
-        private TestableMailRuClient _client;
+        private IRequestFactory _factory = null!;
+        private IClientConfiguration _configuration = null!;
+        private TestableMailRuClient _client = null!;
 
         [SetUp]
         public void SetUp()

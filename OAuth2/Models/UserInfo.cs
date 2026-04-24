@@ -14,17 +14,17 @@ namespace OAuth2.Models
         /// <summary>
         /// Uri of small photo.
         /// </summary>
-        public string Small { get; set; }
+        public string? Small { get; set; }
 
         /// <summary>
         /// Uri of normal photo.
         /// </summary>
-        public string Normal { get; set; }
+        public string? Normal { get; set; }
 
         /// <summary>
         /// Uri of large photo.
         /// </summary>
-        public string Large { get; set; }
+        public string? Large { get; set; }
     }
 
     /// <summary>
@@ -43,7 +43,7 @@ namespace OAuth2.Models
         /// <summary>
         /// Unique identifier.
         /// </summary>
-        public string Id { get; set; }
+        public string? Id { get; set; }
 
         /// <summary>
         /// Friendly name of <see cref="UserInfo"/> provider (which is, in its turn, the client of OAuth/OAuth2 provider).
@@ -51,27 +51,27 @@ namespace OAuth2.Models
         /// <remarks>
         /// Supposed to be unique per OAuth/OAuth2 client.
         /// </remarks>
-        public string ProviderName { get; set; }
+        public string? ProviderName { get; set; }
 
         /// <summary>
         /// Email address.
         /// </summary>
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         /// <summary>
         /// First name.
         /// </summary>
-        public string FirstName { get; set; }
+        public string? FirstName { get; set; }
 
         /// <summary>
         /// Last name.
         /// </summary>
-        public string LastName { get; set; }
+        public string? LastName { get; set; }
 
         /// <summary>
         /// Photo URI.
         /// </summary>
-        public string PhotoUri
+        public string? PhotoUri
         {
             get { return AvatarUri.Normal; }
         }

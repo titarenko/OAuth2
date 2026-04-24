@@ -23,10 +23,10 @@ namespace OAuth2.Tests.Client
     [TestFixture]
     public class OAuth2ClientTests
     {
-        private OAuth2ClientDescendant _descendant;
-        private IRequestFactory _factory;
-        private MockHttpMessageHandler _handler;
-        private List<RestRequest> _capturedRequests;
+        private OAuth2ClientDescendant _descendant = null!;
+        private IRequestFactory _factory = null!;
+        private MockHttpMessageHandler _handler = null!;
+        private List<RestRequest> _capturedRequests = null!;
 
         [SetUp]
         public void SetUp()

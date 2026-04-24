@@ -12,9 +12,9 @@ namespace OAuth2.Tests.Serialization
     [TestFixture]
     public class VkClientSerializationTests
     {
-        private IRequestFactory _factory;
-        private IClientConfiguration _configuration;
-        private TestableVkClient _client;
+        private IRequestFactory _factory = null!;
+        private IClientConfiguration _configuration = null!;
+        private TestableVkClient _client = null!;
 
         [SetUp]
         public void SetUp()

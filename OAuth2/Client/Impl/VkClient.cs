@@ -16,8 +16,8 @@ namespace OAuth2.Client.Impl
     /// <seealso href="https://dev.vk.com/en/api/access-token/authcode-flow-user">VK OAuth Documentation</seealso>
     public class VkClient : OAuth2Client
     {
-        private string _userId;
-        private string _email;
+        private string? _userId;
+        private string? _email;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VkClient"/> class.
@@ -86,7 +86,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override void AfterGetAccessToken(BeforeAfterRequestArgs args)
         {
-            using var doc = JsonDocument.Parse(args.Response.Content);
+            using var doc = JsonDocument.Parse(args.Response.Content!); // Non-null: set from verified response
             var instance = doc.RootElement;
             _userId = instance.GetProperty("user_id").GetStringValue();
             if (instance.TryGetProperty("email", out var email) && email.ValueKind != JsonValueKind.Null)

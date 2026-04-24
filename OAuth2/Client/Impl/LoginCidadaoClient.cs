@@ -94,7 +94,7 @@ namespace OAuth2.Client.Impl
             });
             var response = await client.ExecuteAndVerifyAsync(request, cancellationToken).ConfigureAwait(false);
 
-            var result = ParseUserInfo(response.Content);
+            var result = ParseUserInfo(response.Content!); // Non-null: ExecuteAndVerifyAsync guarantees non-empty content
             result.ProviderName = Name;
 
             return result;
@@ -142,7 +142,7 @@ namespace OAuth2.Client.Impl
             /// <summary>
             /// Gets or sets the CPF (Cadastro de Pessoas Físicas) number.
             /// </summary>
-            public string Cpf { get; set; }
+            public string? Cpf { get; set; }
         }
 
     }

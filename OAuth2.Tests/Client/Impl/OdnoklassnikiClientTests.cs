@@ -15,8 +15,8 @@ namespace OAuth2.Tests.Client.Impl
         /* lang=json */
         private const string Content = "{\"uid\":\"12345\",\"first_name\":\"Oleg\",\"last_name\":\"Ivanov\",\"pic_1\":\"https://i.mycdn.me/image?id=123&photoType=4\"}";
 
-        private OdnoklassnikiClientDescendant _descendant;
-        private IRequestFactory _factory;
+        private OdnoklassnikiClientDescendant _descendant = null!;
+        private IRequestFactory _factory = null!;
 
         [SetUp]
         public void SetUp()

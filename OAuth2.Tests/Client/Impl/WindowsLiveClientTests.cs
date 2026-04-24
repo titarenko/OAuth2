@@ -15,8 +15,8 @@ namespace OAuth2.Tests.Client.Impl
         /* lang=json */
         private const string Content = "{\"id\":\"abc123\",\"first_name\":\"John\",\"last_name\":\"Doe\",\"emails\":{\"preferred\":\"john@example.com\"}}";
 
-        private WindowsLiveClientDescendant _descendant;
-        private IRequestFactory _factory;
+        private WindowsLiveClientDescendant _descendant = null!;
+        private IRequestFactory _factory = null!;
 
         [SetUp]
         public void SetUp()

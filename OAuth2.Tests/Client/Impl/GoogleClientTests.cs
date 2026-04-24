@@ -17,7 +17,7 @@ namespace OAuth2.Tests.Client.Impl
         /* lang=json */
         private const string ContentWithPicture = "{\"email\":\"email\",\"given_name\":\"name\",\"family_name\":\"surname\",\"sub\":\"id\",\"picture\":\"picture\"}";
 
-        private GoogleClientDescendant _descendant;
+        private GoogleClientDescendant _descendant = null!;
 
         [SetUp]
         public void SetUp()

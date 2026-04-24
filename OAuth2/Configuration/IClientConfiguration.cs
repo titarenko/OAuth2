@@ -28,12 +28,12 @@ namespace OAuth2.Configuration
         /// <summary>
         /// Public key.
         /// </summary>
-        string ClientPublic { get; set; }
+        string? ClientPublic { get; set; }
 
         /// <summary>
         /// Scope - contains set of permissions which user should give to your application.
         /// </summary>
-        string Scope { get; set; }
+        string? Scope { get; set; }
 
         /// <summary>
         /// Redirect URI (URI user will be redirected to 

@@ -12,26 +12,26 @@ namespace OAuth2.Client
         /// <summary>
         /// Client instance.
         /// </summary>
-        public RestClient Client { get; set; }
+        public RestClient Client { get; set; } = null!;
 
         /// <summary>
         /// Request instance.
         /// </summary>
-        public RestRequest Request { get; set; }
+        public RestRequest Request { get; set; } = null!;
 
         /// <summary>
         /// Response instance.
         /// </summary>
-        public RestResponse Response { get; set; }
+        public RestResponse Response { get; set; } = null!;
 
         /// <summary>
         /// Values received from service.
         /// </summary>
-        public NameValueCollection Parameters { get; set; }
+        public NameValueCollection Parameters { get; set; } = null!;
 
         /// <summary>
         /// Client configuration.
         /// </summary>
-        public IClientConfiguration Configuration { get; set; }
+        public IClientConfiguration Configuration { get; set; } = null!;
     }
 }

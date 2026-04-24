@@ -13,9 +13,9 @@ namespace OAuth2.Tests.Serialization
     [TestFixture]
     public class AsanaClientSerializationTests
     {
-        private IRequestFactory _factory;
-        private IClientConfiguration _configuration;
-        private TestableAsanaClient _client;
+        private IRequestFactory _factory = null!;
+        private IClientConfiguration _configuration = null!;
+        private TestableAsanaClient _client = null!;
 
         [SetUp]
         public void SetUp()
@@ -177,6 +177,24 @@ namespace OAuth2.Tests.Serialization
 
             // assert
             info.Id.Should().Be("98765");
+        }
+
+        [Test]
+        public void ParseUserInfo_NullPhoto_DoesNotThrow()
+        {
+            // arrange — Asana returns null for photo when the user has no profile picture (issue #103)
+            /* lang=json */
+            const string content = @"{""data"":{""id"":""1"",""name"":""John Doe"",""email"":""j@a.com"",""photo"":null}}";
+
+            // act
+            var info = _client.ParseUserInfo(content);
+
+            // assert
+            info.Id.Should().Be("1");
+            info.FirstName.Should().Be("John");
+            info.AvatarUri.Small.Should().BeNullOrEmpty();
+            info.AvatarUri.Normal.Should().BeNullOrEmpty();
+            info.AvatarUri.Large.Should().BeNullOrEmpty();
         }
 
         private class TestableAsanaClient : AsanaClient

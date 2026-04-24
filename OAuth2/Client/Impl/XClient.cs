@@ -119,8 +119,8 @@ namespace OAuth2.Client.Impl
             var name = response.GetStringOrDefault("name");
             var index = name?.IndexOf(' ') ?? -1;
 
-            string firstName;
-            string lastName;
+            string? firstName;
+            string? lastName;
             if (index == -1)
             {
                 firstName = name;
@@ -128,8 +128,8 @@ namespace OAuth2.Client.Impl
             }
             else
             {
-                firstName = name.Substring(0, index);
-                lastName = name.Substring(index + 1);
+                firstName = name!.Substring(0, index); // Non-null: index != -1 means IndexOf succeeded, so name was non-null
+                lastName = name!.Substring(index + 1);
             }
             var avatarUri = response.GetStringOrDefault("profile_image_url");
             return new UserInfo

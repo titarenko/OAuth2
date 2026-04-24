@@ -17,8 +17,8 @@ namespace OAuth2.Tests.Client.Impl
         /* lang=json */
         private const string Content = "{\"access_token\":\"yada\",\"token_type\":\"bearer\",\"expires_in\":2592000,\"refresh_token\":\"yada\",\"scope\":\"read\",\"uid\":123456,\"info\":{\"name\":\"first.last\",\"email\":\"first.last@domain.com\"}}";
 
-        private DigitalOceanClientDescendant _descendant;
-        private IRequestFactory _requestFactory;
+        private DigitalOceanClientDescendant _descendant = null!;
+        private IRequestFactory _requestFactory = null!;
 
         [SetUp]
         public void SetUp()

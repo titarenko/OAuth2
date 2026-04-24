@@ -13,9 +13,9 @@ namespace OAuth2.Tests.Serialization
     [TestFixture]
     public class GitHubClientSerializationTests
     {
-        private IRequestFactory _factory;
-        private IClientConfiguration _configuration;
-        private TestableGitHubClient _client;
+        private IRequestFactory _factory = null!;
+        private IClientConfiguration _configuration = null!;
+        private TestableGitHubClient _client = null!;
 
         [SetUp]
         public void SetUp()

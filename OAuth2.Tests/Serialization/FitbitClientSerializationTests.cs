@@ -12,9 +12,9 @@ namespace OAuth2.Tests.Serialization
     [TestFixture]
     public class FitbitClientSerializationTests
     {
-        private IRequestFactory _factory;
-        private IClientConfiguration _configuration;
-        private TestableFitbitClient _client;
+        private IRequestFactory _factory = null!;
+        private IClientConfiguration _configuration = null!;
+        private TestableFitbitClient _client = null!;
 
         [SetUp]
         public void SetUp()
