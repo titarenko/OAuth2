@@ -110,13 +110,36 @@ namespace OAuth2.Tests.Client
         public async Task GetUserInfo_ErrorParameter_ThrowsUnexpectedResponse()
         {
             // arrange
-            var parameters = new NameValueCollection { { "error", "error2" } };
+            var parameters = new NameValueCollection { { "error", "access_denied" } };
 
             // act & assert
             var ex = await _descendant
                 .Awaiting(x => x.GetUserInfoAsync(parameters))
                 .Should().ThrowAsync<UnexpectedResponseException>();
             ex.And.FieldName.Should().Be("error");
+            ex.And.ErrorCode.Should().Be("access_denied");
+            ex.And.ErrorDescription.Should().BeNull();
+            ex.And.Message.Should().Contain("access_denied");
+        }
+
+        [Test]
+        public async Task GetUserInfo_ErrorWithDescription_ThrowsWithDetails()
+        {
+            // arrange
+            var parameters = new NameValueCollection
+            {
+                { "error", "access_denied" },
+                { "error_description", "The user denied the request." }
+            };
+
+            // act & assert
+            var ex = await _descendant
+                .Awaiting(x => x.GetUserInfoAsync(parameters))
+                .Should().ThrowAsync<UnexpectedResponseException>();
+            ex.And.ErrorCode.Should().Be("access_denied");
+            ex.And.ErrorDescription.Should().Be("The user denied the request.");
+            ex.And.Message.Should().Contain("access_denied");
+            ex.And.Message.Should().Contain("The user denied the request.");
         }
 
         [Test]

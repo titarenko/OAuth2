@@ -178,7 +178,8 @@ namespace OAuth2.Client
             var error = parameters[errorFieldName];
             if (!error.IsEmpty())
             {
-                throw new UnexpectedResponseException(errorFieldName);
+                var errorDescription = parameters["error_description"];
+                throw new UnexpectedResponseException(errorFieldName, error, errorDescription);
             }
 
             State = parameters["state"];
