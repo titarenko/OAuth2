@@ -28,6 +28,12 @@ namespace OAuth2.Client
         private readonly RequestOptions? _requestOptions;
 
         /// <summary>
+        /// Transport-level options (e.g. timeout) applied to outgoing HTTP requests.
+        /// Exposed to derived clients so additional requests they issue honor the same settings.
+        /// </summary>
+        protected RequestOptions? RequestOptions => _requestOptions;
+
+        /// <summary>
         /// Client configuration object.
         /// </summary>
         public IClientConfiguration Configuration { get; private set; }
