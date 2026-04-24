@@ -86,8 +86,6 @@ namespace OAuth2.Client.Impl
         protected override async Task<UserInfo> GetUserInfoAsync(CancellationToken cancellationToken = default)
         {
             var userInfo = await base.GetUserInfoAsync(cancellationToken).ConfigureAwait(false);
-            if (userInfo == null)
-                return null!;
 
             if (!String.IsNullOrEmpty(userInfo.Email))
                 return userInfo;

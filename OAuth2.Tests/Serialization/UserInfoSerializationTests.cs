@@ -218,6 +218,7 @@ namespace OAuth2.Tests.Serialization
             var deserialized = JsonSerializer.Deserialize<AvatarInfo>(json, Options);
 
             // assert
+            deserialized.Should().NotBeNull();
             deserialized!.Small.Should().Be(original.Small);
             deserialized.Normal.Should().Be(original.Normal);
             deserialized.Large.Should().Be(original.Large);

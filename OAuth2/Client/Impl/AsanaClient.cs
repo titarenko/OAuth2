@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using OAuth2.Configuration;
@@ -98,10 +97,9 @@ namespace OAuth2.Client.Impl
             var avatarSmallUri = photo.GetProperty("image_36x36").GetString();
             var avatarNormalUri = photo.GetProperty("image_60x60").GetString();
             var avatarLargeUri = photo.GetProperty("image_128x128").GetString();
-            var splitName = new List<string>((data.GetProperty("name").GetString() ?? "").Split(' '));
-            var firstName = splitName.FirstOrDefault();
-            splitName.RemoveAt(0);
-            var lastName = splitName.Join(" ");
+            var names = data.GetProperty("name").GetString()?.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries) ?? [];
+            var firstName = names.Length > 0 ? names[0] : null;
+            var lastName = names.Length > 1 ? names.Skip(1).Join(" ") : String.Empty;
 
             return new UserInfo
             {
