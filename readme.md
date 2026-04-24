@@ -6,10 +6,6 @@
 
 OAuth2 is a library for user authentication using third-party services (OAuth/OAuth2 protocol) such as Google, Facebook and so on.
 
-## Current Version and Status
-
-Current version is 0.10.x. Despite several real-life projects being built with this library, we will change the status to "stable" only after a comprehensive set of acceptance tests is ready and runs successfully.
-
 ## Standard Flow
 
 1. Generate a login URL and render a page with it
