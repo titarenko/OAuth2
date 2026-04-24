@@ -32,6 +32,17 @@ namespace OAuth2.Client.Impl
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="XClient"/> class.
+        /// </summary>
+        /// <param name="factory">The factory.</param>
+        /// <param name="configuration">The configuration.</param>
+        /// <param name="requestOptions">Optional transport-level options such as timeout.</param>
+        public XClient(IRequestFactory factory, IClientConfiguration configuration, RequestOptions? requestOptions)
+            : base(factory, configuration, requestOptions)
+        {
+        }
+
+        /// <summary>
         /// Defines URI of service which is called for obtaining request token.
         /// </summary>
         protected override Endpoint RequestTokenServiceEndpoint

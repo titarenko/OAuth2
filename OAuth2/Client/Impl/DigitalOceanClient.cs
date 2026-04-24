@@ -28,6 +28,17 @@ namespace OAuth2.Client.Impl
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="DigitalOceanClient"/> class.
+        /// </summary>
+        /// <param name="factory">The factory.</param>
+        /// <param name="configuration">The configuration.</param>
+        /// <param name="requestOptions">Optional transport-level options such as timeout.</param>
+        public DigitalOceanClient(IRequestFactory factory, IClientConfiguration configuration, RequestOptions? requestOptions)
+            : base(factory, configuration, requestOptions)
+        {
+        }
+
+        /// <summary>
         /// Friendly name of provider (OAuth2 service).
         /// </summary>
         public override string Name

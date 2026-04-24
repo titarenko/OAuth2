@@ -33,6 +33,18 @@ namespace OAuth2.Client.Impl
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="LoginCidadaoClient"/> class.
+        /// </summary>
+        /// <param name="factory">The factory.</param>
+        /// <param name="configuration">The configuration.</param>
+        /// <param name="requestOptions">Optional transport-level options such as timeout.</param>
+        public LoginCidadaoClient(IRequestFactory factory, IClientConfiguration configuration, RequestOptions? requestOptions)
+            : base(factory, configuration, requestOptions)
+        {
+            _factory = factory;
+        }
+
+        /// <summary>
         /// Defines URI of service which issues access code.
         /// </summary>
         protected override Endpoint AccessCodeServiceEndpoint
