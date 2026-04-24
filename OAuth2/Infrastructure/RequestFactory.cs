@@ -23,7 +23,7 @@ namespace OAuth2.Infrastructure
         /// <param name="options">Transport-level options applied to every client created by this factory.</param>
         public RequestFactory(RequestOptions options)
         {
-            _options = options;
+            _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
         /// <summary>
@@ -34,13 +34,12 @@ namespace OAuth2.Infrastructure
             if (String.IsNullOrEmpty(baseUrl))
                 throw new ArgumentException("Value cannot be null or empty.", nameof(baseUrl));
 
-            if (_options?.Timeout is null)
-                return new RestClient(baseUrl);
+            var restClientOptions = new RestClientOptions(baseUrl);
 
-            return new RestClient(new RestClientOptions(baseUrl)
-            {
-                Timeout = _options.Timeout.Value
-            });
+            if (_options?.Timeout is not null)
+                restClientOptions.Timeout = _options.Timeout.Value;
+
+            return new RestClient(restClientOptions);
         }
 
         /// <summary>

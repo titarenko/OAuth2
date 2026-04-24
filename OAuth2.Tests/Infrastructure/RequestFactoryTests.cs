@@ -72,6 +72,16 @@ namespace OAuth2.Tests.Infrastructure
         }
 
         [Test]
+        public void Constructor_WithNullOptions_ThrowsArgumentNullException()
+        {
+            // act
+            Action act = () => new RequestFactory(null!);
+
+            // assert
+            act.Should().Throw<ArgumentNullException>().WithParameterName("options");
+        }
+
+        [Test]
         public void CreateRequest_CalledTwice_ReturnsNewInstances()
         {
             // act
