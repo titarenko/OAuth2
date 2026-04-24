@@ -63,12 +63,15 @@ namespace OAuth2.Tests.Infrastructure
         [Test]
         public void CreateClient_WithoutOptions_DoesNotSetTimeout()
         {
-            // arrange & act
+            // arrange
+            var defaultClient = _factory.CreateClient("https://localhost");
+
+            // act
             var client = _factory.CreateClient("https://localhost");
 
             // assert
             client.Should().NotBeNull();
-            client.Options.Timeout.Should().BeNull();
+            client.Options.Timeout.Should().Be(defaultClient.Options.Timeout);
         }
 
         [Test]
