@@ -1,3 +1,4 @@
+using System;
 using FluentAssertions;
 using NUnit.Framework;
 using OAuth2.Infrastructure;
@@ -27,6 +28,60 @@ namespace OAuth2.Tests.Infrastructure
             client1.Should().NotBeNull();
             client2.Should().NotBeNull();
             client1.Should().NotBeSameAs(client2);
+        }
+
+        [Test]
+        public void CreateClient_WithTimeout_AppliesTimeout()
+        {
+            // arrange
+            var timeout = TimeSpan.FromSeconds(5);
+            var factory = new RequestFactory(new RequestOptions { Timeout = timeout });
+
+            // act
+            var client = factory.CreateClient("https://localhost");
+
+            // assert
+            client.Should().NotBeNull();
+            client.Options.Timeout.Should().Be(timeout);
+        }
+
+        [Test]
+        public void CreateClient_WithNullTimeout_PreservesDefault()
+        {
+            // arrange
+            var factory = new RequestFactory(new RequestOptions());
+            var defaultClient = _factory.CreateClient("https://localhost");
+
+            // act
+            var client = factory.CreateClient("https://localhost");
+
+            // assert
+            client.Should().NotBeNull();
+            client.Options.Timeout.Should().Be(defaultClient.Options.Timeout);
+        }
+
+        [Test]
+        public void CreateClient_WithoutOptions_DoesNotSetTimeout()
+        {
+            // arrange
+            var defaultClient = _factory.CreateClient("https://localhost");
+
+            // act
+            var client = _factory.CreateClient("https://localhost");
+
+            // assert
+            client.Should().NotBeNull();
+            client.Options.Timeout.Should().Be(defaultClient.Options.Timeout);
+        }
+
+        [Test]
+        public void Constructor_WithNullOptions_ThrowsArgumentNullException()
+        {
+            // act
+            Action act = () => new RequestFactory(null!);
+
+            // assert
+            act.Should().Throw<ArgumentNullException>().WithParameterName("options");
         }
 
         [Test]
