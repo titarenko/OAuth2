@@ -25,13 +25,6 @@ namespace OAuth2.Client
         private const string TokenTypeKey = "token_type";
 
         private readonly IRequestFactory _factory;
-        private readonly RequestOptions? _requestOptions;
-
-        /// <summary>
-        /// Transport-level options (e.g. timeout) applied to outgoing HTTP requests.
-        /// Exposed to derived clients so additional requests they issue honor the same settings.
-        /// </summary>
-        protected RequestOptions? RequestOptions => _requestOptions;
 
         /// <summary>
         /// Client configuration object.
@@ -75,12 +68,10 @@ namespace OAuth2.Client
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        /// <param name="requestOptions">Optional transport-level options such as timeout.</param>
-        protected OAuth2Client(IRequestFactory factory, IClientConfiguration configuration, RequestOptions? requestOptions = null)
+        protected OAuth2Client(IRequestFactory factory, IClientConfiguration configuration)
         {
             _factory = factory;
             Configuration = configuration;
-            _requestOptions = requestOptions;
         }
 
         /// <summary>
@@ -93,7 +84,7 @@ namespace OAuth2.Client
         /// <param name="cancellationToken"></param>
         public virtual Task<string> GetLoginLinkUriAsync(string? state = null, CancellationToken cancellationToken = default)
         {
-            var client = _factory.CreateClient(AccessCodeServiceEndpoint, _requestOptions);
+            var client = _factory.CreateClient(AccessCodeServiceEndpoint);
             var request = _factory.CreateRequest(AccessCodeServiceEndpoint);
             if (String.IsNullOrEmpty(Configuration.Scope))
             {
@@ -201,7 +192,7 @@ namespace OAuth2.Client
         /// <param name="cancellationToken">Optional cancellation token</param>
         private async Task QueryAccessTokenAsync(NameValueCollection parameters, CancellationToken cancellationToken = default)
         {
-            var client = _factory.CreateClient(AccessTokenServiceEndpoint, _requestOptions);
+            var client = _factory.CreateClient(AccessTokenServiceEndpoint);
             var request = _factory.CreateRequest(AccessTokenServiceEndpoint, Method.Post);
 
             BeforeGetAccessToken(new BeforeAfterRequestArgs
@@ -318,7 +309,7 @@ namespace OAuth2.Client
         /// <param name="cancellationToken">Optional cancellationtoken</param>
         protected virtual async Task<UserInfo> GetUserInfoAsync(CancellationToken cancellationToken = default)
         {
-            var client = _factory.CreateClient(UserInfoServiceEndpoint, _requestOptions);
+            var client = _factory.CreateClient(UserInfoServiceEndpoint);
             var request = _factory.CreateRequest(UserInfoServiceEndpoint);
             request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken!); // Non-null: set by preceding QueryAccessTokenAsync call
 

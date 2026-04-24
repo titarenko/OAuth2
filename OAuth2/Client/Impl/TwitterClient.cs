@@ -19,16 +19,5 @@ namespace OAuth2.Client.Impl
             : base(factory, configuration)
         {
         }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TwitterClient"/> class.
-        /// </summary>
-        /// <param name="factory">The factory.</param>
-        /// <param name="configuration">The configuration.</param>
-        /// <param name="requestOptions">Optional transport-level options such as timeout.</param>
-        public TwitterClient(IRequestFactory factory, IClientConfiguration configuration, RequestOptions? requestOptions)
-            : base(factory, configuration, requestOptions)
-        {
-        }
     }
 }

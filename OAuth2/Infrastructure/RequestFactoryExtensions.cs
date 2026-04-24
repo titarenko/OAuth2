@@ -20,20 +20,6 @@ namespace OAuth2.Infrastructure
         }
 
         /// <summary>
-        /// Creates a <see cref="RestClient"/> configured with the base URI of the specified endpoint and transport options.
-        /// </summary>
-        /// <param name="factory">The request factory.</param>
-        /// <param name="endpoint">The endpoint whose base URI is used.</param>
-        /// <param name="options">Optional transport-level options such as timeout.</param>
-        /// <returns>A configured <see cref="RestClient"/> instance.</returns>
-        public static RestClient CreateClient(this IRequestFactory factory, Endpoint endpoint, RequestOptions? options)
-        {
-            return options is not null
-                ? factory.CreateClient(endpoint.BaseUri, options)
-                : factory.CreateClient(endpoint.BaseUri);
-        }
-
-        /// <summary>
         /// Creates a <see cref="RestRequest"/> for the specified endpoint using <see cref="Method.Get"/>.
         /// </summary>
         /// <param name="factory">The request factory.</param>

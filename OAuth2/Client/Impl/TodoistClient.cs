@@ -28,15 +28,6 @@ namespace OAuth2.Client.Impl
             : base(factory, configuration) { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TodoistClient"/> class.
-        /// </summary>
-        /// <param name="factory">The factory.</param>
-        /// <param name="configuration">The configuration.</param>
-        /// <param name="requestOptions">Optional transport-level options such as timeout.</param>
-        public TodoistClient(IRequestFactory factory, IClientConfiguration configuration, RequestOptions? requestOptions)
-            : base(factory, configuration, requestOptions) { }
-
-        /// <summary>
         /// Defines URI of service which issues access code.
         /// </summary>
         protected override Endpoint AccessCodeServiceEndpoint

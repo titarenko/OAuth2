@@ -13,11 +13,6 @@ namespace OAuth2.Infrastructure
         RestClient CreateClient(string baseUrl);
 
         /// <summary>
-        /// Returns new REST client instance with the specified base URL and transport options.
-        /// </summary>
-        RestClient CreateClient(string baseUrl, RequestOptions? options);
-
-        /// <summary>
         /// Returns new REST request instance.
         /// </summary>
         RestRequest CreateRequest(string resource);

@@ -20,13 +20,6 @@ namespace OAuth2.Client
         private const string OAuthTokenSecretKey = "oauth_token_secret";
 
         private readonly IRequestFactory _factory;
-        private readonly RequestOptions? _requestOptions;
-
-        /// <summary>
-        /// Transport-level options (e.g. timeout) applied to outgoing HTTP requests.
-        /// Exposed to derived clients so additional requests they issue honor the same settings.
-        /// </summary>
-        protected RequestOptions? RequestOptions => _requestOptions;
 
         /// <summary>
         /// Client configuration object.
@@ -59,12 +52,10 @@ namespace OAuth2.Client
         /// </summary>
         /// <param name="factory">The factory.</param>
         /// <param name="configuration">The configuration.</param>
-        /// <param name="requestOptions">Optional transport-level options such as timeout.</param>
-        protected OAuthClient(IRequestFactory factory, IClientConfiguration configuration, RequestOptions? requestOptions = null)
+        protected OAuthClient(IRequestFactory factory, IClientConfiguration configuration)
         {
             _factory = factory;
             Configuration = configuration;
-            _requestOptions = requestOptions;
         }
 
         /// <summary>
@@ -115,7 +106,7 @@ namespace OAuth2.Client
         /// <param name="cancellationToken">Optional cancellation token</param>
         private async Task QueryRequestTokenAsync(CancellationToken cancellationToken = default)
         {
-            var client = _factory.CreateClient(RequestTokenServiceEndpoint, _requestOptions);
+            var client = _factory.CreateClient(RequestTokenServiceEndpoint);
             var request = _factory.CreateRequest(RequestTokenServiceEndpoint, Method.Post);
             request.Authenticator = OAuth1Authenticator.ForRequestToken(
                 Configuration.ClientId, Configuration.ClientSecret, Configuration.RedirectUri);
@@ -146,7 +137,7 @@ namespace OAuth2.Client
         /// <param name="state">Any additional information needed by application.</param>
         private string GetLoginRequestUri(string? state = null)
         {
-            var client = _factory.CreateClient(LoginServiceEndpoint, _requestOptions);
+            var client = _factory.CreateClient(LoginServiceEndpoint);
             var request = _factory.CreateRequest(LoginServiceEndpoint);
 
             request.AddParameter(OAuthTokenKey, AccessToken);
@@ -166,7 +157,7 @@ namespace OAuth2.Client
         /// <returns>Access token and other extra info.</returns>
         private async Task QueryAccessTokenAsync(string verifier, CancellationToken cancellationToken = default)
         {
-            var client = _factory.CreateClient(AccessTokenServiceEndpoint, _requestOptions);
+            var client = _factory.CreateClient(AccessTokenServiceEndpoint);
             var request = _factory.CreateRequest(AccessTokenServiceEndpoint, Method.Post);
             request.Authenticator = OAuth1Authenticator.ForAccessToken(
                 Configuration.ClientId, Configuration.ClientSecret, AccessToken!, AccessTokenSecret!, verifier); // Non-null: set by preceding QueryRequestTokenAsync call
@@ -209,7 +200,7 @@ namespace OAuth2.Client
         /// <param name="cancellationToken">Optional cancellationtoken</param>
         private async Task<string> QueryUserInfoAsync(CancellationToken cancellationToken = default)
         {
-            var client = _factory.CreateClient(UserInfoServiceEndpoint, _requestOptions);
+            var client = _factory.CreateClient(UserInfoServiceEndpoint);
             var request = _factory.CreateRequest(UserInfoServiceEndpoint);
             request.Authenticator = OAuth1Authenticator.ForProtectedResource(
                 Configuration.ClientId, Configuration.ClientSecret, AccessToken!, AccessTokenSecret!); // Non-null: set by preceding QueryAccessTokenAsync call

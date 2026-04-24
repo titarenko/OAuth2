@@ -8,6 +8,24 @@ namespace OAuth2.Infrastructure
     /// </summary>
     public class RequestFactory : IRequestFactory
     {
+        private readonly RequestOptions? _options;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RequestFactory"/> class.
+        /// </summary>
+        public RequestFactory()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RequestFactory"/> class with transport options.
+        /// </summary>
+        /// <param name="options">Transport-level options applied to every client created by this factory.</param>
+        public RequestFactory(RequestOptions options)
+        {
+            _options = options;
+        }
+
         /// <summary>
         /// Returns new REST client instance with the specified base URL.
         /// </summary>
@@ -16,26 +34,13 @@ namespace OAuth2.Infrastructure
             if (String.IsNullOrEmpty(baseUrl))
                 throw new ArgumentException("Value cannot be null or empty.", nameof(baseUrl));
 
-            return new RestClient(baseUrl);
-        }
-
-        /// <summary>
-        /// Returns new REST client instance with the specified base URL and transport options.
-        /// </summary>
-        public RestClient CreateClient(string baseUrl, RequestOptions? options)
-        {
-            if (String.IsNullOrEmpty(baseUrl))
-                throw new ArgumentException("Value cannot be null or empty.", nameof(baseUrl));
-
-            if (options?.Timeout is null)
+            if (_options?.Timeout is null)
                 return new RestClient(baseUrl);
 
-            var clientOptions = new RestClientOptions(baseUrl)
+            return new RestClient(new RestClientOptions(baseUrl)
             {
-                Timeout = options.Timeout.Value
-            };
-
-            return new RestClient(clientOptions);
+                Timeout = _options.Timeout.Value
+            });
         }
 
         /// <summary>

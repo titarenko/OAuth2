@@ -34,18 +34,6 @@ namespace OAuth2.Client.Impl
             _factory = factory;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GitHubClient"/> class.
-        /// </summary>
-        /// <param name="factory">The factory.</param>
-        /// <param name="configuration">The configuration.</param>
-        /// <param name="requestOptions">Optional transport-level options such as timeout.</param>
-        public GitHubClient(IRequestFactory factory, IClientConfiguration configuration, RequestOptions? requestOptions)
-            : base(factory, configuration, requestOptions)
-        {
-            _factory = factory;
-        }
-
         /// <inheritdoc />
         protected override void BeforeGetAccessToken(BeforeAfterRequestArgs args)
         {

@@ -35,10 +35,10 @@ namespace OAuth2.Tests.Infrastructure
         {
             // arrange
             var timeout = TimeSpan.FromSeconds(5);
-            var options = new RequestOptions { Timeout = timeout };
+            var factory = new RequestFactory(new RequestOptions { Timeout = timeout });
 
             // act
-            var client = _factory.CreateClient("https://localhost", options);
+            var client = factory.CreateClient("https://localhost");
 
             // assert
             client.Should().NotBeNull();
@@ -49,11 +49,11 @@ namespace OAuth2.Tests.Infrastructure
         public void CreateClient_WithNullTimeout_PreservesDefault()
         {
             // arrange
-            var options = new RequestOptions();
+            var factory = new RequestFactory(new RequestOptions());
             var defaultClient = _factory.CreateClient("https://localhost");
 
             // act
-            var client = _factory.CreateClient("https://localhost", options);
+            var client = factory.CreateClient("https://localhost");
 
             // assert
             client.Should().NotBeNull();
@@ -61,17 +61,14 @@ namespace OAuth2.Tests.Infrastructure
         }
 
         [Test]
-        public void CreateClient_WithNullOptions_PreservesDefault()
+        public void CreateClient_WithoutOptions_DoesNotSetTimeout()
         {
-            // arrange
-            var defaultClient = _factory.CreateClient("https://localhost");
-
-            // act
-            var client = _factory.CreateClient("https://localhost", (RequestOptions?)null);
+            // arrange & act
+            var client = _factory.CreateClient("https://localhost");
 
             // assert
             client.Should().NotBeNull();
-            client.Options.Timeout.Should().Be(defaultClient.Options.Timeout);
+            client.Options.Timeout.Should().BeNull();
         }
 
         [Test]
