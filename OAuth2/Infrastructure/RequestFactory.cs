@@ -20,6 +20,22 @@ namespace OAuth2.Infrastructure
         }
 
         /// <summary>
+        /// Returns new REST client instance with the specified base URL and transport options.
+        /// </summary>
+        public RestClient CreateClient(string baseUrl, RequestOptions options)
+        {
+            if (String.IsNullOrEmpty(baseUrl))
+                throw new ArgumentException("Value cannot be null or empty.", nameof(baseUrl));
+
+            var clientOptions = new RestClientOptions(baseUrl);
+
+            if (options.Timeout.HasValue)
+                clientOptions.Timeout = options.Timeout.Value;
+
+            return new RestClient(clientOptions);
+        }
+
+        /// <summary>
         /// Returns new REST request instance.
         /// </summary>
         public RestRequest CreateRequest(string resource)

@@ -37,6 +37,8 @@ namespace OAuth2.Tests.Client
             _factory = Substitute.For<IRequestFactory>();
             _factory.CreateClient(Arg.Any<string>()).Returns(callInfo =>
                 new RestClient(new HttpClient(_handler), new RestClientOptions(callInfo.Arg<string>())));
+            _factory.CreateClient(Arg.Any<string>(), Arg.Any<RequestOptions>()).Returns(callInfo =>
+                new RestClient(new HttpClient(_handler), new RestClientOptions(callInfo.ArgAt<string>(0))));
             _factory.CreateRequest(Arg.Any<string>()).Returns(callInfo =>
             {
                 var req = new RestRequest(callInfo.Arg<string>());

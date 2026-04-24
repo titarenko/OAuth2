@@ -1,3 +1,4 @@
+using System;
 using FluentAssertions;
 using NUnit.Framework;
 using OAuth2.Infrastructure;
@@ -27,6 +28,32 @@ namespace OAuth2.Tests.Infrastructure
             client1.Should().NotBeNull();
             client2.Should().NotBeNull();
             client1.Should().NotBeSameAs(client2);
+        }
+
+        [Test]
+        public void CreateClient_WithRequestOptions_ReturnsClient()
+        {
+            // arrange
+            var options = new RequestOptions { Timeout = TimeSpan.FromSeconds(5) };
+
+            // act
+            var client = _factory.CreateClient("https://localhost", options);
+
+            // assert
+            client.Should().NotBeNull();
+        }
+
+        [Test]
+        public void CreateClient_WithNullTimeout_ReturnsClient()
+        {
+            // arrange
+            var options = new RequestOptions();
+
+            // act
+            var client = _factory.CreateClient("https://localhost", options);
+
+            // assert
+            client.Should().NotBeNull();
         }
 
         [Test]
