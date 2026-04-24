@@ -93,10 +93,15 @@ namespace OAuth2.Client.Impl
             if (!response.TryGetProperty("data", out var data))
                 return new UserInfo();
 
-            var photo = data.GetProperty("photo");
-            var avatarSmallUri = photo.GetProperty("image_36x36").GetString();
-            var avatarNormalUri = photo.GetProperty("image_60x60").GetString();
-            var avatarLargeUri = photo.GetProperty("image_128x128").GetString();
+            string? avatarSmallUri = null;
+            string? avatarNormalUri = null;
+            string? avatarLargeUri = null;
+            if (data.TryGetProperty("photo", out var photo) && photo.ValueKind == JsonValueKind.Object)
+            {
+                avatarSmallUri = photo.GetProperty("image_36x36").GetString();
+                avatarNormalUri = photo.GetProperty("image_60x60").GetString();
+                avatarLargeUri = photo.GetProperty("image_128x128").GetString();
+            }
             var names = data.GetProperty("name").GetString()?.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries) ?? [];
             var firstName = names.Length > 0 ? names[0] : null;
             var lastName = names.Length > 1 ? names.Skip(1).Join(" ") : String.Empty;
