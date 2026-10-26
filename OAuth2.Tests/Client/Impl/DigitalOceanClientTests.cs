@@ -74,7 +74,8 @@ namespace OAuth2.Tests.Client.Impl
         {
             // Arrange
             using var handler = new MockHttpMessageHandler();
-            handler.EnqueueResponse(/* lang=json */ """{"access_token":"test-token","uid":12345,"info":{"name":"Example User","email":"user@example.com"}}""");
+            // https://docs.digitalocean.com/reference/api/oauth/; credentials and profile values replaced.
+            handler.EnqueueResponse(/* lang=json */ """{"access_token":"test-token","info":{"uuid":"00000000-0000-4000-8000-000000000001","team_uuid":"00000000-0000-4000-8000-000000000002","name":"Example User","email":"user@example.com"}}""");
             using var httpClient = new HttpClient(handler, disposeHandler: false);
             using var tokenClient = new RestClient(httpClient, new RestClientOptions("https://cloud.digitalocean.com"), disposeHttpClient: false);
             var factory = Substitute.For<IRequestFactory>();
@@ -102,7 +103,8 @@ namespace OAuth2.Tests.Client.Impl
             form["grant_type"].Should().Be("authorization_code");
             form["redirect_uri"].Should().Be("https://app.example.com/callback?next=a&value=b");
             tokenRequest.Headers.Authorization.Should().BeNull();
-            info.Id.Should().Be("12345");
+            info.Id.Should().Be("00000000-0000-4000-8000-000000000001");
+            info.ProviderName.Should().Be("DigitalOcean");
         }
 
         [Test]

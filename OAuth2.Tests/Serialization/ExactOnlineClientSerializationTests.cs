@@ -6,6 +6,7 @@ using System.Web;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
+using OAuth2.Client;
 using OAuth2.Client.Impl;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
@@ -36,8 +37,9 @@ namespace OAuth2.Tests.Serialization
             // Arrange
             using var handler = new MockHttpMessageHandler();
             handler.EnqueueResponse(/* lang=json */ """{"access_token":"test-token"}""");
-            // Existing ExactOnline parser fixture shape, with synthetic profile values; tests transport, not live API availability.
-            handler.EnqueueResponse(/* lang=json */ """{"id":"exact-1","display_name":"Alice","email":"user@example.com","images":[{"url":"https://example.com/photo"}]}""");
+            // Exact's System/Me schema in an OData collection; values replaced with examples.
+            // https://start.exactonline.nl/docs/HlpRestAPIResourcesDetails.aspx?name=SystemSystemMe
+            handler.EnqueueResponse(/* lang=json */ """{"d":{"results":[{"UserID":"00000000-0000-4000-8000-000000000001","FirstName":"Example","LastName":"User","FullName":"Example User","Email":"user@example.com","PictureUrl":"https://example.com/photo"}]}}""");
             using var httpClient = new HttpClient(handler, disposeHandler: false);
             using var tokenClient = new RestClient(httpClient, new RestClientOptions("https://start.exactonline.nl"), disposeHttpClient: false);
             var factory = Substitute.For<IRequestFactory>();
@@ -50,9 +52,12 @@ namespace OAuth2.Tests.Serialization
             });
 
             // Act
+            var loginUri = new System.Uri(await client.GetLoginLinkUriAsync("state+&="));
             var info = await client.GetUserInfoAsync(new NameValueCollection { { "code", "code+&=" } });
 
             // Assert
+            loginUri.GetLeftPart(System.UriPartial.Path).Should().Be("https://start.exactonline.nl/api/oauth2/auth");
+            HttpUtility.ParseQueryString(loginUri.Query)["state"].Should().Be("state+&=");
             handler.SentRequests.Should().HaveCount(2);
             var tokenRequest = handler.SentRequests[0];
             tokenRequest.Method.Should().Be(HttpMethod.Post);
@@ -74,7 +79,45 @@ namespace OAuth2.Tests.Serialization
             query["access_token"].Should().BeNull();
             query["oauth_token"].Should().BeNull();
             query["client_secret"].Should().BeNull();
+            request.Headers.Accept.Should().ContainSingle(value => value.MediaType == "application/json");
+            info.Id.Should().Be("00000000-0000-4000-8000-000000000001");
+            info.FirstName.Should().Be("Example");
+            info.LastName.Should().Be("User");
+            info.Email.Should().Be("user@example.com");
+            info.AvatarUri.Normal.Should().Be("https://example.com/photo");
             info.ProviderName.Should().Be(client.Name);
+        }
+
+        [TestCase("{\"d\":{\"results\":[]}}")]
+        [TestCase("{\"d\":{\"results\":[{\"FullName\":\"Example User\"}]}}")]
+        [TestCase("{\"d\":{\"results\":[{\"UserID\":{}}]}}")]
+        public void ParseUserInfo_ODataWithoutUserId_RejectsResponse(string content)
+        {
+            // Arrange
+            // Deliberate mutations of the System/Me response: no user or no primary key.
+
+            // Act & Assert
+            Assert.Throws<UnexpectedResponseException>(() => _client.ParseUserInfo(content));
+        }
+
+        [Test]
+        public void ParseUserInfo_SingleODataEntity_MapsUserIdWithoutOptionalFields()
+        {
+            // Arrange
+            // Exact's OData single-record wrapper; optional System/Me fields omitted deliberately.
+            // https://www.exactsoftware.com/docs/DocView.aspx?DocumentID={b3ae2566-b48c-461c-8788-b6e756a44798}
+            const string content = /* lang=json */ """{"d":{"UserID":"00000000-0000-4000-8000-000000000001"}}""";
+
+            // Act
+            var info = _client.ParseUserInfo(content);
+
+            // Assert
+            info.Id.Should().Be("00000000-0000-4000-8000-000000000001");
+            info.FirstName.Should().BeNull();
+            info.LastName.Should().BeNull();
+            info.Email.Should().BeNull();
+            info.EmailVerified.Should().BeNull();
+            info.AvatarUri.Normal.Should().BeNull();
         }
 
         [Test]

@@ -12,7 +12,7 @@ namespace OAuth2.Client.Impl
     /// <summary>
     /// DigitalOcean authentication client.
     /// </summary>
-    /// <seealso href="https://docs.digitalocean.com/reference/api/oauth-api/">DigitalOcean OAuth Documentation</seealso>
+    /// <seealso href="https://docs.digitalocean.com/reference/api/oauth/">DigitalOcean OAuth Documentation</seealso>
     public class DigitalOceanClient : OAuth2Client
     {
         private string? _accessToken;
@@ -101,7 +101,8 @@ namespace OAuth2.Client.Impl
             var info = response.GetProperty("info");
             return new UserInfo
             {
-                Id = response.GetProperty("uid").GetStringValue(),
+                Id = response.GetStringOrDefault("uid") ?? info.GetProperty("uuid").GetString(),
+                ProviderName = Name,
                 FirstName = info.GetProperty("name").GetString(),
                 LastName = "",
                 Email = info.GetStringOrDefault("email")

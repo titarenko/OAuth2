@@ -12,7 +12,7 @@ namespace OAuth2.Client.Impl
     /// <summary>
     /// Uber authentication client.
     /// </summary>
-    /// <seealso href="https://developer.uber.com/docs/riders/guides/authentication/introduction">Uber OAuth Documentation</seealso>
+    /// <seealso href="https://developer.uber.com/docs/consumer-identity/references/api/v3/me-get">Uber UserInfo Documentation</seealso>
     public class UberClient : OAuth2Client
     {
         /// <summary>
@@ -85,7 +85,7 @@ namespace OAuth2.Client.Impl
                 return new Endpoint
                 {
                     BaseUri = "https://api.uber.com",
-                    Resource = "/v1/me"
+                    Resource = "/v3/me"
                 };
             }
         }
@@ -98,13 +98,19 @@ namespace OAuth2.Client.Impl
         {
             using var doc = JsonDocument.Parse(content);
             var response = doc.RootElement;
-            var userInfo = new UserInfo();
-            if (response.TryGetPropertyIgnoreCase("first_name", out var firstName))
+            var userInfo = new UserInfo
+            {
+                Id = response.GetStringOrDefault("sub"),
+                EmailVerified = response.GetBooleanOrDefault("email_verified")
+            };
+            if (response.TryGetPropertyIgnoreCase("given_name", out var firstName) ||
+                response.TryGetPropertyIgnoreCase("first_name", out firstName))
             {
                 userInfo.FirstName = firstName.GetString();
             }
 
-            if (response.TryGetPropertyIgnoreCase("last_name", out var lastName))
+            if (response.TryGetPropertyIgnoreCase("family_name", out var lastName) ||
+                response.TryGetPropertyIgnoreCase("last_name", out lastName))
             {
                 userInfo.LastName = lastName.GetString();
             }

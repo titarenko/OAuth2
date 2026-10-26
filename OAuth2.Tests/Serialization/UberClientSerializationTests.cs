@@ -36,8 +36,9 @@ namespace OAuth2.Tests.Serialization
             // Arrange
             using var handler = new MockHttpMessageHandler();
             handler.EnqueueResponse(/* lang=json */ """{"access_token":"test-token"}""");
-            // Existing Uber parser fixture shape, with synthetic profile values; tests transport, not live API availability.
-            handler.EnqueueResponse(/* lang=json */ """{"first_name":"Uber","last_name":"Rider","email":"user@example.com","picture":"https://example.com/photo"}""");
+            // https://developer.uber.com/docs/consumer-identity/references/api/v3/me-get
+            // Profile example with the subject, email and image replaced with synthetic values.
+            handler.EnqueueResponse(/* lang=json */ """{"sub":"example-uber-subject","given_name":"Uber","family_name":"Rider","email":"user@example.com","picture":"https://example.com/photo"}""");
             using var httpClient = new HttpClient(handler, disposeHandler: false);
             using var tokenClient = new RestClient(httpClient, new RestClientOptions("https://auth.uber.com"), disposeHttpClient: false);
             using var userClient = new RestClient(httpClient, new RestClientOptions("https://api.uber.com"), disposeHttpClient: false);
@@ -69,14 +70,54 @@ namespace OAuth2.Tests.Serialization
             tokenRequest.Headers.Authorization.Should().BeNull();
             var request = handler.SentRequests[1];
             request.Method.Should().Be(HttpMethod.Get);
-            request.RequestUri!.GetLeftPart(System.UriPartial.Path).Should().Be("https://api.uber.com/v1/me");
+            request.RequestUri!.GetLeftPart(System.UriPartial.Path).Should().Be("https://api.uber.com/v3/me");
             handler.SentBodies[1].Should().BeNullOrEmpty();
             var query = HttpUtility.ParseQueryString(request.RequestUri.Query);
             request.Headers.Authorization!.ToString().Should().Be("Bearer test-token");
             query["access_token"].Should().BeNull();
             query["oauth_token"].Should().BeNull();
             query["client_secret"].Should().BeNull();
+            info.Id.Should().Be("example-uber-subject");
+            info.FirstName.Should().Be("Uber");
+            info.LastName.Should().Be("Rider");
+            info.EmailVerified.Should().BeNull();
             info.ProviderName.Should().Be(client.Name);
+        }
+
+        [TestCase("true", true)]
+        [TestCase("false", false)]
+        [TestCase("null", null)]
+        [TestCase("\"true\"", null)]
+        public void ParseUserInfo_CurrentEmailVerification_PreservesOnlyBooleanAssertions(string verification, bool? expected)
+        {
+            // Arrange
+            // v3/me example; deliberately vary the verification claim, including malformed text.
+            const string template = /* lang=json */ """{"sub":"example-subject","email":"user@example.com","email_verified":VERIFICATION}""";
+
+            // Act
+            var info = _client.ParseUserInfo(template.Replace("VERIFICATION", verification));
+
+            // Assert
+            info.Id.Should().Be("example-subject");
+            info.EmailVerified.Should().Be(expected);
+        }
+
+        [Test]
+        public void ParseUserInfo_SubOnly_ReturnsIdWithoutInventingProfileClaims()
+        {
+            // Arrange
+            // Documented v3/me response for eats.pos_provisioning without profile scope; subject replaced.
+            const string content = /* lang=json */ """{"sub":"example-subject"}""";
+
+            // Act
+            var info = _client.ParseUserInfo(content);
+
+            // Assert
+            info.Id.Should().Be("example-subject");
+            info.FirstName.Should().BeNull();
+            info.LastName.Should().BeNull();
+            info.Email.Should().BeNull();
+            info.EmailVerified.Should().BeNull();
         }
 
         [Test]

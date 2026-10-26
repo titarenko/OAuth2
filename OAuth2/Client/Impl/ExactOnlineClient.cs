@@ -47,7 +47,7 @@ namespace OAuth2.Client.Impl
                 return new Endpoint
                 {
                     BaseUri = "https://start.exactonline.nl",
-                    Resource = "/api/oauth2/authorize"
+                    Resource = "/api/oauth2/auth"
                 };
             }
         }
@@ -74,6 +74,7 @@ namespace OAuth2.Client.Impl
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
             args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken!, BearerTokenType);
+            args.Request.AddHeader("Accept", "application/json");
         }
 
         /// <summary>
@@ -99,6 +100,25 @@ namespace OAuth2.Client.Impl
         {
             using var doc = JsonDocument.Parse(content);
             var response = doc.RootElement;
+            if (response.TryGetProperty("d", out var data))
+            {
+                var user = data.SelectToken("results[0]") ?? data;
+                if (user.ValueKind != JsonValueKind.Object || !user.TryGetProperty("UserID", out var id) ||
+                    id.ValueKind != JsonValueKind.String || String.IsNullOrWhiteSpace(id.GetString()))
+                    throw new UnexpectedResponseException("UserID");
+
+                var picture = user.GetStringOrDefault("PictureUrl");
+                return new UserInfo
+                {
+                    Id = id.GetString(),
+                    ProviderName = Name,
+                    FirstName = user.GetStringOrDefault("FirstName"),
+                    LastName = user.GetStringOrDefault("LastName"),
+                    Email = user.GetStringOrDefault("Email"),
+                    AvatarUri = { Small = picture, Normal = picture, Large = picture }
+                };
+            }
+
             var userInfo = new UserInfo();
             userInfo.AvatarUri.Normal =
                 userInfo.AvatarUri.Large =
