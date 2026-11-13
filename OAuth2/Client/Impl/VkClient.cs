@@ -99,6 +99,8 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
+            args.Request.Authenticator = null;
+            args.Request.AddParameter("access_token", AccessToken);
             args.Request.AddParameter("v", "5.131");
             args.Request.AddParameter("user_ids", _userId);
             args.Request.AddParameter("fields", "first_name,last_name,has_photo,photo_max_orig");

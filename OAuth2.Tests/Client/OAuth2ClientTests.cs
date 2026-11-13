@@ -189,19 +189,21 @@ namespace OAuth2.Tests.Client
         [TestCase(/* lang=json */ "{\"access_token\": \"token\"}")]
         public async Task GetUserInfo_Called_IssuesCorrectUserInfoRequest(string response)
         {
-            // arrange
+            // Arrange
             _handler.EnqueueResponse(response);
             _handler.EnqueueResponse("content");
 
-            // act
+            // Act
             await _descendant.GetUserInfoAsync(new NameValueCollection { { "code", "code" } });
 
-            // assert
+            // Assert
             _factory.Received().CreateClient("https://UserInfoServiceEndpoint");
             _factory.Received().CreateRequest("/UserInfoServiceEndpoint", Method.Get);
 
             var userInfoRequest = _capturedRequests.Last();
             userInfoRequest.Authenticator.Should().BeOfType<OAuth2AuthorizationRequestHeaderAuthenticator>();
+            _handler.SentRequests.Last().Headers.Authorization!.Scheme.Should().Be("OAuth");
+            _handler.SentRequests.Last().Headers.Authorization!.Parameter.Should().Be("token");
         }
 
         [Test]

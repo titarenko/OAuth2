@@ -17,8 +17,15 @@ namespace OAuth2.Client
     /// <summary>
     /// Base class for OAuth2 client implementation.
     /// </summary>
+    /// <remarks>
+    /// Instances retain tokens and callback state and are not safe for concurrent authentication flows.
+    /// Create a separate instance for each flow. The caller must generate, bind, and validate the callback
+    /// <c>state</c> value before exchanging an authorization code.
+    /// </remarks>
     public abstract class OAuth2Client : IClient
     {
+        internal const string BearerTokenType = "Bearer";
+
         private const string AccessTokenKey = "access_token";
         private const string RefreshTokenKey = "refresh_token";
         private const string ExpiresKey = "expires_in";
@@ -37,7 +44,7 @@ namespace OAuth2.Client
         public abstract string Name { get; }
 
         /// <summary>
-        /// State (any additional information that was provided by application and is posted back by service).
+        /// State returned by the provider. The library exposes this value but does not validate it.
         /// </summary>
         public string? State { get; private set; }
 
@@ -79,7 +86,8 @@ namespace OAuth2.Client
         /// This URI should be used for rendering login link.
         /// </summary>
         /// <param name="state">
-        /// Any additional information that will be posted back by service.
+        /// A caller-generated, unpredictable, single-use value that will be posted back by the provider.
+        /// Bind it to the initiating user-agent session and validate the callback value before token exchange.
         /// </param>
         /// <param name="cancellationToken"></param>
         public virtual Task<string> GetLoginLinkUriAsync(string? state = null, CancellationToken cancellationToken = default)
@@ -115,6 +123,7 @@ namespace OAuth2.Client
         /// </summary>
         /// <param name="parameters">Callback request payload (parameters).</param>
         /// <param name="cancellationToken">Optional cancellation token</param>
+        /// <remarks>The caller must validate callback state before calling this method.</remarks>
         public async Task<string> GetTokenAsync(NameValueCollection parameters, CancellationToken cancellationToken = default)
         {
             GrantType = "authorization_code";
@@ -329,6 +338,7 @@ namespace OAuth2.Client
         }
 
         /// <inheritdoc />
+        /// <remarks>The caller must validate callback state before calling this method.</remarks>
         public async Task<UserInfo> GetUserInfoAsync(NameValueCollection parameters, CancellationToken cancellationToken = default)
         {
             GrantType = "authorization_code";

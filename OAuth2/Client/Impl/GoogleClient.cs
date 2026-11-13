@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using OAuth2.Configuration;
 using OAuth2.Extensions;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using RestSharp.Authenticators.OAuth2;
 
 namespace OAuth2.Client.Impl
 {
@@ -76,6 +78,15 @@ namespace OAuth2.Client.Impl
             get { return "Google"; }
         }
 
+        /// <summary>
+        /// Uses Google's documented Bearer scheme instead of the authenticator's default OAuth scheme.
+        /// </summary>
+        /// <param name="args">Request context for the userinfo request.</param>
+        /// <seealso href="https://developers.google.com/identity/openid-connect/reference#userinfo">Google userinfo endpoint</seealso>
+        protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
+        {
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken!, BearerTokenType);
+        }
 
         /// <summary>
         /// Should return parsed <see cref="UserInfo"/> from content received from third-party service.
@@ -91,8 +102,12 @@ namespace OAuth2.Client.Impl
             {
                 Id = response.GetProperty("sub").GetStringValue(),
                 Email = response.GetStringOrDefault("email"),
-                FirstName = response.GetProperty("given_name").GetString(),
-                LastName = response.GetProperty("family_name").GetString(),
+                EmailVerified = response.GetBooleanOrDefault("email_verified"),
+                ProviderData = response.TryGetProperty("hd", out var hostedDomain) && hostedDomain.ValueKind == JsonValueKind.String
+                    ? new Dictionary<string, string>(StringComparer.Ordinal) { ["hd"] = hostedDomain.GetString()! }
+                    : null,
+                FirstName = response.TryGetProperty("given_name", out var firstName) ? firstName.GetString() : null,
+                LastName = response.TryGetProperty("family_name", out var lastName) ? lastName.GetString() : null,
                 AvatarUri =
                     {
                         Small = !String.IsNullOrWhiteSpace(avatarUri) ? String.Format(avatarUriTemplate, avatarUri, AvatarInfo.SmallSize) : String.Empty,

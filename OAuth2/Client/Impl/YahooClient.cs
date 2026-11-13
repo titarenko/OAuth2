@@ -18,7 +18,7 @@ namespace OAuth2.Client.Impl
         private string? _userProfileGUID;
 
         /// <summary>
-        /// Gets the Yahoo user profile GUID obtained from the token response.
+        /// Gets the Yahoo user GUID from the token response or the UserInfo <c>sub</c> claim.
         /// </summary>
         public string? UserProfileGUID
         {
@@ -84,8 +84,7 @@ namespace OAuth2.Client.Impl
         }
 
         /// <summary>
-        /// It's required to store the User GUID obtained in the response for further usage
-        /// https://developer.yahoo.com/oauth2/guide/flows_authcode/
+        /// Retains the legacy GUID when supplied so it can be checked against the UserInfo subject.
         /// </summary>
         /// <param name="args"></param>
         protected override void AfterGetAccessToken(BeforeAfterRequestArgs args)
@@ -97,14 +96,10 @@ namespace OAuth2.Client.Impl
         /// <summary>
         /// Called just before issuing request to third-party service when everything is ready.
         /// Allows to add extra parameters to request or do any other needed preparations.
-        ///
-        /// We have to reformat the Url adding the user guid for accessing their information
-        /// https://developer.yahoo.com/oauth2/guide/apirequests/
         /// </summary>
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken!, "Bearer");
-            args.Request.Resource = String.Format(this.UserInfoServiceEndpoint.Resource, this._userProfileGUID);
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken!, BearerTokenType);
         }
 
         /// <summary>
@@ -116,8 +111,8 @@ namespace OAuth2.Client.Impl
             {
                 return new Endpoint
                 {
-                    BaseUri = "https://social.yahooapis.com",
-                    Resource = "v1/user/{0}/profile?format=json"
+                    BaseUri = "https://api.login.yahoo.com",
+                    Resource = "/openid/v1/userinfo"
                 };
             }
         }
@@ -130,6 +125,36 @@ namespace OAuth2.Client.Impl
         {
             using var doc = JsonDocument.Parse(content);
             var response = doc.RootElement;
+            if (response.TryGetProperty("sub", out _) || !response.TryGetProperty("profile", out var profile) ||
+                profile.ValueKind != JsonValueKind.Object)
+            {
+                if (!response.TryGetProperty("sub", out var subject) || subject.ValueKind != JsonValueKind.String ||
+                    String.IsNullOrWhiteSpace(subject.GetString()))
+                    throw new UnexpectedResponseException("sub");
+
+                var id = subject.GetString();
+                if (!String.IsNullOrEmpty(_userProfileGUID) && !String.Equals(_userProfileGUID, id, StringComparison.Ordinal))
+                    throw new UnexpectedResponseException("sub");
+
+                UserProfileGUID = id;
+                var picture = response.GetStringOrDefault("picture");
+                return new UserInfo
+                {
+                    Id = id,
+                    ProviderName = Name,
+                    FirstName = response.GetStringOrDefault("given_name"),
+                    LastName = response.GetStringOrDefault("family_name"),
+                    Email = response.GetStringOrDefault("email"),
+                    EmailVerified = response.GetBooleanOrDefault("email_verified"),
+                    AvatarUri =
+                    {
+                        Small = response.SelectToken("profile_images.image32")?.GetStringValue() ?? picture,
+                        Normal = response.SelectToken("profile_images.image64")?.GetStringValue() ?? picture,
+                        Large = response.SelectToken("profile_images.image128")?.GetStringValue() ?? picture
+                    }
+                };
+            }
+
             var userInfo = new UserInfo();
             userInfo.AvatarUri.Normal =
                 userInfo.AvatarUri.Large =

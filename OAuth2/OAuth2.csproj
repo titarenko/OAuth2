@@ -1,13 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\build\common.props" />
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net8.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net10.0;net11.0</TargetFrameworks>
     <PackageTags>OAuth2, OAuth, DigitalOcean, Facebook, Foursquare, GitHub, Google, Instagram, LinkedIn, MailRu, Odnoklassniki, Twitter, VK (Vkontakte), Windows Live, Yandex, VSTS</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\readme.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="RestSharp" Version="114.0.0" />
+    <PackageReference Include="RestSharp" Version="114.1.0" />
+    <PackageReference Include="System.Text.Json" Version="11.0.0" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
   </ItemGroup>
 </Project>

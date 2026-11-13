@@ -16,6 +16,7 @@ namespace OAuth2.Tests.TestHelpers
         private readonly Queue<(HttpStatusCode StatusCode, string Content)> _responses = new();
 
         public List<HttpRequestMessage> SentRequests { get; } = new();
+        public List<string?> SentBodies { get; } = new();
 
         public void EnqueueResponse(HttpStatusCode statusCode, string content)
         {
@@ -27,9 +28,10 @@ namespace OAuth2.Tests.TestHelpers
             _responses.Enqueue((HttpStatusCode.OK, content));
         }
 
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             SentRequests.Add(request);
+            SentBodies.Add(request.Content == null ? null : await request.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
 
             if (_responses.Count == 0)
             {
@@ -45,7 +47,7 @@ namespace OAuth2.Tests.TestHelpers
                 Content = new StringContent(content)
             };
 
-            return Task.FromResult(response);
+            return response;
         }
 
         protected override void Dispose(bool disposing)
@@ -56,6 +58,7 @@ namespace OAuth2.Tests.TestHelpers
                     request.Dispose();
 
                 SentRequests.Clear();
+                SentBodies.Clear();
                 _responses.Clear();
             }
 

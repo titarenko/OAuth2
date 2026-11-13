@@ -16,6 +16,7 @@ namespace OAuth2.Client.Impl
     public class MailRuClient : OAuth2Client
     {
         private readonly IClientConfiguration _configuration;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MailRuClient"/> class.
         /// </summary>
@@ -79,7 +80,7 @@ namespace OAuth2.Client.Impl
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
             // Source documents
-            // http://api.mail.ru/docs/guides/restapi/
+            // https://api.mail.ru/docs/guides/restapi/
             // http://api.mail.ru/docs/reference/rest/users.getInfo/
 
             args.Request.AddParameter("app_id", _configuration.ClientId);
@@ -87,15 +88,14 @@ namespace OAuth2.Client.Impl
             args.Request.AddParameter("secure", "1");
             args.Request.AddParameter("session_key", AccessToken);
 
-            // workaround for current design, oauth_token is always present in URL, so we need emulate it for correct request signing
-            var fakeParam = new QueryParameter("oauth_token", AccessToken);
-            args.Request.AddParameter(fakeParam);
-
             //sign=hex_md5('app_id={client_id}method=users.getInfosecure=1session_key={access_token}{secret_key}')
-            string signature = String.Concat(args.Request.Parameters.OrderBy(x => x.Name).Select(x => String.Format("{0}={1}", x.Name, x.Value)).ToList());
+            // Header authentication does not append oauth_token; do not sign a nonexistent query parameter.
+            // Include real request/client-default query parameters, but never headers or the signature itself.
+            string signature = String.Concat(args.Request.Parameters.Concat(args.Client.DefaultParameters)
+                .Where(x => (x.Type is ParameterType.GetOrPost or ParameterType.QueryString) && x.Name != "sig")
+                .OrderBy(x => x.Name, StringComparer.Ordinal)
+                .Select(x => String.Format("{0}={1}", x.Name, x.Value)));
             signature = (signature + _configuration.ClientSecret).GetMd5Hash();
-
-            args.Request.Parameters.RemoveParameter(fakeParam);
 
             args.Request.AddParameter("sig", signature);
         }

@@ -5,6 +5,7 @@ using OAuth2.Extensions;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
+using RestSharp.Authenticators.OAuth2;
 
 namespace OAuth2.Client.Impl
 {
@@ -57,6 +58,7 @@ namespace OAuth2.Client.Impl
         /// <summary>
         /// Gets or sets the Salesforce user profile URL returned in the token response.
         /// </summary>
+        /// <remarks>The URL must be absolute and use HTTPS.</remarks>
         public string? SalesforceProfileUrl { get; set; }
 
         /// <summary>
@@ -66,7 +68,12 @@ namespace OAuth2.Client.Impl
         {
             get
             {
-                Uri uri = new Uri(SalesforceProfileUrl!); // Non-null: set by ParseTokenResponse during token exchange
+                if (!Uri.TryCreate(SalesforceProfileUrl, UriKind.Absolute, out var uri) ||
+                    !String.Equals(uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new UnexpectedResponseException("id");
+                }
+
                 return new Endpoint
                 {
                     BaseUri = uri.GetLeftPart(UriPartial.Authority),
@@ -84,9 +91,15 @@ namespace OAuth2.Client.Impl
         }
 
         /// <inheritdoc />
+        protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
+        {
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken!, BearerTokenType);
+        }
+
+        /// <inheritdoc />
         protected override string? ParseTokenResponse(string content, string key)
         {
-            // save the user's identity service url which is included in the response
+            // Save the identity URL returned in the token response.
             SalesforceProfileUrl = base.ParseTokenResponse(content, "id");
 
             return base.ParseTokenResponse(content, key);
@@ -106,6 +119,7 @@ namespace OAuth2.Client.Impl
             {
                 Id = response.GetProperty("id").GetStringValue(),
                 Email = response.GetStringOrDefault("email"),
+                EmailVerified = response.GetBooleanOrDefault("email_verified"),
                 FirstName = response.GetProperty("first_name").GetString(),
                 LastName = response.GetProperty("last_name").GetString(),
                 AvatarUri =

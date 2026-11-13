@@ -80,26 +80,25 @@ namespace OAuth2.Client.Impl
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
             // Source document
-            // http://dev.odnoklassniki.ru/wiki/pages/viewpage.action?pageId=12878032
+            // https://apiok.ru/en/dev/methods/
 
             args.Request.AddParameter("application_key", _configuration.ClientPublic);
             args.Request.AddParameter("method", "users.getCurrentUser");
 
-            // workaround for current design, oauth_token is always present in URL, so we need emulate it for correct request signing
-            var fakeParam = new QueryParameter("oauth_token", AccessToken);
-            args.Request.AddParameter(fakeParam);
-
             // Signing.
             // Call API methods using access_token instead of session_key parameter
             // Calculate every request signature parameter sig using a little bit different way described in
-            // http://dev.odnoklassniki.ru/wiki/display/ok/Authentication+and+Authorization
+            // https://apiok.ru/en/dev/methods/
             // sig = md5( request_params_composed_string+ md5(access_token + application_secret_key)  )
-            // Don't include access_token into request_params_composed_string
-            string signature = String.Concat(args.Request.Parameters.OrderBy(x => x.Name).Select(x => String.Format("{0}={1}", x.Name, x.Value)).ToList());
+            // Don't include access_token, session_key or sig into request_params_composed_string.
+            // Header authentication does not append oauth_token; sign it only when actually supplied.
+            // Include request/client-default query parameters, not headers.
+            string signature = String.Concat(args.Request.Parameters.Concat(args.Client.DefaultParameters)
+                .Where(x => (x.Type is ParameterType.GetOrPost or ParameterType.QueryString) &&
+                    x.Name is not "access_token" and not "session_key" and not "sig")
+                .OrderBy(x => x.Name, StringComparer.Ordinal)
+                .Select(x => String.Format("{0}={1}", x.Name, x.Value)));
             signature = (signature + (AccessToken + _configuration.ClientSecret).GetMd5Hash()).GetMd5Hash();
-
-            // Removing fake param to prevent dups
-            args.Request.Parameters.RemoveParameter(fakeParam);
 
             args.Request.AddParameter("access_token", AccessToken);
             args.Request.AddParameter("sig", signature);
@@ -127,6 +126,7 @@ namespace OAuth2.Client.Impl
                     }
             };
         }
+
         /// <summary>
         /// Friendly name of provider (OAuth2 service).
         /// </summary>

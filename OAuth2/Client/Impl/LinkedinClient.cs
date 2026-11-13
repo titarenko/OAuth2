@@ -6,6 +6,7 @@ using OAuth2.Configuration;
 using OAuth2.Extensions;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using RestSharp.Authenticators.OAuth2;
 
 namespace OAuth2.Client.Impl
 {
@@ -77,6 +78,12 @@ namespace OAuth2.Client.Impl
         }
 
         /// <inheritdoc />
+        protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
+        {
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken!, BearerTokenType);
+        }
+
+        /// <inheritdoc />
         public override Task<string> GetLoginLinkUriAsync(string? state = null, CancellationToken cancellationToken = default)
         {
             return base.GetLoginLinkUriAsync(state ?? Guid.NewGuid().ToString("N"), cancellationToken);
@@ -95,6 +102,7 @@ namespace OAuth2.Client.Impl
             {
                 Id = response.GetProperty("sub").GetString(),
                 Email = response.GetStringOrDefault("email"),
+                EmailVerified = response.GetBooleanOrDefault("email_verified"),
                 FirstName = response.GetStringOrDefault("given_name"),
                 LastName = response.GetStringOrDefault("family_name"),
                 AvatarUri =

@@ -1,3 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
+using System.Net.Http;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
@@ -6,6 +15,7 @@ using OAuth2.Client.Impl;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using OAuth2.Tests.TestHelpers;
 using RestSharp;
 
 namespace OAuth2.Tests.Client.Impl
@@ -83,6 +93,80 @@ namespace OAuth2.Tests.Client.Impl
             // assert
             endpoint.BaseUri.Should().Be("https://api.twitter.com");
             endpoint.Resource.Should().Be("/1.1/account/verify_credentials.json");
+        }
+
+        [Test]
+        public async Task GetUserInfoAsync_OAuth1Flow_SignsActualRequestsWithMatchingSecrets()
+        {
+            // Arrange
+            using var handler = new MockHttpMessageHandler();
+            handler.EnqueueResponse("oauth_token=request-token&oauth_token_secret=request-secret&oauth_callback_confirmed=true");
+            handler.EnqueueResponse("oauth_token=access-token&oauth_token_secret=access-secret");
+            // Selected fields from the existing verify_credentials fixture, with synthetic values.
+            // https://docs.x.com/x-api/v1/accounts-and-users/manage-account-settings/api-reference/get-account-verify_credentials
+            handler.EnqueueResponse(/* lang=json */ """{"id":12345,"name":"Example User","email":"user@example.com"}""");
+            using var httpClient = new HttpClient(handler, disposeHandler: false);
+            using var restClient = new RestClient(httpClient, new RestClientOptions("https://api.twitter.com"), disposeHttpClient: false);
+            var factory = Substitute.For<IRequestFactory>();
+            factory.CreateClient("https://api.twitter.com").Returns(restClient);
+            factory.CreateRequest(Arg.Any<string>(), Arg.Any<Method>()).Returns(call => new RestRequest(call.Arg<string>(), call.Arg<Method>()));
+            var client = new XClient(factory, new ClientConfiguration
+            {
+                ClientId = "client-id", ClientSecret = "secret+&=",
+                RedirectUri = "https://app.example.com/callback?next=a&value=b"
+            });
+
+            // Act
+            var loginUri = await client.GetLoginLinkUriAsync();
+            var info = await client.GetUserInfoAsync(new NameValueCollection
+            {
+                { "oauth_token", "request-token" }, { "oauth_verifier", "verifier+&=" }
+            });
+
+            // Assert
+            loginUri.Should().Be("https://api.twitter.com/oauth/authenticate?oauth_token=request-token");
+            handler.SentRequests.Should().HaveCount(3);
+            handler.SentRequests[0].Method.Should().Be(HttpMethod.Post);
+            handler.SentRequests[0].RequestUri!.AbsoluteUri.Should().Be("https://api.twitter.com/oauth/request_token");
+            handler.SentRequests[1].Method.Should().Be(HttpMethod.Post);
+            handler.SentRequests[1].RequestUri!.AbsoluteUri.Should().Be("https://api.twitter.com/oauth/access_token");
+            handler.SentRequests[2].Method.Should().Be(HttpMethod.Get);
+            handler.SentRequests[2].RequestUri!.AbsoluteUri.Should().Be("https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true");
+            var requestAuth = VerifySignature(handler.SentRequests[0], "");
+            requestAuth["oauth_callback"].Should().Be("https://app.example.com/callback?next=a&value=b");
+            requestAuth.Should().NotContainKey("oauth_token");
+            var exchangeAuth = VerifySignature(handler.SentRequests[1], "request-secret");
+            exchangeAuth["oauth_token"].Should().Be("request-token");
+            exchangeAuth["oauth_verifier"].Should().Be("verifier+&=");
+            var profileAuth = VerifySignature(handler.SentRequests[2], "access-secret");
+            profileAuth["oauth_token"].Should().Be("access-token");
+            foreach (var body in handler.SentBodies)
+                body.Should().BeNullOrEmpty();
+            info.Id.Should().Be("12345");
+            info.Email.Should().Be("user@example.com");
+
+            // Independently verify RFC 5849 section 3.4.1 against the emitted URI and OAuth header.
+            static Dictionary<string, string> VerifySignature(HttpRequestMessage request, string tokenSecret)
+            {
+                request.Headers.Authorization!.Scheme.Should().Be("OAuth");
+                var auth = request.Headers.Authorization.Parameter!.Split(',')
+                    .Select(part => part.Trim().Split('=', 2))
+                    .ToDictionary(parts => Uri.UnescapeDataString(parts[0]), parts => Uri.UnescapeDataString(parts[1].Trim('"')));
+                auth["oauth_consumer_key"].Should().Be("client-id");
+                auth["oauth_signature_method"].Should().Be("HMAC-SHA1");
+                auth["oauth_nonce"].Should().NotBeNullOrEmpty();
+                auth["oauth_timestamp"].Should().MatchRegex("^[0-9]+$");
+                var query = HttpUtility.ParseQueryString(request.RequestUri!.Query);
+                var parameters = auth.Where(pair => pair.Key != "oauth_signature")
+                    .Concat(query.AllKeys.Select(key => new KeyValuePair<string, string>(key!, query[key]!)))
+                    .Select(pair => new KeyValuePair<string, string>(Uri.EscapeDataString(pair.Key), Uri.EscapeDataString(pair.Value)))
+                    .OrderBy(pair => pair.Key, StringComparer.Ordinal).ThenBy(pair => pair.Value, StringComparer.Ordinal);
+                var normalized = String.Join("&", parameters.Select(pair => pair.Key + "=" + pair.Value));
+                var signatureBase = request.Method + "&" + Uri.EscapeDataString(request.RequestUri.GetLeftPart(UriPartial.Path)) + "&" + Uri.EscapeDataString(normalized);
+                using var hmac = new HMACSHA1(Encoding.ASCII.GetBytes(Uri.EscapeDataString("secret+&=") + "&" + Uri.EscapeDataString(tokenSecret)));
+                auth["oauth_signature"].Should().Be(Convert.ToBase64String(hmac.ComputeHash(Encoding.ASCII.GetBytes(signatureBase))));
+                return auth;
+            }
         }
 
         [Test]

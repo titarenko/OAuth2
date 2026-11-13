@@ -78,8 +78,8 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            args.Request.AddParameter("opt_fields", "id,name,photo.image_128x128,photo.image_60x60,photo.image_36x36,email");
-            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken!, "Bearer");
+            args.Request.AddParameter("opt_fields", "gid,name,photo.image_128x128,photo.image_60x60,photo.image_36x36,email");
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken!, BearerTokenType);
         }
 
         /// <summary>
@@ -98,9 +98,9 @@ namespace OAuth2.Client.Impl
             string? avatarLargeUri = null;
             if (data.TryGetProperty("photo", out var photo) && photo.ValueKind == JsonValueKind.Object)
             {
-                avatarSmallUri = photo.GetProperty("image_36x36").GetString();
-                avatarNormalUri = photo.GetProperty("image_60x60").GetString();
-                avatarLargeUri = photo.GetProperty("image_128x128").GetString();
+                avatarSmallUri = photo.GetStringOrDefault("image_36x36");
+                avatarNormalUri = photo.GetStringOrDefault("image_60x60");
+                avatarLargeUri = photo.GetStringOrDefault("image_128x128");
             }
             var names = data.GetProperty("name").GetString()?.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries) ?? [];
             var firstName = names.Length > 0 ? names[0] : null;
@@ -108,7 +108,7 @@ namespace OAuth2.Client.Impl
 
             return new UserInfo
             {
-                Id = data.GetProperty("id").GetStringValue(),
+                Id = data.GetStringOrDefault("gid") ?? data.GetProperty("id").GetStringValue(),
                 FirstName = firstName,
                 LastName = lastName,
                 Email = data.GetStringOrDefault("email"),

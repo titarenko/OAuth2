@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using FluentAssertions;
 using NUnit.Framework;
 using OAuth2.Models;
@@ -15,14 +17,168 @@ namespace OAuth2.Tests.Serialization
         };
 
         [Test]
+        public void Deserialize_MissingOptionalClaims_DefaultsToNull()
+        {
+            // Arrange
+            // Serialized library DTO, not a provider API response.
+            /* lang=json */
+            const string json = """{"Id":"user-123","ProviderName":"Google","Email":"test@example.com","FirstName":"John","LastName":"Doe"}""";
+
+            // Act
+            var info = JsonSerializer.Deserialize<UserInfo>(json, Options);
+
+            // Assert
+            info.Should().NotBeNull();
+            info!.Id.Should().Be("user-123");
+            info.ProviderName.Should().Be("Google");
+            info.Email.Should().Be("test@example.com");
+            info.FirstName.Should().Be("John");
+            info.LastName.Should().Be("Doe");
+            info.EmailVerified.Should().BeNull();
+            info.ProviderData.Should().BeNull();
+        }
+
+        [Test]
+        public void Roundtrip_AvatarInfo_DeserializesToEquivalentObject()
+        {
+            // Arrange
+            var original = new AvatarInfo { Small = "small.jpg", Normal = "normal.jpg", Large = "large.jpg" };
+
+            // Act
+            var json = JsonSerializer.Serialize(original, Options);
+            var deserialized = JsonSerializer.Deserialize<AvatarInfo>(json, Options);
+
+            // Assert
+            deserialized.Should().NotBeNull();
+            deserialized!.Small.Should().Be(original.Small);
+            deserialized.Normal.Should().Be(original.Normal);
+            deserialized.Large.Should().Be(original.Large);
+        }
+
+        [Test]
+        public void Roundtrip_CamelCaseNamingPolicy_PreservesClaims()
+        {
+            // Arrange
+            var options = new JsonSerializerOptions(Options) { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            var original = new UserInfo
+            {
+                ProviderName = "Google",
+                EmailVerified = true,
+                ProviderData = new Dictionary<string, string> { ["hd"] = "example.com" }
+            };
+
+            // Act
+            var json = JsonSerializer.Serialize(original, options);
+            using var doc = JsonDocument.Parse(json);
+            var deserialized = JsonSerializer.Deserialize<UserInfo>(json, options);
+
+            // Assert
+            doc.RootElement.GetProperty("emailVerified").GetBoolean().Should().BeTrue();
+            doc.RootElement.GetProperty("providerData").GetProperty("hd").GetString().Should().Be("example.com");
+            deserialized.Should().NotBeNull();
+            deserialized!.ProviderName.Should().Be("Google");
+            deserialized.EmailVerified.Should().BeTrue();
+            deserialized.ProviderData.Should().Contain("hd", "example.com");
+        }
+
+        [TestCase(JsonIgnoreCondition.WhenWritingNull)]
+        [TestCase(JsonIgnoreCondition.WhenWritingDefault)]
+        public void Roundtrip_FalseVerificationWithIgnoreCondition_PreservesFalse(JsonIgnoreCondition ignoreCondition)
+        {
+            // Arrange
+            var options = new JsonSerializerOptions(Options) { DefaultIgnoreCondition = ignoreCondition };
+            var original = new UserInfo { EmailVerified = false };
+
+            // Act
+            var json = JsonSerializer.Serialize(original, options);
+            using var doc = JsonDocument.Parse(json);
+            var deserialized = JsonSerializer.Deserialize<UserInfo>(json, options);
+
+            // Assert
+            doc.RootElement.GetProperty("EmailVerified").GetBoolean().Should().BeFalse();
+            doc.RootElement.TryGetProperty("ProviderData", out _).Should().BeFalse();
+            deserialized.Should().NotBeNull();
+            deserialized!.EmailVerified.Should().BeFalse();
+            deserialized.ProviderData.Should().BeNull();
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        [TestCase(null)]
+        public void Roundtrip_UserInfoClaims_PreservesVerificationAndProviderData(bool? verified)
+        {
+            // Arrange
+            var original = new UserInfo
+            {
+                Id = "user-123",
+                ProviderName = "Google",
+                Email = "test@example.com",
+                EmailVerified = verified,
+                ProviderData = new Dictionary<string, string> { ["hd"] = "example.com" }
+            };
+
+            // Act
+            var json = JsonSerializer.Serialize(original, Options);
+            using var doc = JsonDocument.Parse(json);
+            var deserialized = JsonSerializer.Deserialize<UserInfo>(json, Options);
+
+            // Assert
+            deserialized.Should().NotBeNull();
+            deserialized!.Id.Should().Be(original.Id);
+            deserialized.ProviderName.Should().Be(original.ProviderName);
+            deserialized.Email.Should().Be(original.Email);
+            deserialized.EmailVerified.Should().Be(verified);
+            deserialized.ProviderData.Should().ContainSingle();
+            deserialized.ProviderData.Should().Contain("hd", "example.com");
+            doc.RootElement.GetProperty("ProviderData").GetProperty("hd").GetString().Should().Be("example.com");
+            doc.RootElement.TryGetProperty("HostedDomain", out _).Should().BeFalse();
+        }
+
+        [Test]
+        public void Serialize_AvatarInfo_ContainsAllSizeFields()
+        {
+            // Arrange
+            var avatar = new AvatarInfo { Small = "small.jpg", Normal = "normal.jpg", Large = "large.jpg" };
+
+            // Act
+            var json = JsonSerializer.Serialize(avatar, Options);
+            using var doc = JsonDocument.Parse(json);
+            var root = doc.RootElement;
+
+            // Assert
+            root.GetProperty("Small").GetString().Should().Be("small.jpg");
+            root.GetProperty("Normal").GetString().Should().Be("normal.jpg");
+            root.GetProperty("Large").GetString().Should().Be("large.jpg");
+        }
+
+        [Test]
+        public void Serialize_DefaultUserInfo_ContainsNullAvatarFields()
+        {
+            // Arrange
+            var userInfo = new UserInfo();
+
+            // Act
+            var json = JsonSerializer.Serialize(userInfo, Options);
+            using var doc = JsonDocument.Parse(json);
+            var avatar = doc.RootElement.GetProperty("AvatarUri");
+
+            // Assert
+            avatar.GetProperty("Small").ValueKind.Should().Be(JsonValueKind.Null);
+            avatar.GetProperty("Normal").ValueKind.Should().Be(JsonValueKind.Null);
+            avatar.GetProperty("Large").ValueKind.Should().Be(JsonValueKind.Null);
+        }
+
+        [Test]
         public void Serialize_FullyPopulatedUserInfo_ContainsAllFieldValues()
         {
-            // arrange
+            // Arrange
             var userInfo = new UserInfo
             {
                 Id = "user-123",
                 ProviderName = "TestProvider",
                 Email = "test@example.com",
+                EmailVerified = true,
+                ProviderData = new Dictionary<string, string> { ["custom"] = "value" },
                 FirstName = "John",
                 LastName = "Doe",
                 AvatarUri =
@@ -33,15 +189,17 @@ namespace OAuth2.Tests.Serialization
                 }
             };
 
-            // act
+            // Act
             var json = JsonSerializer.Serialize(userInfo, Options);
             using var doc = JsonDocument.Parse(json);
             var root = doc.RootElement;
 
-            // assert
+            // Assert
             root.GetProperty("Id").GetString().Should().Be("user-123");
             root.GetProperty("ProviderName").GetString().Should().Be("TestProvider");
             root.GetProperty("Email").GetString().Should().Be("test@example.com");
+            root.GetProperty("EmailVerified").GetBoolean().Should().BeTrue();
+            root.GetProperty("ProviderData").GetProperty("custom").GetString().Should().Be("value");
             root.GetProperty("FirstName").GetString().Should().Be("John");
             root.GetProperty("LastName").GetString().Should().Be("Doe");
             root.GetProperty("PhotoUri").GetString().Should().Be("https://example.com/photo_normal.jpg");
@@ -50,7 +208,7 @@ namespace OAuth2.Tests.Serialization
         [Test]
         public void Serialize_FullyPopulatedUserInfo_ContainsNestedAvatarUri()
         {
-            // arrange
+            // Arrange
             var userInfo = new UserInfo
             {
                 AvatarUri =
@@ -61,80 +219,89 @@ namespace OAuth2.Tests.Serialization
                 }
             };
 
-            // act
+            // Act
             var json = JsonSerializer.Serialize(userInfo, Options);
             using var doc = JsonDocument.Parse(json);
             var avatar = doc.RootElement.GetProperty("AvatarUri");
 
-            // assert
+            // Assert
             avatar.GetProperty("Small").GetString().Should().Be("https://example.com/photo_small.jpg");
             avatar.GetProperty("Normal").GetString().Should().Be("https://example.com/photo_normal.jpg");
             avatar.GetProperty("Large").GetString().Should().Be("https://example.com/photo_large.jpg");
         }
 
-        [Test]
-        public void Serialize_UserInfoWithNullFields_SerializesAsJsonNull()
+        [TestCase(JsonIgnoreCondition.WhenWritingNull)]
+        [TestCase(JsonIgnoreCondition.WhenWritingDefault)]
+        public void Serialize_NullClaimsWithIgnoreCondition_OmitsClaims(JsonIgnoreCondition ignoreCondition)
         {
-            // arrange
-            var userInfo = new UserInfo { Id = "1" };
+            // Arrange
+            var options = new JsonSerializerOptions(Options) { DefaultIgnoreCondition = ignoreCondition };
+            var userInfo = new UserInfo { Id = "user-123" };
 
-            // act
-            var json = JsonSerializer.Serialize(userInfo, Options);
+            // Act
+            var json = JsonSerializer.Serialize(userInfo, options);
             using var doc = JsonDocument.Parse(json);
-            var root = doc.RootElement;
 
-            // assert
-            root.GetProperty("Email").ValueKind.Should().Be(JsonValueKind.Null);
-            root.GetProperty("FirstName").ValueKind.Should().Be(JsonValueKind.Null);
-            root.GetProperty("LastName").ValueKind.Should().Be(JsonValueKind.Null);
+            // Assert
+            doc.RootElement.GetProperty("Id").GetString().Should().Be("user-123");
+            doc.RootElement.TryGetProperty("EmailVerified", out _).Should().BeFalse();
+            doc.RootElement.TryGetProperty("ProviderData", out _).Should().BeFalse();
         }
 
         [Test]
-        public void Serialize_UserInfoWithEmptyStrings_SerializesAsEmptyStrings()
+        public void Serialize_SameUserInfoTwice_ProducesIdenticalOutput()
         {
-            // arrange
+            // Arrange
             var userInfo = new UserInfo
             {
-                Id = "1",
-                Email = "",
-                FirstName = "",
-                LastName = ""
+                Id = "user-123",
+                ProviderName = "TestProvider",
+                Email = "test@example.com",
+                EmailVerified = true,
+                ProviderData = new Dictionary<string, string> { ["custom"] = "value" },
+                FirstName = "John",
+                LastName = "Doe",
+                AvatarUri =
+                {
+                    Small = "https://example.com/photo_small.jpg",
+                    Normal = "https://example.com/photo_normal.jpg",
+                    Large = "https://example.com/photo_large.jpg"
+                }
             };
 
-            // act
-            var json = JsonSerializer.Serialize(userInfo, Options);
-            using var doc = JsonDocument.Parse(json);
-            var root = doc.RootElement;
+            // Act
+            var json1 = JsonSerializer.Serialize(userInfo, Options);
+            var json2 = JsonSerializer.Serialize(userInfo, Options);
 
-            // assert
-            root.GetProperty("Email").GetString().Should().BeEmpty();
-            root.GetProperty("FirstName").GetString().Should().BeEmpty();
-            root.GetProperty("LastName").GetString().Should().BeEmpty();
+            // Assert
+            json1.Should().Be(json2);
         }
 
         [Test]
         public void Serialize_UserInfo_UsesPascalCasePropertyNames()
         {
-            // arrange
+            // Arrange
             var userInfo = new UserInfo
             {
                 Id = "1",
                 ProviderName = "Test",
-                Email = "e@t.com",
+                Email = "e@example.com",
                 FirstName = "F",
                 LastName = "L",
-                AvatarUri = { Normal = "http://test.com/pic.jpg" }
+                AvatarUri = { Normal = "https://example.com/pic.jpg" }
             };
 
-            // act
+            // Act
             var json = JsonSerializer.Serialize(userInfo, Options);
             using var doc = JsonDocument.Parse(json);
             var root = doc.RootElement;
 
-            // assert
+            // Assert
             root.TryGetProperty("Id", out _).Should().BeTrue();
             root.TryGetProperty("ProviderName", out _).Should().BeTrue();
             root.TryGetProperty("Email", out _).Should().BeTrue();
+            root.TryGetProperty("EmailVerified", out _).Should().BeTrue();
+            root.TryGetProperty("ProviderData", out _).Should().BeTrue();
             root.TryGetProperty("FirstName", out _).Should().BeTrue();
             root.TryGetProperty("LastName", out _).Should().BeTrue();
             root.TryGetProperty("PhotoUri", out _).Should().BeTrue();
@@ -145,116 +312,60 @@ namespace OAuth2.Tests.Serialization
         }
 
         [Test]
-        public void Serialize_DefaultUserInfo_ContainsNullAvatarFields()
+        public void Serialize_UserInfoWithEmptyStrings_SerializesAsEmptyStrings()
         {
-            // arrange
-            var userInfo = new UserInfo();
+            // Arrange
+            var userInfo = new UserInfo { Id = "1", Email = "", FirstName = "", LastName = "" };
 
-            // act
+            // Act
             var json = JsonSerializer.Serialize(userInfo, Options);
             using var doc = JsonDocument.Parse(json);
-            var avatar = doc.RootElement.GetProperty("AvatarUri");
+            var root = doc.RootElement;
 
-            // assert
-            avatar.GetProperty("Small").ValueKind.Should().Be(JsonValueKind.Null);
-            avatar.GetProperty("Normal").ValueKind.Should().Be(JsonValueKind.Null);
-            avatar.GetProperty("Large").ValueKind.Should().Be(JsonValueKind.Null);
+            // Assert
+            root.GetProperty("Email").GetString().Should().BeEmpty();
+            root.GetProperty("FirstName").GetString().Should().BeEmpty();
+            root.GetProperty("LastName").GetString().Should().BeEmpty();
         }
 
         [Test]
         public void Serialize_UserInfoWithNormalAvatar_PhotoUriMatchesAvatarUriNormal()
         {
-            // arrange
-            var userInfo = new UserInfo
-            {
-                AvatarUri = { Normal = "https://example.com/pic.jpg" }
-            };
+            // Arrange
+            var userInfo = new UserInfo { AvatarUri = { Normal = "https://example.com/pic.jpg" } };
 
-            // act
+            // Act
             var json = JsonSerializer.Serialize(userInfo, Options);
             using var doc = JsonDocument.Parse(json);
 
-            // assert
+            // Assert
             doc.RootElement.GetProperty("PhotoUri").GetString().Should().Be("https://example.com/pic.jpg");
-            doc.RootElement.GetProperty("AvatarUri").GetProperty("Normal").GetString()
-                .Should().Be("https://example.com/pic.jpg");
+            doc.RootElement.GetProperty("AvatarUri").GetProperty("Normal").GetString().Should().Be("https://example.com/pic.jpg");
         }
 
         [Test]
-        public void Serialize_AvatarInfo_ContainsAllSizeFields()
+        public void Serialize_UserInfoWithNullFields_SerializesAsJsonNull()
         {
-            // arrange
-            var avatar = new AvatarInfo
-            {
-                Small = "small.jpg",
-                Normal = "normal.jpg",
-                Large = "large.jpg"
-            };
+            // Arrange
+            var userInfo = new UserInfo { Id = "1" };
 
-            // act
-            var json = JsonSerializer.Serialize(avatar, Options);
+            // Act
+            var json = JsonSerializer.Serialize(userInfo, Options);
             using var doc = JsonDocument.Parse(json);
             var root = doc.RootElement;
 
-            // assert
-            root.GetProperty("Small").GetString().Should().Be("small.jpg");
-            root.GetProperty("Normal").GetString().Should().Be("normal.jpg");
-            root.GetProperty("Large").GetString().Should().Be("large.jpg");
-        }
-
-        [Test]
-        public void Roundtrip_AvatarInfo_DeserializesToEquivalentObject()
-        {
-            // arrange
-            var original = new AvatarInfo
-            {
-                Small = "small.jpg",
-                Normal = "normal.jpg",
-                Large = "large.jpg"
-            };
-
-            // act
-            var json = JsonSerializer.Serialize(original, Options);
-            var deserialized = JsonSerializer.Deserialize<AvatarInfo>(json, Options);
-
-            // assert
-            deserialized.Should().NotBeNull();
-            deserialized!.Small.Should().Be(original.Small);
-            deserialized.Normal.Should().Be(original.Normal);
-            deserialized.Large.Should().Be(original.Large);
-        }
-
-        [Test]
-        public void Serialize_SameUserInfoTwice_ProducesIdenticalOutput()
-        {
-            // arrange
-            var userInfo = new UserInfo
-            {
-                Id = "user-123",
-                ProviderName = "TestProvider",
-                Email = "test@example.com",
-                FirstName = "John",
-                LastName = "Doe",
-                AvatarUri =
-                {
-                    Small = "https://example.com/photo_small.jpg",
-                    Normal = "https://example.com/photo_normal.jpg",
-                    Large = "https://example.com/photo_large.jpg"
-                }
-            };
-
-            // act
-            var json1 = JsonSerializer.Serialize(userInfo, Options);
-            var json2 = JsonSerializer.Serialize(userInfo, Options);
-
-            // assert
-            json1.Should().Be(json2);
+            // Assert
+            root.GetProperty("Email").ValueKind.Should().Be(JsonValueKind.Null);
+            root.GetProperty("EmailVerified").ValueKind.Should().Be(JsonValueKind.Null);
+            root.GetProperty("ProviderData").ValueKind.Should().Be(JsonValueKind.Null);
+            root.GetProperty("FirstName").ValueKind.Should().Be(JsonValueKind.Null);
+            root.GetProperty("LastName").ValueKind.Should().Be(JsonValueKind.Null);
         }
 
         [Test]
         public void Serialize_UserInfoWithSpecialCharacters_PreservesCharacters()
         {
-            // arrange
+            // Arrange
             var userInfo = new UserInfo
             {
                 Id = "id-with-special/chars",
@@ -263,12 +374,12 @@ namespace OAuth2.Tests.Serialization
                 Email = "user+tag@example.com"
             };
 
-            // act
+            // Act
             var json = JsonSerializer.Serialize(userInfo, Options);
             using var doc = JsonDocument.Parse(json);
             var root = doc.RootElement;
 
-            // assert
+            // Assert
             root.GetProperty("Id").GetString().Should().Be("id-with-special/chars");
             root.GetProperty("FirstName").GetString().Should().Be("José");
             root.GetProperty("LastName").GetString().Should().Be("O'Brien");
@@ -278,7 +389,7 @@ namespace OAuth2.Tests.Serialization
         [Test]
         public void Serialize_UserInfoWithUnicodeAvatarUrls_PreservesUnicode()
         {
-            // arrange
+            // Arrange
             var userInfo = new UserInfo
             {
                 AvatarUri =
@@ -289,12 +400,12 @@ namespace OAuth2.Tests.Serialization
                 }
             };
 
-            // act
+            // Act
             var json = JsonSerializer.Serialize(userInfo, Options);
             using var doc = JsonDocument.Parse(json);
             var avatar = doc.RootElement.GetProperty("AvatarUri");
 
-            // assert
+            // Assert
             avatar.GetProperty("Small").GetString().Should().Contain("José");
         }
     }

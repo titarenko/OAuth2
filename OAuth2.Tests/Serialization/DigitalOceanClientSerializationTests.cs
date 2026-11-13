@@ -25,6 +25,20 @@ namespace OAuth2.Tests.Serialization
         }
 
         [Test]
+        public void ParseUserInfo_LegacyUidAndCurrentUuid_PreservesLegacyAccountKey()
+        {
+            // Arrange
+            // Deliberately combine the historical fixture with current info.uuid to test precedence.
+            const string content = /* lang=json */ """{"uid":42,"info":{"uuid":"00000000-0000-4000-8000-000000000001","name":"Example User"}}""";
+
+            // Act
+            var info = _client.ParseUserInfo(content);
+
+            // Assert
+            info.Id.Should().Be("42");
+        }
+
+        [Test]
         public void ParseUserInfo_ValidContent_ReturnsCorrectId()
         {
             // arrange

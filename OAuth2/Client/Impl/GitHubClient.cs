@@ -37,6 +37,12 @@ namespace OAuth2.Client.Impl
         /// <inheritdoc />
         protected override void BeforeGetAccessToken(BeforeAfterRequestArgs args)
         {
+            if (args.Parameters["code"] == null && args.Parameters["refresh_token"] != null)
+            {
+                base.BeforeGetAccessToken(args);
+                return;
+            }
+
             args.Request.AddObject(new
             {
                 code = args.Parameters.GetOrThrowUnexpectedResponse("code"),
@@ -79,7 +85,7 @@ namespace OAuth2.Client.Impl
         /// <inheritdoc />
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
-            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken!, "Bearer");
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken!, BearerTokenType);
         }
 
         /// <inheritdoc />
@@ -87,12 +93,14 @@ namespace OAuth2.Client.Impl
         {
             var userInfo = await base.GetUserInfoAsync(cancellationToken).ConfigureAwait(false);
 
+            // The public profile does not report email verification. Keep the existing
+            // fast path rather than requiring an additional request and user:email scope.
             if (!String.IsNullOrEmpty(userInfo.Email))
                 return userInfo;
 
             var client = _factory.CreateClient(UserEmailServiceEndpoint);
             var request = _factory.CreateRequest(UserEmailServiceEndpoint);
-            request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken!, "Bearer");
+            request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken!, BearerTokenType);
 
             BeforeGetUserInfo(new BeforeAfterRequestArgs
             {
@@ -104,10 +112,12 @@ namespace OAuth2.Client.Impl
             var response = await client.ExecuteAndVerifyAsync(request, cancellationToken).ConfigureAwait(false);
             var userEmails = ParseEmailAddresses(response.Content!).Where(u => !String.IsNullOrEmpty(u.Email)).ToList();
 
-            string? primaryEmail = userEmails.Where(u => u.Primary).Select(u => u.Email).FirstOrDefault();
-            string? verifiedEmail = userEmails.Where(u => u.Verified).Select(u => u.Email).FirstOrDefault();
-            string? fallbackEmail = userEmails.Select(u => u.Email).FirstOrDefault();
-            userInfo.Email = primaryEmail ?? verifiedEmail ?? fallbackEmail;
+            // Preserve selection order and keep verification attached to the selected email.
+            var selectedEmail = userEmails.FirstOrDefault(u => u.Primary)
+                ?? userEmails.FirstOrDefault(u => u.Verified)
+                ?? userEmails.FirstOrDefault();
+            userInfo.Email = selectedEmail?.Email;
+            userInfo.EmailVerified = selectedEmail?.VerificationStatus;
 
             return userInfo;
         }
@@ -180,7 +190,15 @@ namespace OAuth2.Client.Impl
             /// <summary>
             /// Gets or sets a value indicating whether the email address has been verified.
             /// </summary>
-            public bool Verified { get; set; }
+            public bool Verified
+            {
+                get { return VerificationStatus is true; }
+                set { VerificationStatus = value; }
+            }
+
+            // Keep the protected model's bool API compatible with existing subclasses,
+            // while distinguishing an omitted claim from an explicitly assigned false.
+            internal bool? VerificationStatus { get; private set; }
         }
     }
 }

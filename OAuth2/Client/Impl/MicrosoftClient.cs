@@ -3,6 +3,7 @@ using OAuth2.Configuration;
 using OAuth2.Extensions;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using RestSharp.Authenticators.OAuth2;
 
 namespace OAuth2.Client.Impl
 {
@@ -71,6 +72,12 @@ namespace OAuth2.Client.Impl
                     Resource = "/v1.0/me"
                 };
             }
+        }
+
+        /// <inheritdoc />
+        protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
+        {
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken!, BearerTokenType);
         }
 
         /// <summary>

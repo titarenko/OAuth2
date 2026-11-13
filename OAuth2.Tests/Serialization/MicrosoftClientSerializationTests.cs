@@ -1,4 +1,7 @@
+using System.Collections.Specialized;
+using System.Net.Http;
 using System.Text.Json;
+using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
@@ -6,6 +9,8 @@ using OAuth2.Client.Impl;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using OAuth2.Tests.TestHelpers;
+using RestSharp;
 
 namespace OAuth2.Tests.Serialization
 {
@@ -22,6 +27,42 @@ namespace OAuth2.Tests.Serialization
             _factory = Substitute.For<IRequestFactory>();
             _configuration = Substitute.For<IClientConfiguration>();
             _client = new TestableMicrosoftClient(_factory, _configuration);
+        }
+
+        [Test]
+        public async Task GetUserInfoAsync_GraphResponse_SendsBearerAndPreservesIdentity()
+        {
+            // Arrange
+            using var handler = new MockHttpMessageHandler();
+            handler.EnqueueResponse(/* lang=json */ """{"access_token":"test-token","token_type":"Bearer"}""");
+            // Graph /me response fields; identifiers and contact details are synthetic.
+            // https://learn.microsoft.com/en-us/graph/api/user-get?view=graph-rest-1.0
+            handler.EnqueueResponse(/* lang=json */ """{"id":"ms-123","givenName":"Test","surname":"User","mail":"user@example.com"}""");
+            using var httpClient = new HttpClient(handler, disposeHandler: false);
+            using var tokenClient = new RestClient(httpClient, new RestClientOptions("https://login.microsoftonline.com"), disposeHttpClient: false);
+            using var userClient = new RestClient(httpClient, new RestClientOptions("https://graph.microsoft.com"), disposeHttpClient: false);
+            _factory.CreateClient("https://login.microsoftonline.com").Returns(tokenClient);
+            _factory.CreateClient("https://graph.microsoft.com").Returns(userClient);
+            _factory.CreateRequest(Arg.Any<string>(), Arg.Any<Method>()).Returns(call => new RestRequest(call.Arg<string>(), call.Arg<Method>()));
+            var client = new MicrosoftClient(_factory, new ClientConfiguration
+            {
+                ClientId = "client-id", ClientSecret = "client-secret",
+                RedirectUri = "https://app.example.com/callback", Scope = "User.Read"
+            });
+
+            // Act
+            var info = await client.GetUserInfoAsync(new NameValueCollection { { "code", "test-code" } });
+
+            // Assert
+            handler.SentRequests.Should().HaveCount(2);
+            var request = handler.SentRequests[1];
+            request.RequestUri!.AbsoluteUri.Should().Be("https://graph.microsoft.com/v1.0/me");
+            request.Headers.Authorization!.Scheme.Should().Be("Bearer");
+            request.Headers.Authorization.Parameter.Should().Be("test-token");
+            info.ProviderName.Should().Be("Microsoft");
+            info.Id.Should().Be("ms-123");
+            info.Email.Should().Be("user@example.com");
+            info.EmailVerified.Should().BeNull();
         }
 
         [Test]

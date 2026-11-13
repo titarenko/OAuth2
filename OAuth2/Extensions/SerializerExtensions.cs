@@ -9,6 +9,20 @@ namespace OAuth2.Extensions
     internal static class SerializerExtensions
     {
         /// <summary>
+        /// Gets a JSON boolean from an exact property name, or <c>null</c> when absent, null, or not a boolean.
+        /// String and numeric values are not coerced to booleans.
+        /// </summary>
+        public static bool? GetBooleanOrDefault(this JsonElement element, string propertyName)
+        {
+            if (element.ValueKind != JsonValueKind.Object || !element.TryGetProperty(propertyName, out var property))
+                return null;
+
+            return property.ValueKind == JsonValueKind.True || property.ValueKind == JsonValueKind.False
+                ? property.GetBoolean()
+                : (bool?)null;
+        }
+
+        /// <summary>
         /// Converts a <see cref="JsonElement"/> of any type to its string representation.
         /// </summary>
         public static string? GetStringValue(this JsonElement element)

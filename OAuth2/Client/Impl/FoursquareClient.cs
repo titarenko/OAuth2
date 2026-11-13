@@ -5,6 +5,7 @@ using OAuth2.Extensions;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
 using RestSharp;
+using RestSharp.Authenticators.OAuth2;
 
 namespace OAuth2.Client.Impl
 {
@@ -80,6 +81,7 @@ namespace OAuth2.Client.Impl
         /// </summary>
         protected override void BeforeGetUserInfo(BeforeAfterRequestArgs args)
         {
+            args.Request.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AccessToken!, BearerTokenType);
             // Source documents
             // https://developer.foursquare.com/overview/auth.html
             // https://developer.foursquare.com/overview/versioning

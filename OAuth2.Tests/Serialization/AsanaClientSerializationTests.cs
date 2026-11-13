@@ -1,5 +1,9 @@
 using System;
+using System.Collections.Specialized;
+using System.Net.Http;
 using System.Text.Json;
+using System.Threading.Tasks;
+using System.Web;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
@@ -7,6 +11,8 @@ using OAuth2.Client.Impl;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 using OAuth2.Models;
+using OAuth2.Tests.TestHelpers;
+using RestSharp;
 
 namespace OAuth2.Tests.Serialization
 {
@@ -23,6 +29,92 @@ namespace OAuth2.Tests.Serialization
             _factory = Substitute.For<IRequestFactory>();
             _configuration = Substitute.For<IClientConfiguration>();
             _client = new TestableAsanaClient(_factory, _configuration);
+        }
+
+        [Test]
+        public async Task GetUserInfoAsync_AuthorizationCode_SendsExpectedRequests()
+        {
+            // Arrange
+            using var handler = new MockHttpMessageHandler();
+            handler.EnqueueResponse(/* lang=json */ """{"access_token":"test-token"}""");
+            // https://developers.asana.com/reference/getuser; profile values replaced with examples.
+            handler.EnqueueResponse(/* lang=json */ """{"data":{"gid":"12345","resource_type":"user","name":"Example User","email":"user@example.com"}}""");
+            using var httpClient = new HttpClient(handler, disposeHandler: false);
+            using var tokenClient = new RestClient(httpClient, new RestClientOptions("https://app.asana.com"), disposeHttpClient: false);
+            var factory = Substitute.For<IRequestFactory>();
+            factory.CreateClient("https://app.asana.com").Returns(tokenClient);
+            factory.CreateRequest(Arg.Any<string>(), Arg.Any<Method>()).Returns(call => new RestRequest(call.Arg<string>(), call.Arg<Method>()));
+            var client = new AsanaClient(factory, new ClientConfiguration
+            {
+                ClientId = "client-id", ClientSecret = "secret+&=", ClientPublic = "public-key",
+                RedirectUri = "https://app.example.com/callback?next=a&value=b"
+            });
+
+            // Act
+            var info = await client.GetUserInfoAsync(new NameValueCollection { { "code", "code+&=" } });
+
+            // Assert
+            handler.SentRequests.Should().HaveCount(2);
+            var tokenRequest = handler.SentRequests[0];
+            tokenRequest.Method.Should().Be(HttpMethod.Post);
+            tokenRequest.RequestUri!.AbsoluteUri.Should().Be("https://app.asana.com/-/oauth_token");
+            tokenRequest.Content!.Headers.ContentType!.MediaType.Should().Be("application/x-www-form-urlencoded");
+            var form = HttpUtility.ParseQueryString(handler.SentBodies[0]!);
+            form["code"].Should().Be("code+&=");
+            form["client_id"].Should().Be("client-id");
+            form["client_secret"].Should().Be("secret+&=");
+            form["grant_type"].Should().Be("authorization_code");
+            form["redirect_uri"].Should().Be("https://app.example.com/callback?next=a&value=b");
+            tokenRequest.Headers.Authorization.Should().BeNull();
+            var request = handler.SentRequests[1];
+            request.Method.Should().Be(HttpMethod.Get);
+            request.RequestUri!.GetLeftPart(System.UriPartial.Path).Should().Be("https://app.asana.com/api/1.0/users/me");
+            handler.SentBodies[1].Should().BeNullOrEmpty();
+            var query = HttpUtility.ParseQueryString(request.RequestUri.Query);
+            request.Headers.Authorization!.ToString().Should().Be("Bearer test-token");
+            query["access_token"].Should().BeNull();
+            query["oauth_token"].Should().BeNull();
+            query["client_secret"].Should().BeNull();
+            query["opt_fields"].Should().Be("gid,name,photo.image_128x128,photo.image_60x60,photo.image_36x36,email");
+            info.Id.Should().Be("12345");
+        }
+
+        [Test]
+        public void ParseUserInfo_GidWithPartialPhoto_PreservesIdentityAndAvailablePhoto()
+        {
+            // Arrange
+            // Asana's user schema; deliberate omission of optional photo sizes and email.
+            // https://developers.asana.com/reference/getuser
+            const string content = /* lang=json */ """{"data":{"gid":"9007199254740993","name":"Example User","photo":{"image_128x128":"https://example.com/128.jpg"}}}""";
+
+            // Act
+            var info = _client.ParseUserInfo(content);
+
+            // Assert
+            info.Id.Should().Be("9007199254740993");
+            info.FirstName.Should().Be("Example");
+            info.LastName.Should().Be("User");
+            info.Email.Should().BeNull();
+            info.AvatarUri.Small.Should().BeNullOrEmpty();
+            info.AvatarUri.Normal.Should().BeNullOrEmpty();
+            info.AvatarUri.Large.Should().Be("https://example.com/128.jpg");
+        }
+
+        [Test]
+        public void ParseUserInfo_LegacyAndCurrentIds_ReturnsSameAccountKey()
+        {
+            // Arrange
+            // Asana guarantees that existing IDs do not change when converted to strings.
+            // https://forum.asana.com/t/asana-is-moving-to-string-ids-updated-with-revised-timeline/29340
+            const string legacy = /* lang=json */ """{"data":{"id":9007199254740993,"name":"Example User"}}""";
+            const string current = /* lang=json */ """{"data":{"gid":"9007199254740993","name":"Example User"}}""";
+
+            // Act
+            var legacyInfo = _client.ParseUserInfo(legacy);
+            var currentInfo = _client.ParseUserInfo(current);
+
+            // Assert
+            currentInfo.Id.Should().Be(legacyInfo.Id).And.Be("9007199254740993");
         }
 
         [Test]
