@@ -74,9 +74,10 @@ namespace OAuth2.Infrastructure
         private static HttpClient CreateSharedHttpClient()
         {
             HttpMessageHandler handler;
-#if NET8_0_OR_GREATER
+#if NET10_0_OR_GREATER
             if (OperatingSystem.IsWindows() || OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
             {
+                // Retire pooled connections periodically so a long-lived client can pick up DNS changes.
                 handler = new SocketsHttpHandler
                 {
                     AllowAutoRedirect = false,
@@ -94,6 +95,7 @@ namespace OAuth2.Infrastructure
                     platformHandler.UseCookies = false;
                     platformHandler.AutomaticDecompression = DecompressionMethods.All;
                 }
+
                 handler = platformHandler;
             }
 #else
@@ -127,6 +129,7 @@ namespace OAuth2.Infrastructure
                         throw new HttpRequestException("OAuth requests cannot follow redirects to another origin.");
                     }
                 }
+
                 return response;
             }
         }
