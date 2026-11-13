@@ -19,117 +19,50 @@ Install the [OAuth2 NuGet package](https://www.nuget.org/packages/OAuth2/):
 dotnet add package OAuth2
 ```
 
-## Usage
+## Usage (ASP.NET Core Minimal API)
 
-Create a client with your application's registered credentials and redirect URI:
+Install `OAuth2` in an ASP.NET Core web project. Configure `Google:ClientId` and `Google:ClientSecret` using user secrets or a secret store, and register `https://localhost:5001/auth/google/callback` with Google. Run the app on `https://localhost:5001` with a trusted development certificate.
 
-```csharp
-using OAuth2.Client.Impl;
-using OAuth2.Configuration;
-using OAuth2.Infrastructure;
-
-var client = new GoogleClient(new RequestFactory(), new ClientConfiguration
-{
-    ClientId = "<client-id>",
-    ClientSecret = "<client-secret>",
-    RedirectUri = "https://localhost:5001/auth/google/callback",
-    Scope = "openid profile email"
-});
-```
-
-Call `GetLoginLinkUriAsync(state)` to obtain the login URL. Your application must generate unpredictable, single-use state, bind it to the initiating browser session, and validate the returned value before exchanging the authorization code. After validation, pass the callback parameters as a `NameValueCollection` to `GetUserInfoAsync` to obtain a `UserInfo`.
-
-The library exposes callback state; it does not validate it, manage browser sessions, or validate ID tokens. Use a tested authentication handler or correlation store for those responsibilities. Create a client per authentication flow; do not share an instance concurrently. See [Google's authorization-code flow](https://developers.google.com/identity/protocols/oauth2/web-server).
-
-### ASP.NET Core Minimal API example
-
-In an ASP.NET Core web project, install `OAuth2` and replace `Program.cs` with the following. Configure `Google:ClientId` and `Google:ClientSecret` using user secrets or your deployment's secret store. Register `https://localhost:5001/auth/google/callback` with Google and run the application on `https://localhost:5001` with a trusted development certificate.
+This example shows the basic flow only. Before using it for authentication, generate an unpredictable, single-use `state`, bind it to the initiating browser session, pass it to `GetLoginLinkUriAsync(state)`, and validate it before exchanging the code. The library does not validate state, manage sessions, or validate ID tokens; use an established authentication handler or correlation store for those responsibilities. See [Google's authorization-code flow](https://developers.google.com/identity/protocols/oauth2/web-server).
 
 ```csharp
 using System.Collections.Specialized;
-using System.Security.Cryptography;
-using Microsoft.Extensions.Caching.Memory;
 using OAuth2.Client.Impl;
 using OAuth2.Configuration;
 using OAuth2.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddMemoryCache();
 var app = builder.Build();
-var pendingLogins = app.Services.GetRequiredService<IMemoryCache>();
-var stateLock = new object();
-const string stateCookie = "__Host-OAuth2-Google-State";
-var cookieOptions = new CookieOptions
-{
-    HttpOnly = true,
-    Secure = true,
-    SameSite = SameSiteMode.Lax,
-    Path = "/",
-    MaxAge = TimeSpan.FromMinutes(5)
-};
 
 GoogleClient CreateGoogleClient() => new(new RequestFactory(), new ClientConfiguration
 {
-    ClientId = app.Configuration["Google:ClientId"]
-        ?? throw new InvalidOperationException("Configure Google:ClientId."),
-    ClientSecret = app.Configuration["Google:ClientSecret"]
-        ?? throw new InvalidOperationException("Configure Google:ClientSecret."),
+    ClientId = app.Configuration["Google:ClientId"]!,
+    ClientSecret = app.Configuration["Google:ClientSecret"]!,
     RedirectUri = "https://localhost:5001/auth/google/callback",
     Scope = "openid profile email"
 });
 
-app.MapGet("/auth/google", async (HttpContext context) =>
+app.MapGet("/auth/google", async () =>
 {
-    var state = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
-    var loginUri = await CreateGoogleClient().GetLoginLinkUriAsync(
-        state, context.RequestAborted);
-    pendingLogins.Set(state, true, TimeSpan.FromMinutes(5));
-    context.Response.Cookies.Append(stateCookie, state, cookieOptions);
+    var loginUri = await CreateGoogleClient().GetLoginLinkUriAsync();
     return Results.Redirect(loginUri);
 });
 
 app.MapGet("/auth/google/callback", async (HttpContext context) =>
 {
-    context.Response.Headers.CacheControl = "no-store";
-    var state = context.Request.Query["state"].ToString();
-    if (string.IsNullOrEmpty(state) ||
-        !context.Request.Cookies.TryGetValue(stateCookie, out var expectedState) ||
-        !string.Equals(state, expectedState, StringComparison.Ordinal))
-        return Results.BadRequest("Invalid authentication state.");
-
-    // Consume state atomically before exchanging a code, including error callbacks.
-    lock (stateLock)
-    {
-        if (!pendingLogins.TryGetValue(state, out bool _))
-            return Results.BadRequest("Expired or already used authentication state.");
-        pendingLogins.Remove(state);
-    }
-    context.Response.Cookies.Delete(stateCookie, cookieOptions);
-
     var code = context.Request.Query["code"].ToString();
-    if (context.Request.Query.ContainsKey("error") || string.IsNullOrEmpty(code))
-        return Results.BadRequest("Authentication was declined or no code was returned.");
+    if (string.IsNullOrEmpty(code))
+        return Results.BadRequest("Missing authorization code.");
 
     var userInfo = await CreateGoogleClient().GetUserInfoAsync(
-        new NameValueCollection { { "code", code }, { "state", state } },
-        context.RequestAborted);
-
-    return Results.Ok(new
-    {
-        userInfo.ProviderName,
-        userInfo.Id,
-        userInfo.FirstName,
-        userInfo.LastName,
-        userInfo.Email,
-        userInfo.EmailVerified,
-        userInfo.AvatarUri
-    });
+        new NameValueCollection { { "code", code } });
+    return Results.Ok(userInfo);
 });
 
 app.Run();
 ```
 
-Open `/auth/google` to start. This single-instance example allows one pending login per browser and returns profile data; it does not create a local account or sign-in session. For multiple app instances, replace the in-memory state cache and lock with a shared correlation store that supports atomic consumption, or use an established ASP.NET Core authentication handler. Link accounts using `ProviderName` and `Id`; apply the [email-verification guidance](#email-verification) before trusting an email address.
+Open `/auth/google` to start. Create a client per authentication flow; do not share an instance concurrently. Use `ProviderName` and `Id` to look up a linked account, and follow the [email-verification guidance](#email-verification) before trusting an email address.
 
 ### HTTP transport and timeouts
 
