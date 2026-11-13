@@ -41,6 +41,98 @@ Call `GetLoginLinkUriAsync(state)` to obtain the login URL. Your application mus
 
 The library exposes callback state; it does not validate it, manage browser sessions, or validate ID tokens. Use a tested authentication handler or correlation store for those responsibilities. Create a client per authentication flow; do not share an instance concurrently. See [Google's authorization-code flow](https://developers.google.com/identity/protocols/oauth2/web-server).
 
+### ASP.NET Core Minimal API example
+
+In an ASP.NET Core web project, install `OAuth2` and replace `Program.cs` with the following. Configure `Google:ClientId` and `Google:ClientSecret` using user secrets or your deployment's secret store. Register `https://localhost:5001/auth/google/callback` with Google and run the application on `https://localhost:5001` with a trusted development certificate.
+
+```csharp
+using System.Collections.Specialized;
+using System.Security.Cryptography;
+using Microsoft.Extensions.Caching.Memory;
+using OAuth2.Client.Impl;
+using OAuth2.Configuration;
+using OAuth2.Infrastructure;
+
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddMemoryCache();
+var app = builder.Build();
+var pendingLogins = app.Services.GetRequiredService<IMemoryCache>();
+var stateLock = new object();
+const string stateCookie = "__Host-OAuth2-Google-State";
+var cookieOptions = new CookieOptions
+{
+    HttpOnly = true,
+    Secure = true,
+    SameSite = SameSiteMode.Lax,
+    Path = "/",
+    MaxAge = TimeSpan.FromMinutes(5)
+};
+
+GoogleClient CreateGoogleClient() => new(new RequestFactory(), new ClientConfiguration
+{
+    ClientId = app.Configuration["Google:ClientId"]
+        ?? throw new InvalidOperationException("Configure Google:ClientId."),
+    ClientSecret = app.Configuration["Google:ClientSecret"]
+        ?? throw new InvalidOperationException("Configure Google:ClientSecret."),
+    RedirectUri = "https://localhost:5001/auth/google/callback",
+    Scope = "openid profile email"
+});
+
+app.MapGet("/auth/google", async (HttpContext context) =>
+{
+    var state = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
+    var loginUri = await CreateGoogleClient().GetLoginLinkUriAsync(
+        state, context.RequestAborted);
+    pendingLogins.Set(state, true, TimeSpan.FromMinutes(5));
+    context.Response.Cookies.Append(stateCookie, state, cookieOptions);
+    return Results.Redirect(loginUri);
+});
+
+app.MapGet("/auth/google/callback", async (HttpContext context) =>
+{
+    context.Response.Headers.CacheControl = "no-store";
+    var state = context.Request.Query["state"].ToString();
+    if (string.IsNullOrEmpty(state) ||
+        !context.Request.Cookies.TryGetValue(stateCookie, out var expectedState) ||
+        !string.Equals(state, expectedState, StringComparison.Ordinal))
+        return Results.BadRequest("Invalid authentication state.");
+
+    // Consume state atomically before exchanging a code, including error callbacks.
+    lock (stateLock)
+    {
+        if (!pendingLogins.TryGetValue(state, out bool _))
+            return Results.BadRequest("Expired or already used authentication state.");
+        pendingLogins.Remove(state);
+    }
+    context.Response.Cookies.Delete(stateCookie, cookieOptions);
+
+    var code = context.Request.Query["code"].ToString();
+    if (context.Request.Query.ContainsKey("error") || string.IsNullOrEmpty(code))
+        return Results.BadRequest("Authentication was declined or no code was returned.");
+
+    var userInfo = await CreateGoogleClient().GetUserInfoAsync(
+        new NameValueCollection { { "code", code }, { "state", state } },
+        context.RequestAborted);
+
+    return Results.Ok(new
+    {
+        userInfo.ProviderName,
+        userInfo.Id,
+        userInfo.FirstName,
+        userInfo.LastName,
+        userInfo.Email,
+        userInfo.EmailVerified,
+        userInfo.AvatarUri
+    });
+});
+
+app.Run();
+```
+
+Open `/auth/google` to start. This single-instance example allows one pending login per browser and returns profile data; it does not create a local account or sign-in session. For multiple app instances, replace the in-memory state cache and lock with a shared correlation store that supports atomic consumption, or use an established ASP.NET Core authentication handler. Link accounts using `ProviderName` and `Id`; apply the [email-verification guidance](#email-verification) before trusting an email address.
+
+### HTTP transport and timeouts
+
 `RequestFactory` shares its HTTP transport across authentication flows. Each call to `CreateClient` returns a separate `RestClient`; headers, authenticators, and timeouts stay on that client. Disposing it leaves the shared transport available. On Windows, Linux, and macOS with .NET 10 or .NET 11, pooled connections expire after two minutes so new connections can refresh DNS. Mobile, browser, and netstandard2.0 builds retain their platform handler. Outside the browser, handler cookies are disabled so they do not cross authentication flows. RestSharp still handles explicit request cookies and same-origin redirects.
 
 The default transport rejects redirects to another scheme, host, or port before RestSharp can forward an OAuth form body or token-bearing query string. A provider that requires a redirect to another origin must use its documented endpoint directly or an application-owned `IRequestFactory` with an explicit redirect policy. Browser redirect behavior also depends on the browser's fetch implementation and CORS policy.
