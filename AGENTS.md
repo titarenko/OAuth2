@@ -8,11 +8,11 @@ Base provider fixtures on published examples or sanitized captures, with source 
 
 Put public API usage in `readme.md`, not implementation histories. Preserve exact names such as `UserInfo.Id`, `id`, and `sub`. Prefer `is true` for nullable booleans. Do not silently change endpoints, scopes, or stored account identifiers.
 
-Validate with a .NET 11 SDK and the .NET 10/11 runtimes:
+Validate with a .NET 11 SDK and the .NET 8/10/11 runtimes:
 
 ```sh
 dotnet build OAuth2.slnx --configuration Release
 dotnet test OAuth2.Tests/OAuth2.Tests.csproj --configuration Release --no-build --no-restore
 ```
 
-Report the tested revision and actual results. The standard test project runs on .NET 10 and .NET 11; netstandard2.0 is built, not independently executed by those commands. Do not disable auditing, warning policies, or CI checks to obtain a pass.
+Report the tested revision and actual results. The standard test project runs on .NET 8, .NET 10, and .NET 11; netstandard2.0 is built, not independently executed by those commands. Do not disable auditing, warning policies, or CI checks to obtain a pass.
