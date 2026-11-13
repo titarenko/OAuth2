@@ -37,6 +37,12 @@ namespace OAuth2.Client.Impl
         /// <inheritdoc />
         protected override void BeforeGetAccessToken(BeforeAfterRequestArgs args)
         {
+            if (args.Parameters["code"] == null && args.Parameters["refresh_token"] != null)
+            {
+                base.BeforeGetAccessToken(args);
+                return;
+            }
+
             args.Request.AddObject(new
             {
                 code = args.Parameters.GetOrThrowUnexpectedResponse("code"),

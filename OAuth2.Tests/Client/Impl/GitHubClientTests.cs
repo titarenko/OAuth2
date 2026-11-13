@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using System.Web;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
@@ -96,6 +97,117 @@ namespace OAuth2.Tests.Client.Impl
             // Assert
             endpoint.BaseUri.Should().Be("https://github.com");
             endpoint.Resource.Should().Be("/login/oauth/access_token");
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public async Task GetCurrentTokenAsync_ExplicitRefreshToken_SendsRefreshRequest(bool jsonResponse)
+        {
+            // Arrange
+            // GitHub's documented refresh contract, with synthetic tokens and credentials.
+            // https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps#refreshing-an-access-token-with-a-refresh-token
+            _configuration.ClientSecret = "secret+&=";
+            _configuration.Scope = "repo offline_access";
+            _handler.EnqueueResponse(jsonResponse
+                ? /* lang=json */ """{"access_token":"refreshed-token","refresh_token":"rotated+&=","token_type":"bearer","expires_in":28800}"""
+                : "access_token=refreshed-token&refresh_token=rotated%2B%26%3D&token_type=bearer&expires_in=28800");
+
+            // Act
+            var token = await _client.GetCurrentTokenAsync("refresh+&=", forceUpdate: true);
+
+            // Assert
+            var request = _handler.SentRequests.Should().ContainSingle().Which;
+            request.Method.Should().Be(HttpMethod.Post);
+            request.RequestUri!.AbsoluteUri.Should().Be("https://github.com/login/oauth/access_token");
+            request.Headers.Authorization.Should().BeNull();
+            request.Content!.Headers.ContentType!.MediaType.Should().Be("application/x-www-form-urlencoded");
+            var form = HttpUtility.ParseQueryString(_handler.SentBodies[0]!);
+            form.AllKeys.Should().BeEquivalentTo(new[] { "client_id", "client_secret", "grant_type", "refresh_token" });
+            form["client_id"].Should().Be("client-id");
+            form["client_secret"].Should().Be("secret+&=");
+            form["grant_type"].Should().Be("refresh_token");
+            form["refresh_token"].Should().Be("refresh+&=");
+            token.Should().Be("refreshed-token");
+            _client.AccessToken.Should().Be(token);
+            _client.RefreshToken.Should().Be("rotated+&=");
+            _client.TokenType.Should().Be("bearer");
+        }
+
+        [Test]
+        public async Task GetCurrentTokenAsync_StoredRefreshToken_UsesRotatedToken()
+        {
+            // Arrange
+            // Documented token fields; negative expiries deliberately exercise renewal without waiting.
+            _handler.EnqueueResponse(/* lang=json */ """{"access_token":"initial-token","refresh_token":"initial+&=","expires_in":-1}""");
+            await _client.GetTokenAsync(new NameValueCollection { { "code", "code" }, { "state", "callback-state" } });
+            _handler.EnqueueResponse(/* lang=json */ """{"access_token":"first-token","refresh_token":"rotated+&=","expires_in":-1}""");
+            _handler.EnqueueResponse(/* lang=json */ """{"access_token":"second-token","refresh_token":"final-token","expires_in":28800}""");
+
+            // Act
+            var firstToken = await _client.GetCurrentTokenAsync();
+            var secondToken = await _client.GetCurrentTokenAsync();
+
+            // Assert
+            _handler.SentRequests.Should().HaveCount(3);
+            var firstForm = HttpUtility.ParseQueryString(_handler.SentBodies[1]!);
+            var secondForm = HttpUtility.ParseQueryString(_handler.SentBodies[2]!);
+            firstForm["refresh_token"].Should().Be("initial+&=");
+            secondForm["refresh_token"].Should().Be("rotated+&=");
+            foreach (var form in new[] { firstForm, secondForm })
+            {
+                form.AllKeys.Should().BeEquivalentTo(new[] { "client_id", "client_secret", "grant_type", "refresh_token" });
+                form["grant_type"].Should().Be("refresh_token");
+            }
+            firstToken.Should().Be("first-token");
+            secondToken.Should().Be("second-token");
+            _client.AccessToken.Should().Be(secondToken);
+            _client.RefreshToken.Should().Be("final-token");
+            _client.State.Should().Be("callback-state");
+        }
+
+        [TestCase(null)]
+        [TestCase("ignored-refresh-token")]
+        public async Task GetTokenAsync_AuthorizationCode_PreservesRequestParameters(string? unexpectedRefreshToken)
+        {
+            // Arrange
+            _configuration.ClientSecret = "secret+&=";
+            _configuration.RedirectUri = "https://app.example.com/callback?next=a&value=b";
+            _handler.EnqueueResponse(TokenResponse);
+            var parameters = new NameValueCollection { { "code", "code+&=" }, { "state", "state+&=" } };
+            // An unexpected callback field must not switch an authorization-code exchange to refresh.
+            if (unexpectedRefreshToken != null)
+                parameters.Add("refresh_token", unexpectedRefreshToken);
+
+            // Act
+            var token = await _client.GetTokenAsync(parameters);
+
+            // Assert
+            var request = _handler.SentRequests.Should().ContainSingle().Which;
+            request.Method.Should().Be(HttpMethod.Post);
+            request.RequestUri!.AbsoluteUri.Should().Be("https://github.com/login/oauth/access_token");
+            request.Headers.Authorization.Should().BeNull();
+            request.Content!.Headers.ContentType!.MediaType.Should().Be("application/x-www-form-urlencoded");
+            var form = HttpUtility.ParseQueryString(_handler.SentBodies[0]!);
+            form.AllKeys.Should().BeEquivalentTo(new[] { "code", "client_id", "client_secret", "redirect_uri", "state" });
+            form["code"].Should().Be("code+&=");
+            form["client_id"].Should().Be("client-id");
+            form["client_secret"].Should().Be("secret+&=");
+            form["redirect_uri"].Should().Be(_configuration.RedirectUri);
+            form["state"].Should().Be("state+&=");
+            token.Should().Be("test-token");
+            _client.State.Should().Be("state+&=");
+        }
+
+        [Test]
+        public async Task GetTokenAsync_RefreshTokenWithoutCode_RejectsCallback()
+        {
+            // Arrange
+            // Malformed callback: GetTokenAsync still requires an authorization code.
+            var parameters = new NameValueCollection { { "refresh_token", "unexpected-token" } };
+
+            // Act & Assert
+            await _client.Awaiting(x => x.GetTokenAsync(parameters)).Should().ThrowAsync<UnexpectedResponseException>();
+            _handler.SentRequests.Should().BeEmpty();
         }
 
         [Test]
